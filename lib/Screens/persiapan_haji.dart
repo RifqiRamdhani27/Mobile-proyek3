@@ -1,193 +1,129 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/isi_persiapan_haji/keutamaan_haji.dart';
-import 'package:flutter_application/isi_persiapan_haji/makna_jamaah_haji.dart';
-import 'package:flutter_application/isi_persiapan_haji/motivasi_berhaji.dart';
-import 'package:flutter_application/isi_persiapan_haji/sabar_saat_haji.dart';
-import 'package:flutter_application/isi_persiapan_haji/ikhlas_berhaji.dart';
-import 'package:flutter_application/isi_persiapan_haji/teladan_rasulullah.dart';
-import 'package:flutter_application/isi_persiapan_haji/jaga_haji_agar_mabrur.dart';
+
+final List<Map<String, String>> menuItems = [
+  {"title": "Keutamaan Haji",       "image": "assets/images/keutamaan_haji.png",       "route": "/keutamaan-haji"},
+  {"title": "Makna Jamaah Haji",    "image": "assets/images/makna_jemaah_haji.png",    "route": "/makna-jamaah-haji"},
+  {"title": "Motivasi Berhaji",     "image": "assets/images/motivasi_berhaji.png",     "route": "/motivasi-berhaji"},
+  {"title": "Sabar Saat Haji",      "image": "assets/images/sabar_saat_haji.png",      "route": "/sabar-saat-haji"},
+  {"title": "Ikhlas Berhaji",       "image": "assets/images/ikhlas_berhaji.png",       "route": "/ikhlas-berhaji"},
+  {"title": "Teladan Rasulullah",   "image": "assets/images/teladan_rasulullah.png",   "route": "/teladan-rasulullah"},
+  {"title": "Jaga Haji agar Mabrur","image": "assets/images/jaga_haji_agar_mabrur.png","route": "/jaga-haji-mabrur"},
+];
 
 class PersiapanHajiScreen extends StatelessWidget {
-  const PersiapanHajiScreen({super.key});
+  final bool isDark;
+  const PersiapanHajiScreen({super.key, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
+    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg   = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final shadowClr= isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
-
-      // ===== APP BAR =====
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF4B400),
-        elevation: 0,
-        title: const Text(
-          "Persiapan Haji",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+      backgroundColor: bg,
+      body: Column(
+        children: [
+          // ── AppBar ──────────────────────────────────────────────────────────
+          Container(
+            height: 95,
+            color: appBarBg,
+            child: SafeArea(
+              bottom: false,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 6, left: 8),
+                      child: Text(
+                        '←',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: Text(
+                      'Persiapan Haji',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
 
-      // ===== BODY =====
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _menuItem(
-                context,
-                "Keutamaan Haji",
-                "assets/images/keutamaan_haji.png",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const IsiKeutamaanHajiScreen(),
+          // ── List Menu ────────────────────────────────────────────────────────
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: menuItems.length,
+              itemBuilder: (context, index) {
+                final item = menuItems[index];
+                return GestureDetector(
+                  onTap: () {
+                    // Navigator.pushNamed(context, item['route']!);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: cardBg,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: shadowClr.withOpacity(0.1),
+                          blurRadius: 6,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-
-              _menuItem(
-                context,
-                "Makna Jamaah Haji",
-                "assets/images/makna_jemaah_haji.png",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MaknaJamaahHaji(),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          item['image']!,
+                          width: 40,
+                          height: 40,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.image,
+                            size: 40,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            item['title']!,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textClr,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-              _menuItem(
-                context,
-                "Motivasi Berhaji",
-                "assets/images/motivasi_berhaji.png",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MotivasiBerhaji(),
-                    ),
-                  );
-                },
-              ),
-              _menuItem(
-                context,
-                "Sabar Saat Haji",
-                "assets/images/sabar_saat_haji.png",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const SabarSaatHaji(),
-                    ),
-                  );
-                },
-              ),
-              _menuItem(
-                context,
-                "Ikhlas Berhaji",
-                "assets/images/ikhlas_berhaji.png",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const IkhlasBerhaji(),
-                    ),
-                  );
-                },
-              ),
-              _menuItem(
-                context,
-                "Teladan Rasulullah",
-                "assets/images/teladan_rasulullah.png",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const TeladanRasulullah(),
-                    ),
-                  );
-                },
-              ),
-              _menuItem(
-                context,
-                "Jaga Haji agar Mabrur",
-                "assets/images/jaga_haji_agar_mabrur.png",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const JagaHajiAgarMabrur(),
-                    ),
-                  );
-                },
-              ),
-            ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-      ),
-
-      // ===== NAVBAR =====
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFFE6A63C),
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "Time"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Health"),
         ],
-      ),
-    );
-  }
-
-  // ===== MENU ITEM =====
-  Widget _menuItem(
-    BuildContext context,
-    String title,
-    String imagePath, {
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        height: 70,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Image.asset(imagePath, width: 40, height: 40),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

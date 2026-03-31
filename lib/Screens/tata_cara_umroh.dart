@@ -2,119 +2,148 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TataCaraUmrohScreen extends StatelessWidget {
-  const TataCaraUmrohScreen({super.key});
+  final bool isDark;
+  const TataCaraUmrohScreen({super.key, this.isDark = false});
 
   final String youtubeUrl =
       "https://www.youtube.com/watch?v=VIDEO_ID_KAMU"; // GANTI LINK
 
   Future<void> _launchYoutube() async {
     final Uri url = Uri.parse(youtubeUrl);
-
-    if (!await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication,
-    )) {
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Tidak bisa membuka YouTube');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEDEDED),
+    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
-      // ===== APP BAR =====
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF4B400),
-        elevation: 0,
-        title: const Text(
-          "Tata Cara Umroh",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-
-      // ===== BODY =====
-      body: SingleChildScrollView(
-        child: Column(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: bg,
+        body: Column(
           children: [
-
-            const SizedBox(height: 25),
-
-            // ===== THUMBNAIL =====
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
-              child: Container(
-                height: 170, // Atur tinggi di sini
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      offset: const Offset(0, 6),
+            // ── AppBar ──────────────────────────────────────────────────────
+            Container(
+              height: 95,
+              color: appBarBg,
+              child: SafeArea(
+                bottom: false,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 8),
+                        child: Text(
+                          '←',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: titleClr,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text(
+                        'Tata Cara Umroh',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                child: ClipRRect(
-                  child: Image.asset(
-                    "assets/images/tata_cara_umroh.png",
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                ),
               ),
             ),
 
-            const SizedBox(height: 30),
+            // ── Body ────────────────────────────────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 25),
 
-            // ===== TOMBOL =====
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE6A63C),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  side: BorderSide(
-                    color: Colors.black.withOpacity(0.3),
-                    width: 2,
-                  ),
-                ),
-                elevation: 8,
-              ),
-              onPressed: _launchYoutube,
-              child: const Text(
-                "Tonton Video",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                    // ── Thumbnail ──────────────────────────────────────────
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Container(
+                        height: 170,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          child: Image.asset(
+                            "assets/images/tata_cara_umroh.png",
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: const Color(0xFFCCBB88),
+                              child: const Icon(Icons.image,
+                                  size: 60, color: Colors.white54),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // ── Tombol Tonton Video ────────────────────────────────
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE6A63C),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 50,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: BorderSide(
+                            color: Colors.black.withOpacity(0.3),
+                            width: 2,
+                          ),
+                        ),
+                        elevation: 8,
+                      ),
+                      onPressed: _launchYoutube,
+                      child: const Text(
+                        "Tonton Video",
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+                  ],
                 ),
               ),
             ),
-
-            const SizedBox(height: 30),
           ],
         ),
-      ),
-
-      // ===== NAVBAR BAWAH =====
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFFE6A63C),
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "Time"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Health"),
-        ],
       ),
     );
   }
