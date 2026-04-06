@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import '../isi_fiqih_umroh/ihram_miqot.dart';
+import '../isi_fiqih_umroh/thowaf.dart';
+import '../isi_fiqih_umroh/makam-ibrahim.dart';
+import '../isi_fiqih_umroh/minum-air-zamzam.dart';
+import '../isi_fiqih_umroh/sai.dart';
+import '../isi_fiqih_umroh/gundul.dart';
 
 final List<Map<String, String>> fiqihUmrohMenuItems = [
-  {"title": "Ihram Miqot",                      "image": "assets/images/ihram_miqot.png",       "route": "/ihram-miqot"},
-  {"title": "Thowaf",                            "image": "assets/images/thowaf.png",             "route": "/thowaf"},
-  {"title": "Makam Ibrahim",                     "image": "assets/images/makam_ibrahim.png",      "route": "/makam-ibrahim"},
-  {"title": "Minum Air Zamzam",                  "image": "assets/images/minum_air_zamzam.png",   "route": "/minum-air-zamzam"},
-  {"title": "Sa'i",                              "image": "assets/images/sa'i2.png",              "route": "/sai"},
-  {"title": "Gundul / Cukuran Umroh & haji",     "image": "assets/images/gundul.png",             "route": "/gundul"},
+  {"title": "Ihram Miqot",                  "image": "assets/images/ihram_miqot.png",      "route": "/ihram_miqot"},
+  {"title": "Thowaf",                        "image": "assets/images/thowaf.png",            "route": "/thowaf"},
+  {"title": "Makam Ibrahim",                 "image": "assets/images/makam_ibrahim.png",     "route": "/makam-ibrahim"},
+  {"title": "Minum Air Zamzam",              "image": "assets/images/minum_air_zamzam.png",  "route": "/minum-air-zamzam"},
+  {"title": "Sa'i",                          "image": "assets/images/sa'i2.png",             "route": "/sai"},
+  {"title": "Gundul / Cukuran Umroh & haji", "image": "assets/images/gundul.png",            "route": "/gundul"},
 ];
 
 class FiqihUmrohScreen extends StatelessWidget {
@@ -31,7 +37,6 @@ class FiqihUmrohScreen extends StatelessWidget {
         backgroundColor: bg,
         body: Column(
           children: [
-            // ── AppBar ──────────────────────────────────────────────────────
             Container(
               height: 95,
               color: appBarBg,
@@ -71,8 +76,6 @@ class FiqihUmrohScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // ── List Menu ──────────────────────────────────────────────────
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -81,7 +84,19 @@ class FiqihUmrohScreen extends StatelessWidget {
                   final item = fiqihUmrohMenuItems[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, item['route']!);
+                      final route = item['route']!;
+                      final screenMap = <String, Widget>{
+                        '/ihram_miqot':      IhramMiqotScreen(isDark: isDark),
+                        '/thowaf':           ThowafScreen(isDark: isDark),
+                        '/makam-ibrahim':    MakamIbrahimScreen(isDark: isDark),
+                        '/minum-air-zamzam': MinumAirZamzamScreen(isDark: isDark),
+                        '/sai':                 SaiScreen(isDark: isDark),
+                        '/gundul':           GundulScreen(isDark: isDark),
+                      };
+                      final screen = screenMap[route];
+                      if (screen != null) {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                      }
                     },
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 16),

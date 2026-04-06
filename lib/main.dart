@@ -34,6 +34,7 @@ class RavolaApp extends StatelessWidget {
       builder: (context, isDark, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
+          initialRoute: '/',
           theme: ThemeData(
             brightness: isDark ? Brightness.dark : Brightness.light,
           ),
@@ -464,7 +465,7 @@ class _MoonSwitchState extends State<MoonSwitch>
         builder: (context, _) {
           return Container(
             width: 60,
-            height: 28,
+            height: 32,
             decoration: BoxDecoration(
               color: widget.value ? const Color(0x33FFB700) : Colors.white,
               borderRadius: BorderRadius.circular(30),

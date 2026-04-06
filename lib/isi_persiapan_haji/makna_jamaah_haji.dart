@@ -1,102 +1,123 @@
 import 'package:flutter/material.dart';
 
-class MaknaJamaahHaji extends StatelessWidget {
-  const MaknaJamaahHaji({super.key});
+class MaknaJamaahHajiScreen extends StatelessWidget {
+  final bool isDark;
+  const MaknaJamaahHajiScreen({super.key, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEDEDED),
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
 
-      // ===== APPBAR =====
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF4B400),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text(
-          "Makna Jamaah Haji",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: bg,
+        body: Column(
+          children: [
+            Container(
+              height: 95,
+              color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
+              child: SafeArea(
+                bottom: false,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          '←',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Makna Jamaah Haji',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    const Center(
+                      child: Text(
+                        'Tamu-Tamu Allah',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFE6A63C),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Setelah Nabi Ibrahim dan putranya Nabi Ismail \'alaihimassalam selesai '
+                      'membangun Ka\'bah, maka Allah memerintahkan Nabi Ibrahim untuk menyeru '
+                      'kepada manusia agar mereka datang melaksanakan ibadah haji.\n\n'
+                      'Kenapa?, karena rumah Allah, Baitullah, telah dibangun. Tinggal mereka '
+                      'datang menuju Baitullah untuk berhaji. Allah Subḥānahu wa Ta\'ālā berfirman:',
+                      style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
+                      textAlign: TextAlign.justify,
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF8E7),
+                        border: const Border(
+                          left: BorderSide(color: Color(0xFFE6A63C), width: 4),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: const Text(
+                        'وَأَذِّنْ فِي النَّاسِ بِالْحَجِّ يَأْتُوكَ رِجَالًا وَعَلَىٰ كُلِّ ضَامِرٍ يَأْتِينَ مِن كُلِّ فَجٍّ عَمِيقٍ',
+                        style: TextStyle(
+                          fontSize: 20,
+                          height: 1.8,
+                          color: Color(0xFF1A1A1A),
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '"Dan berserulah kepada manusia untuk mengerjakan haji, niscaya mereka '
+                      'akan datang kepadamu dengan berjalan kaki dan mengendarai unta, yang '
+                      'datang dari segenap penjuru yang jauh." (Qs. Al Hajj ayat 27)',
+                      style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
+                      textAlign: TextAlign.justify,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
-
-      // ===== BODY =====
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            children: const [
-              SizedBox(height: 8),
-
-              Text(
-                "Tamu-Tamu Allah",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFE6A63C),
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              SizedBox(height: 16),
-
-              Text(
-                """Setelah Nabi Ibrahim dan putranya Nabi Ismail ‘alaihimassalam selesai membangun Ka'bah, maka Allah memerintahkan Nabi Ibrahim untuk menyeru kepada manusia agar mereka datang melaksanakan ibadah haji.
-
-Kenapa?, karena rumah Allah, Baitullah, telah dibangun. Tinggal mereka datang menuju Baitullah untuk berhaji. Allah Subḥānahu wa Ta'ālā berfirman:""",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 15,
-                  height: 1.35,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-
-              SizedBox(height: 16),
-
-              // ===== AYAT ARAB =====
-              Text(
-                "وَأَذِّنْ فِي النَّاسِ بِالْحَجِّ يَأْتُوكَ رِجَالًا وَعَلَىٰ كُلِّ ضَامِرٍ يَأْتِينَ مِن كُلِّ فَجٍّ عَمِيقٍ",
-                style: TextStyle(fontSize: 18, height: 1.6),
-                textAlign: TextAlign.right,
-              ),
-
-              SizedBox(height: 12),
-
-              Text(
-                """"Dan berserulah kepada manusia untuk mengerjakan haji, niscaya mereka akan datang kepadamu dengan berjalan kaki dan mengendarai unta, yang datang dari segenap penjuru yang jauh." (Qs. Al Hajj ayat 27)""",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 15,
-                  height: 1.35,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-
-              SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ),
-
-      // ===== NAVBAR BAWAH =====
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFFE6A63C),
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "Time"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Health"),
-        ],
       ),
     );
   }

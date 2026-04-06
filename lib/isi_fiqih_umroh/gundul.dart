@@ -1,109 +1,112 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/isi_fiqih_umroh/gundul/kesalahan_tahallul.dart';
-import 'package:flutter_application/isi_fiqih_umroh/gundul/penjelasan_tahallul.dart';
+import 'gundul/penjelasan_tahallul.dart';
+import 'gundul/kesalahan_tahallul.dart';
 
-class Gundul extends StatelessWidget {
-  const Gundul({super.key});
+final List<Map<String, String>> gundulMenuItems = [
+  {"title": "Penjelasan Tahallul (Gundul)",        "image": "assets/images/tahallul.png",  "route": "/gundul/penjelasan_tahallul"},
+  {"title": "Kesalahan Saat Tahallul (Gundul)",    "image": "assets/images/tahallul2.png", "route": "/gundul/kesalahan_tahallul"},
+];
+
+class GundulScreen extends StatelessWidget {
+  final bool isDark;
+  const GundulScreen({super.key, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
+    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg   = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
-
-      // ===== APP BAR =====
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF4B400),
-        elevation: 0,
-        title: const Text(
-          "Gundul / Cukuran Umroh/Haji",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-
-      // ===== BODY =====
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PenjelasanTahallul(),
-                    ),
-                  );
-                },
-                child: _menuItem(
-                  "Penjelasan Tahallul (Gundul)",
-                  "assets/images/tahallul.png",
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const KesalahanTahallul(),
-                    ),
-                  );
-                },
-                child: _menuItem(
-                  "Kesalahan Saat Tahallul (Gundul)",
-                  "assets/images/tahallul2.png",
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-
-      // ===== NAVBAR BAWAH (FIXED) =====
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFFE6A63C),
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "Time"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Health"),
-        ],
-      ),
-    );
-  }
-
-  Widget _menuItem(String title, String imagePath) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      height: 70,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
+      backgroundColor: bg,
+      body: Column(
         children: [
-          Image.asset(imagePath, width: 40, height: 40),
-          const SizedBox(width: 16),
+          Container(
+            height: 95,
+            color: appBarBg,
+            child: SafeArea(
+              bottom: false,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 6, left: 8),
+                      child: Text(
+                        '←',
+                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: titleClr),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: Text(
+                      'Gundul / Cukuran Umroh/Haji',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: titleClr),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
+              itemCount: gundulMenuItems.length,
+              itemBuilder: (context, index) {
+                final item = gundulMenuItems[index];
+                return GestureDetector(
+                  onTap: () {
+                    final route = item['route']!;
+                    final screenMap = <String, Widget>{
+                      '/gundul/penjelasan_tahallul': PenjelasanTahallulScreen(isDark: isDark),
+                      '/gundul/kesalahan_tahallul':  KesalahanTahallulScreen(isDark: isDark),
+                    };
+                    final screen = screenMap[route];
+                    if (screen != null) {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                    }
+                  },
+                  child: Container(
+                    height: 70,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: cardBg,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 6,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          item['image']!,
+                          width: 40,
+                          height: 40,
+                          errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 40, color: Colors.grey),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            item['title']!,
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: textClr),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],

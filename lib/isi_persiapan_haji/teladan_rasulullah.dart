@@ -1,196 +1,106 @@
 import 'package:flutter/material.dart';
 
-class TeladanRasulullah extends StatelessWidget {
-  const TeladanRasulullah({super.key});
+class TeladanRasulullahScreen extends StatelessWidget {
+  final bool isDark;
+  const TeladanRasulullahScreen({super.key, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEDEDED),
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
 
-      // ===== APPBAR =====
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF4B400),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text(
-          "Teladan Rasulullah",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-          textAlign: TextAlign.center,
+    const bulletItems = [
+      'Mengikuti tata cara sesuai sunnah',
+      'Bersikap lembut dan tidak menyakiti orang lain',
+      'Memperbanyak dzikir dan doa',
+    ];
+
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: bg,
+        body: Column(
+          children: [
+            Container(
+              height: 95,
+              color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
+              child: SafeArea(
+                bottom: false,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text('←', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFC9A84C) : Colors.black)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text('Teladan Rasulullah', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFC9A84C) : Colors.black)),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    const Text('Teladan Rasulullah dalam Haji', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C))),
+                    const SizedBox(height: 16),
+                    Text('Rasulullah ﷺ melaksanakan haji yang dikenal dengan Haji Wada\' (haji perpisahan). Dari beliau kita belajar tata cara dan adab berhaji.', style: TextStyle(fontSize: 15, height: 1.6, color: textClr), textAlign: TextAlign.justify),
+                    const SizedBox(height: 16),
+                    Text('QS. Al-Ahzab ayat 21:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr)),
+                    const SizedBox(height: 8),
+                    _ayatBox('"Sungguh, telah ada pada (diri) Rasulullah itu suri teladan yang baik bagimu."', '(QS. Al-Ahzab: 21)'),
+                    Text('Dalam berhaji, kita meneladani Rasulullah dengan:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr)),
+                    const SizedBox(height: 8),
+                    ...bulletItems.map((item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('• ', style: TextStyle(fontSize: 15, color: textClr)),
+                          Expanded(child: Text(item, style: TextStyle(fontSize: 15, color: textClr))),
+                        ],
+                      ),
+                    )),
+                    const SizedBox(height: 16),
+                    Text('Mencontoh Rasulullah membuat ibadah kita lebih sempurna.', style: TextStyle(fontSize: 15, height: 1.6, color: textClr), textAlign: TextAlign.justify),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                "Teladan Rasulullah dalam Haji",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFE6A63C),
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              Text(
-                """Rasulullah ﷺ melaksanakan haji yang dikenal dengan Haji Wada’ (haji perpisahan). Dari beliau kita belajar tata cara dan adab berhaji.""",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 15,
-                  height: 1.35,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-
-              SizedBox(height: 16),
-
-              Text(
-                "QS. Al-Ahzab ayat 21:",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              SizedBox(height: 8),
-
-              Text(
-                "“Sungguh, telah ada pada (diri) Rasulullah itu suri teladan yang baik bagimu.”",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 15,
-                  height: 1.35,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-
-              SizedBox(height: 6),
-
-              Text(
-                "(QS. Al-Ahzab: 21)",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 14,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-
-              SizedBox(height: 18),
-
-              Text(
-                "Dalam berhaji, kita meneladani Rasulullah dengan:",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              SizedBox(height: 10),
-
-              // ===== BULLET LIST =====
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "• ",
-                    style: TextStyle(fontFamily: 'TimesNewRoman', fontSize: 15),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "Mengikuti tata cara sesuai sunnah",
-                      style: TextStyle(
-                        fontFamily: 'TimesNewRoman',
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 6),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "• ",
-                    style: TextStyle(fontFamily: 'TimesNewRoman', fontSize: 15),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "Bersikap lembut dan tidak menyakiti orang lain",
-                      style: TextStyle(
-                        fontFamily: 'TimesNewRoman',
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 6),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "• ",
-                    style: TextStyle(fontFamily: 'TimesNewRoman', fontSize: 15),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "Memperbanyak dzikir dan doa",
-                      style: TextStyle(
-                        fontFamily: 'TimesNewRoman',
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16),
-
-              Text(
-                "Mencontoh Rasulullah membuat ibadah kita lebih sempurna.",
-                style: TextStyle(
-                  fontFamily: 'TimesNewRoman',
-                  fontSize: 15,
-                  height: 1.35,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-
-              SizedBox(height: 24),
-            ],
-          ),
-        ),
+  Widget _ayatBox(String text, String source) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E7),
+        border: const Border(left: BorderSide(color: Color(0xFFE6A63C), width: 4)),
+        borderRadius: BorderRadius.circular(8),
       ),
-
-      // ===== NAVBAR BAWAH =====
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFFE6A63C),
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "Time"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Health"),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(text, style: const TextStyle(fontSize: 15, height: 1.6, color: Color(0xFF1A1A1A)), textAlign: TextAlign.justify),
+          const SizedBox(height: 8),
+          Text(source, style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: Color(0xFF888888))),
         ],
       ),
     );

@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import '../isi_persiapan_haji/keutamaan_haji.dart';
+import '../isi_persiapan_haji/makna_jamaah_haji.dart';
+import '../isi_persiapan_haji/motivasi_berhaji.dart';
+import '../isi_persiapan_haji/sabar_saat_haji.dart';
+import '../isi_persiapan_haji/ikhlas_berhaji.dart';
+import '../isi_persiapan_haji/teladan_rasulullah.dart';
+import '../isi_persiapan_haji/jaga_haji_agar_mabrur.dart';
 
 final List<Map<String, String>> menuItems = [
-  {"title": "Keutamaan Haji",       "image": "assets/images/keutamaan_haji.png",       "route": "/keutamaan-haji"},
-  {"title": "Makna Jamaah Haji",    "image": "assets/images/makna_jemaah_haji.png",    "route": "/makna-jamaah-haji"},
-  {"title": "Motivasi Berhaji",     "image": "assets/images/motivasi_berhaji.png",     "route": "/motivasi-berhaji"},
-  {"title": "Sabar Saat Haji",      "image": "assets/images/sabar_saat_haji.png",      "route": "/sabar-saat-haji"},
-  {"title": "Ikhlas Berhaji",       "image": "assets/images/ikhlas_berhaji.png",       "route": "/ikhlas-berhaji"},
-  {"title": "Teladan Rasulullah",   "image": "assets/images/teladan_rasulullah.png",   "route": "/teladan-rasulullah"},
-  {"title": "Jaga Haji agar Mabrur","image": "assets/images/jaga_haji_agar_mabrur.png","route": "/jaga-haji-mabrur"},
+  {"title": "Keutamaan Haji",       "image": "assets/images/keutamaan_haji.png",       "route": "/isi_persiapan_haji/keutamaan_haji"},
+  {"title": "Makna Jamaah Haji",    "image": "assets/images/makna_jemaah_haji.png",    "route": "/isi_persiapan_haji/makna_jamaah_haji"},
+  {"title": "Motivasi Berhaji",     "image": "assets/images/motivasi_berhaji.png",     "route": "/isi_persiapan_haji/motivasi_berhaji"},
+  {"title": "Sabar Saat Haji",      "image": "assets/images/sabar_saat_haji.png",      "route": "/isi_persiapan_haji/sabar_saat_haji"},
+  {"title": "Ikhlas Berhaji",       "image": "assets/images/ikhlas_berhaji.png",       "route": "/isi_persiapan_haji/ikhlas_berhaji"},
+  {"title": "Teladan Rasulullah",   "image": "assets/images/teladan_rasulullah.png",   "route": "/isi_persiapan_haji/teladan_rasulullah"},
+  {"title": "Jaga Haji agar Mabrur","image": "assets/images/jaga_haji_agar_mabrur.png","route": "/isi_persiapan_haji/jaga_haji_agar_mabrur"},
 ];
 
 class PersiapanHajiScreen extends StatelessWidget {
@@ -16,18 +23,17 @@ class PersiapanHajiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
-    final cardBg   = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
-    final shadowClr= isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
-    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
+    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     return Scaffold(
       backgroundColor: bg,
       body: Column(
         children: [
-          // ── AppBar ──────────────────────────────────────────────────────────
           Container(
             height: 95,
             color: appBarBg,
@@ -67,8 +73,6 @@ class PersiapanHajiScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // ── List Menu ────────────────────────────────────────────────────────
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -77,7 +81,20 @@ class PersiapanHajiScreen extends StatelessWidget {
                 final item = menuItems[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navigator.pushNamed(context, item['route']!);
+                    final route = item['route']!;
+                    final screenMap = <String, Widget>{
+                      '/isi_persiapan_haji/keutamaan_haji':        KeutamaanHajiScreen(isDark: isDark),
+                      '/isi_persiapan_haji/makna_jamaah_haji':     MaknaJamaahHajiScreen(isDark: isDark),
+                      '/isi_persiapan_haji/motivasi_berhaji':      MotivasiBerhajiScreen(isDark: isDark),
+                      '/isi_persiapan_haji/sabar_saat_haji':       SabarSaatHajiScreen(isDark: isDark),
+                      '/isi_persiapan_haji/ikhlas_berhaji':        IkhlasBerhajiScreen(isDark: isDark),
+                      '/isi_persiapan_haji/teladan_rasulullah':    TeladanRasulullahScreen(isDark: isDark),
+                      '/isi_persiapan_haji/jaga_haji_agar_mabrur': JagaHajiAgarMabrurScreen(isDark: isDark),
+                    };
+                    final screen = screenMap[route];
+                    if (screen != null) {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                    }
                   },
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 16),

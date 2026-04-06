@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-
-final List<Map<String, String>> petaJarakMenuItems = [
-  {"title": "Peta Miqot - Miqot",                        "image": "assets/images/peta_miqot.png",                    "route": "/peta-miqot"},
-  {"title": "Peta Arofah Muzdalifah Mina",                "image": "assets/images/peta_arofah.png",                   "route": "/peta-arofah"},
-  {"title": "Peta Kemah Jamaah Indonesia di Mina",        "image": "assets/images/peta_kemah_jamaah_indonesia.png",   "route": "/peta-kemah-mina"},
-];
+import '../isi_peta_jarak/peta_miqot.dart';
+import '../isi_peta_jarak/peta_jamaah_indo.dart';
 
 class PetaJarakScreen extends StatelessWidget {
   final bool isDark;
@@ -16,117 +12,112 @@ class PetaJarakScreen extends StatelessWidget {
     final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
     final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
     final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
-    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        if (!didPop) Navigator.pop(context);
+    final menuItems = [
+      {
+        'title': 'Peta Miqot - Miqot',
+        'image': 'assets/images/peta_miqot.png',
+       'screen': PetaMiqotScreen(isDark: isDark),
       },
-      child: Scaffold(
-        backgroundColor: bg,
-        body: Column(
-          children: [
-            // ── AppBar ──────────────────────────────────────────────────────
-            Container(
-              height: 95,
-              color: appBarBg,
-              child: SafeArea(
-                bottom: false,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 8),
-                        child: Text(
-                          '←',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: titleClr,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Peta Jarak',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: titleClr,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      {
+        'title': 'Peta Kemah Jamaah Indonesia di Mina',
+        'image': 'assets/images/peta_kemah_jamaah_indonesia.png',
+        'screen': PetaJamaahIndoScreen(isDark: isDark),
+      },
+    ];
 
-            // ── List Menu ──────────────────────────────────────────────────
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: petaJarakMenuItems.length,
-                itemBuilder: (context, index) {
-                  final item = petaJarakMenuItems[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, item['route']!);
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      height: 70,
-                      decoration: BoxDecoration(
-                        color: cardBg,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: shadowClr.withOpacity(0.1),
-                            blurRadius: 6,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            item['image']!,
-                            width: 40,
-                            height: 40,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.image,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              item['title']!,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: textClr,
-                              ),
-                            ),
-                          ),
-                        ],
+    return Scaffold(
+      backgroundColor: bg,
+      body: Column(
+        children: [
+          Container(
+            height: 95,
+            color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
+            child: SafeArea(
+              bottom: false,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        '←',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                        ),
                       ),
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Peta Jarak',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: menuItems.length,
+              itemBuilder: (context, index) {
+                final item = menuItems[index];
+                return GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => item['screen'] as Widget),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: cardBg,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: shadowClr.withOpacity(0.1),
+                          blurRadius: 6,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          item['image'] as String,
+                          width: 40,
+                          height: 40,
+                          errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 40, color: Colors.grey),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            item['title'] as String,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textClr,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
