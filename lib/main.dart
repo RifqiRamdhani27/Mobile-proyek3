@@ -10,6 +10,7 @@ import 'Screens/peta_jarak.dart';
 import 'Screens/lokasi_ziarah.dart';
 import 'Screens/fiqih_haji.dart';
 import 'Screens/waktu-sholat.dart';
+import 'Screens/travel_screen.dart';
 
 // ─── Entry Point ─────────────────────────────────────────────────────────────
 void main() {
@@ -50,6 +51,7 @@ class RavolaApp extends StatelessWidget {
             '/lokasi-ziarah': (context) => LokasiZiarahScreen(isDark: isDark),
             '/fiqih-haji': (context) => FiqihHajiScreen(isDark: isDark),
             '/waktu-sholat': (context) => WaktuSholatScreen(isDark: isDark),
+            '/search': (context) => const TravelScreen(),
           },
         );
       },
@@ -554,6 +556,8 @@ class Dock extends StatelessWidget {
               final label = item['label'] as String;
               if (label == 'Time') {
                 Navigator.pushNamed(context, '/waktu-sholat');
+              } else if (label == 'Search') {
+                Navigator.pushNamed(context, '/search');  
               } else {
                 onTap?.call(label);
               }
