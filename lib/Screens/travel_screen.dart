@@ -1,47 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-
-// ─── MODEL ───────────────────────────────────────────────────────────────────
-class Travel {
-  final int id;
-  final String namaTrevel;
-  final String? alamat;
-  final String? nomorTelepon;
-  final String? email;
-  final String? nomorSkUmrah;
-  final String? nomorSkHaji;
-  final String? logo;
-
-  Travel({
-    required this.id,
-    required this.namaTrevel,
-    this.alamat,
-    this.nomorTelepon,
-    this.email,
-    this.nomorSkUmrah,
-    this.nomorSkHaji,
-    this.logo,
-  });
-
-  factory Travel.fromJson(Map<String, dynamic> json) => Travel(
-        id: json['id'],
-        namaTrevel: json['nama_travel'] ?? '',
-        alamat: json['alamat'],
-        nomorTelepon: json['nomor_telepon'],
-        email: json['email'],
-        nomorSkUmrah: json['nomor_sk_umrah'],
-        nomorSkHaji: json['nomor_sk_haji'],
-        logo: json['logo'],
-      );
-
-  String get statusLabel =>
-      (nomorSkUmrah != null || nomorSkHaji != null) ? 'Resmi & Terdaftar' : 'Aktif';
-}
+import 'package:flutter/services/travel_service.dart
+import 'travel_model.dart';
 
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
-const String kBaseUrl = 'http://localhost:8000/api/travel';
+const String kBaseUrl = 'http://192.168.1.5:8000';
 const String kApiUrl = '$kBaseUrl/api';
 
 const Color kGold = Color(0xFFF5B400);
@@ -56,7 +20,7 @@ class TravelScreen extends StatefulWidget {
 
   @override
   State<TravelScreen> createState() => _TravelScreenState();
-}
+  }
 
 class _TravelScreenState extends State<TravelScreen>
     with TickerProviderStateMixin {
@@ -105,32 +69,21 @@ class _TravelScreenState extends State<TravelScreen>
   }
 
   // ── API CALLS ──────────────────────────────────────────────────────────────
-  Future<void> _fetchTravels({String search = ''}) async {
-    setState(() => _isLoading = true);
-    try {
-      final uri = Uri.parse('$kApiUrl/travels').replace(
-        queryParameters: search.isNotEmpty ? {'search': search} : null,
-      );
-      final res = await http.get(uri, headers: {'Accept': 'application/json'});
-      if (res.statusCode == 200) {
-        final List data = jsonDecode(res.body);
-        setState(() {
-          _travels = data.map((e) => Travel.fromJson(e)).toList();
-          _applyFilter();
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _error = 'Gagal memuat data (${res.statusCode})';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _error = 'Tidak dapat terhubung ke server';
-        _isLoading = false;
-      });
-    }
+  Future<void> _fetchTravels() async {
+  try {
+    final data = await ApiService.getTravels();
+
+    setState(() {
+      _travels = data;
+      _filtered = data;
+      _isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      _error = e.toString();
+      _isLoading = false;
+    });
+  }
   }
 
   void _applyFilter() {
@@ -334,7 +287,7 @@ class _TravelScreenState extends State<TravelScreen>
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 14),
               ),
-              onSubmitted: (val) => _fetchTravels(search: val),
+              onSubmitted: (val) => _fetchTravels(),
             ),
           ),
         ],
@@ -981,4 +934,18 @@ class _TravelCardState extends State<_TravelCard> with SingleTickerProviderState
     color: kGoldLight,
     child: const Center(child: Icon(Icons.mosque, color: kGold, size: 40)),
   );
+
+Future<void> fetchTravel() async {
+  final response = await http.get(
+    Uri.parse("http://192.168.1.5:8000/api/travel"),
+  );
+
+  if (response.statusCode == 200) {
+    var data = jsonDecode(response.body);
+    print(data); // buat cek di console
+  } else {
+    print("Gagal: ${response.statusCode}");
+  }
+}
+
 }
