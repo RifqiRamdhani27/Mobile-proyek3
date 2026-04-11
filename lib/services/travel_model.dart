@@ -18,7 +18,7 @@ class Travel {
   factory Travel.fromJson(Map<String, dynamic> json) {
     return Travel(
       id: json['id'],
-      nama: json['nama_travel'],
+      nama: json['nama_travel'] ?? '',
       alamat: json['alamat'],
       telepon: json['nomor_telepon'],
       email: json['email'],
