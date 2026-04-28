@@ -11,20 +11,21 @@ import 'Screens/lokasi_ziarah.dart';
 import 'Screens/fiqih_haji.dart';
 import 'Screens/waktu-sholat.dart';
 import 'Screens/travel_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // ─── Entry Point ─────────────────────────────────────────────────────────────
 void main() {
   runApp(const RavolaApp());
 }
 
-// ─── Theme Notifier (pengganti useTheme / ThemeContext) ──────────────────────
+// ─── Theme Notifier ───────────────────────────────────────────────────────────
 class ThemeNotifier extends ValueNotifier<bool> {
-  ThemeNotifier() : super(false); // false = light, true = dark
+  ThemeNotifier() : super(false);
 }
 
 final themeNotifier = ThemeNotifier();
 
-// ─── Root App ────────────────────────────────────────────────────────────────
+// ─── Root App ─────────────────────────────────────────────────────────────────
 class RavolaApp extends StatelessWidget {
   const RavolaApp({super.key});
 
@@ -35,7 +36,6 @@ class RavolaApp extends StatelessWidget {
       builder: (context, isDark, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: '/',
           theme: ThemeData(
             brightness: isDark ? Brightness.dark : Brightness.light,
           ),
@@ -52,6 +52,7 @@ class RavolaApp extends StatelessWidget {
             '/fiqih-haji': (context) => FiqihHajiScreen(isDark: isDark),
             '/waktu-sholat': (context) => WaktuSholatScreen(isDark: isDark),
             '/search': (context) => const TravelScreen(),
+            '/theme-settings': (context) => ThemeSettingsScreen(isDark: isDark),
           },
         );
       },
@@ -59,7 +60,7 @@ class RavolaApp extends StatelessWidget {
   }
 }
 
-// ─── Menu Items ──────────────────────────────────────────────────────────────
+// ─── Menu Items ───────────────────────────────────────────────────────────────
 class MenuItem {
   final String title;
   final String imagePath;
@@ -152,7 +153,7 @@ class AppTheme {
   );
 }
 
-// ─── Islamic SVG Background ──────────────────────────────────────────────────
+// ─── Islamic Background ───────────────────────────────────────────────────────
 class IslamicBackground extends StatelessWidget {
   final bool isDark;
   const IslamicBackground({super.key, required this.isDark});
@@ -175,7 +176,6 @@ class IslamicBackgroundPainter extends CustomPainter {
     final gold = const Color(0xFFC9A84C);
     final op = isDark ? 0.42 : 0.45;
 
-    // Background
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
       Paint()..color = bg,
@@ -190,7 +190,6 @@ class IslamicBackgroundPainter extends CustomPainter {
       ..color = gold.withOpacity(op)
       ..style = PaintingStyle.fill;
 
-    // ── Corner TL ────────────────────────────────────────────────────────────
     _drawArc(canvas, strokePaint, Offset(0, 60), Offset(60, 0), Offset(0, 0));
     _drawArc(
       canvas,
@@ -202,11 +201,10 @@ class IslamicBackgroundPainter extends CustomPainter {
       Offset(40, 0),
       Offset(0, 0),
     );
-    canvas.drawCircle(Offset(0, 0), 5, fillPaint);
-    canvas.drawCircle(Offset(28, 6), 3, fillPaint);
-    canvas.drawCircle(Offset(6, 28), 3, fillPaint);
+    canvas.drawCircle(const Offset(0, 0), 5, fillPaint);
+    canvas.drawCircle(const Offset(28, 6), 3, fillPaint);
+    canvas.drawCircle(const Offset(6, 28), 3, fillPaint);
 
-    // ── Corner TR ────────────────────────────────────────────────────────────
     _drawArc(
       canvas,
       strokePaint,
@@ -228,7 +226,6 @@ class IslamicBackgroundPainter extends CustomPainter {
     canvas.drawCircle(Offset(size.width - 28, 6), 3, fillPaint);
     canvas.drawCircle(Offset(size.width - 6, 28), 3, fillPaint);
 
-    // ── Corner BL ────────────────────────────────────────────────────────────
     _drawArc(
       canvas,
       strokePaint,
@@ -240,7 +237,6 @@ class IslamicBackgroundPainter extends CustomPainter {
     canvas.drawCircle(Offset(28, size.height - 6), 3, fillPaint);
     canvas.drawCircle(Offset(6, size.height - 28), 3, fillPaint);
 
-    // ── Corner BR ────────────────────────────────────────────────────────────
     _drawArc(
       canvas,
       strokePaint,
@@ -252,7 +248,6 @@ class IslamicBackgroundPainter extends CustomPainter {
     canvas.drawCircle(Offset(size.width - 28, size.height - 6), 3, fillPaint);
     canvas.drawCircle(Offset(size.width - 6, size.height - 28), 3, fillPaint);
 
-    // ── Islamic Stars ─────────────────────────────────────────────────────────
     _drawIslamicStar(
       canvas,
       Offset(size.width / 2, 160),
@@ -278,7 +273,6 @@ class IslamicBackgroundPainter extends CustomPainter {
       gold.withOpacity(op * 0.8),
     );
 
-    // ── Vine Arabesque ────────────────────────────────────────────────────────
     _drawVine(canvas, gold.withOpacity(op + 0.05), size.width, 100, 0.8);
     _drawVine(canvas, gold.withOpacity(op), size.width, 110, 0.5);
     _drawVine(
@@ -297,36 +291,24 @@ class IslamicBackgroundPainter extends CustomPainter {
       0.6,
     );
 
-    // ── Center Vine Dots ──────────────────────────────────────────────────────
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       3,
       Paint()..color = gold.withOpacity(op),
     );
-    canvas.drawCircle(
-      Offset(120, size.height / 2),
-      2,
-      Paint()..color = gold.withOpacity(op),
-    );
-    canvas.drawCircle(
-      Offset(280, size.height / 2),
-      2,
-      Paint()..color = gold.withOpacity(op),
-    );
 
-    // ── Diamonds ─────────────────────────────────────────────────────────────
     final diamondPaint = Paint()
       ..color = gold.withOpacity(op)
       ..style = PaintingStyle.fill;
     for (final pt in [
-      Offset(50, 250),
-      Offset(350, 250),
-      Offset(50, 600),
-      Offset(350, 600),
-      Offset(130, 350),
-      Offset(270, 350),
-      Offset(130, 550),
-      Offset(270, 550),
+      const Offset(50, 250),
+      const Offset(350, 250),
+      const Offset(50, 600),
+      const Offset(350, 600),
+      const Offset(130, 350),
+      const Offset(270, 350),
+      const Offset(130, 550),
+      const Offset(270, 550),
     ]) {
       _drawDiamond(canvas, pt, 8, diamondPaint);
     }
@@ -412,105 +394,7 @@ class IslamicBackgroundPainter extends CustomPainter {
   bool shouldRepaint(IslamicBackgroundPainter old) => old.isDark != isDark;
 }
 
-// ─── Moon Switch ─────────────────────────────────────────────────────────────
-class MoonSwitch extends StatefulWidget {
-  final bool value;
-  final ValueChanged<bool> onValueChange;
-
-  const MoonSwitch({
-    super.key,
-    required this.value,
-    required this.onValueChange,
-  });
-
-  @override
-  State<MoonSwitch> createState() => _MoonSwitchState();
-}
-
-class _MoonSwitchState extends State<MoonSwitch>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _anim = Tween<double>(
-      begin: 0,
-      end: 26,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-    if (widget.value) _ctrl.value = 1.0;
-  }
-
-  @override
-  void didUpdateWidget(MoonSwitch old) {
-    super.didUpdateWidget(old);
-    widget.value ? _ctrl.forward() : _ctrl.reverse();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => widget.onValueChange(!widget.value),
-      child: AnimatedBuilder(
-        animation: _anim,
-        builder: (context, _) {
-          return Container(
-            width: 60,
-            height: 32,
-            decoration: BoxDecoration(
-              color: widget.value ? const Color(0x33FFB700) : Colors.white,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: const EdgeInsets.all(4),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: _anim.value,
-                  child: Container(
-                    width: 23,
-                    height: 23,
-                    decoration: BoxDecoration(
-                      color: widget.value
-                          ? const Color(0xFF13082D)
-                          : const Color(0xFFFFF3B0),
-                      borderRadius: BorderRadius.circular(13),
-                    ),
-                    child: Center(
-                      child: widget.value
-                          ? const Icon(
-                              Icons.nightlight_round,
-                              size: 14,
-                              color: Color(0xFFDCDCDC),
-                            )
-                          : const Icon(
-                              Icons.wb_sunny,
-                              size: 14,
-                              color: Color(0xFFFF8C00),
-                            ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-// ─── Dock Navbar ─────────────────────────────────────────────────────────────
+// ─── Dock Navbar ──────────────────────────────────────────────────────────────
 class Dock extends StatelessWidget {
   final bool isDark;
   final String activeLabel;
@@ -557,7 +441,7 @@ class Dock extends StatelessWidget {
               if (label == 'Time') {
                 Navigator.pushNamed(context, '/waktu-sholat');
               } else if (label == 'Search') {
-                Navigator.pushNamed(context, '/search');  
+                Navigator.pushNamed(context, '/search');
               } else {
                 onTap?.call(label);
               }
@@ -589,7 +473,475 @@ class Dock extends StatelessWidget {
   }
 }
 
-// ─── Home Screen ─────────────────────────────────────────────────────────────
+// ─── Sidebar Menu ─────────────────────────────────────────────────────────────
+class AppSidebar extends StatelessWidget {
+  final bool isDark;
+  final VoidCallback onClose;
+  final String? loggedInUser = null;
+
+  const AppSidebar({super.key, required this.isDark, required this.onClose});
+
+  @override
+  Widget build(BuildContext context) {
+    final headerBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFEAB21B);
+    final sidebarBg = isDark
+        ? const Color(0xFF1C1C1C)
+        : const Color(0xFFFFFBF0);
+    final gold = const Color(0xFFC9A84C);
+    final textDark = isDark ? const Color(0xFFF0E6C8) : const Color(0xFF1A1200);
+    final dividerColor = isDark
+        ? const Color(0xFF2E2E2E)
+        : const Color(0xFFE5D9B6);
+
+    return GestureDetector(
+      onTap: onClose,
+      child: Stack(
+        children: [
+          // Overlay
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.45)),
+          ),
+
+          // Sidebar panel
+          GestureDetector(
+            onTap: () {},
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.55,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  color: sidebarBg,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 16,
+                      offset: const Offset(4, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.fromLTRB(20, 56, 20, 20),
+                      decoration: BoxDecoration(color: headerBg),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(0xFF2A2A2A)
+                                  : Colors.white.withOpacity(0.3),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'R',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? gold : Colors.white,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'RAVOLA',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 3,
+                              color: isDark ? gold : Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Panduan Haji & Umroh',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: isDark
+                                  ? Colors.white54
+                                  : Colors.white.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    _SidebarItem(
+                      icon: Icons.palette_outlined,
+                      label: 'Theme Settings',
+                      isDark: isDark,
+                      gold: gold,
+                      textColor: textDark,
+                      onTap: () {
+                        onClose();
+                        Navigator.pushNamed(context, '/theme-settings');
+                      },
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Divider(color: dividerColor, height: 1),
+                    ),
+
+                    _SidebarItem(
+                      icon: Icons.login_rounded,
+                      label: 'Login',
+                      isDark: isDark,
+                      gold: gold,
+                      textColor: textDark,
+                      onTap: () {
+                        onClose();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text(
+                              'Fitur login akan segera hadir',
+                            ),
+                            backgroundColor: gold,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      },
+                    ),
+
+                    const Spacer(),
+
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        'v1.0.0',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.white24 : Colors.black26,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ], // ← tutup children Stack AppSidebar
+      ), // ← tutup Stack
+    ); // ← tutup GestureDetector
+  }
+}
+
+class _SidebarItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isDark;
+  final Color gold;
+  final Color textColor;
+  final VoidCallback onTap;
+
+  const _SidebarItem({
+    required this.icon,
+    required this.label,
+    required this.isDark,
+    required this.gold,
+    required this.textColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      splashColor: gold.withOpacity(0.15),
+      highlightColor: gold.withOpacity(0.08),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            Icon(icon, color: gold, size: 22),
+            const SizedBox(width: 14),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+            ),
+            const Spacer(),
+            Icon(Icons.chevron_right, color: gold.withOpacity(0.5), size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Theme Settings Screen ────────────────────────────────────────────────────
+class ThemeSettingsScreen extends StatelessWidget {
+  final bool isDark;
+  const ThemeSettingsScreen({super.key, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: themeNotifier,
+      builder: (context, currentDark, _) {
+        final gold = const Color(0xFFC9A84C);
+        final headerBg = currentDark
+            ? const Color(0xFF1A1A1A)
+            : const Color(0xFFEAB21B);
+        final bgColor = currentDark
+            ? const Color(0xFF121212)
+            : const Color(0xFFFAFAF7);
+        final textPrimary = currentDark
+            ? const Color(0xFFF0E6C8)
+            : const Color(0xFF1A1200);
+        final textSecondary = currentDark
+            ? const Color(0xFF9E8A5A)
+            : const Color(0xFF8B7332);
+        final cardBg = currentDark ? const Color(0xFF1E1E1E) : Colors.white;
+        final cardBorder = currentDark
+            ? const Color(0xFF2E2E2E)
+            : const Color(0xFFE8D9A0);
+
+        return Scaffold(
+          backgroundColor: bgColor,
+          body: Column(
+            children: [
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: headerBg,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          (currentDark ? const Color(0xFFF4B400) : Colors.black)
+                              .withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 16, 10),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: currentDark ? gold : Colors.black,
+                            size: 20,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        Transform.translate(
+                          offset: const Offset(-2, -8),
+                          child: Text(
+                            'Theme Settings',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1,
+                              color: currentDark ? gold : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(
+                        'Pilih Tampilan',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: textSecondary,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      _ThemeOptionCard(
+                        label: 'Light Mode',
+                        description: 'Tampilan terang dengan aksen emas',
+                        icon: Icons.wb_sunny_rounded,
+                        isSelected: !currentDark,
+                        gold: gold,
+                        cardBg: cardBg,
+                        cardBorder: cardBorder,
+                        textPrimary: textPrimary,
+                        textSecondary: textSecondary,
+                        onTap: () => themeNotifier.value = false,
+                        previewColors: const [
+                          Color(0xFFEAB21B),
+                          Color(0xFFFAFAF7),
+                          Color(0xFFC9A84C),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      _ThemeOptionCard(
+                        label: 'Dark Mode',
+                        description: 'Tampilan gelap elegan dengan emas',
+                        icon: Icons.nightlight_round,
+                        isSelected: currentDark,
+                        gold: gold,
+                        cardBg: cardBg,
+                        cardBorder: cardBorder,
+                        textPrimary: textPrimary,
+                        textSecondary: textSecondary,
+                        onTap: () => themeNotifier.value = true,
+                        previewColors: const [
+                          Color(0xFF121212),
+                          Color(0xFF1A1A1A),
+                          Color(0xFFC9A84C),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ThemeOptionCard extends StatelessWidget {
+  final String label;
+  final String description;
+  final IconData icon;
+  final bool isSelected;
+  final Color gold;
+  final Color cardBg;
+  final Color cardBorder;
+  final Color textPrimary;
+  final Color textSecondary;
+  final VoidCallback onTap;
+  final List<Color> previewColors;
+
+  const _ThemeOptionCard({
+    required this.label,
+    required this.description,
+    required this.icon,
+    required this.isSelected,
+    required this.gold,
+    required this.cardBg,
+    required this.cardBorder,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.onTap,
+    required this.previewColors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? gold : cardBorder,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: gold.withOpacity(0.2),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : [],
+        ),
+        child: Row(
+          children: [
+            Row(
+              children: previewColors
+                  .map(
+                    (c) => Container(
+                      width: 18,
+                      height: 18,
+                      margin: const EdgeInsets.only(right: 4),
+                      decoration: BoxDecoration(
+                        color: c,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: TextStyle(fontSize: 11, color: textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? gold : Colors.transparent,
+                border: Border.all(
+                  color: isSelected ? gold : textSecondary.withOpacity(0.4),
+                  width: 2,
+                ),
+              ),
+              child: isSelected
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Home Screen ──────────────────────────────────────────────────────────────
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -597,7 +949,43 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  bool _sidebarOpen = false;
+  late AnimationController _sidebarCtrl;
+  late Animation<Offset> _slideAnim;
+  final String? _loggedInName = null;
+
+  @override
+  void initState() {
+    super.initState();
+    _sidebarCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 280),
+    );
+    _slideAnim = Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _sidebarCtrl, curve: Curves.easeOutCubic),
+        );
+  }
+
+  void _openSidebar() {
+    setState(() => _sidebarOpen = true);
+    _sidebarCtrl.forward();
+  }
+
+  void _closeSidebar() {
+    _sidebarCtrl.reverse().then((_) {
+      if (mounted) setState(() => _sidebarOpen = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _sidebarCtrl.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
@@ -605,149 +993,213 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, isDark, _) {
         final t = isDark ? AppTheme.dark : AppTheme.light;
 
+        final greeting = _loggedInName != null
+            ? "Assalamu'alaikum, $_loggedInName"
+            : "Assalamu'alaikum, Calon Jama'ah";
+        final subtitle = _loggedInName != null
+            ? "Selamat datang kembali"
+            : "Selamat datang di Ravola";
+
         return Scaffold(
-          backgroundColor: Colors.transparent,
+          extendBody: true,
+          backgroundColor: t.background,
           body: Stack(
             children: [
-              // ── Islamic Background ─────────────────────────────────────────
-              IslamicBackground(isDark: isDark),
-
+              // ── Main Column ──
               Column(
                 children: [
-                  // ── AppBar ─────────────────────────────────────────────────
-                  Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xEE1A1A1A)
-                          : const Color(0xFFEAB21B),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              (isDark ? const Color(0xFFF4B400) : Colors.black)
-                                  .withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: SafeArea(
-                      bottom: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 0, 16, 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'RAVOLA',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: 3,
-                                color: isDark
-                                    ? const Color(0xFFC9A84C)
-                                    : Colors.black,
-                                // Ganti dengan font Cinzel jika sudah di-add di pubspec
-                                // fontFamily: 'CinzelDecorative',
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 18,
-                                right: 5,
-                              ),
-                              child: MoonSwitch(
-                                value: isDark,
-                                onValueChange: (v) => themeNotifier.value = v,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // ── Grid Menu ──────────────────────────────────────────────
-                  Expanded(
-                    child: GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 26, 16, 110),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 18,
-                            mainAxisSpacing: 18,
-                            childAspectRatio: 1.0,
+                  // ── HEADER ──
+                  SizedBox(
+                    height: 240,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Image.asset(
+                            'assets/images/bg-home.png',
+                            fit: BoxFit.cover,
                           ),
-                      itemCount: menuItems.length,
-                      itemBuilder: (context, index) {
-                        final item = menuItems[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, item.route);
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Stack(
+                        ),
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.2),
+                                  Colors.black.withOpacity(0.4),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(26, 8, 16, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Card Image
-                                Positioned.fill(
-                                  child: Image.asset(
-                                    item.imagePath,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                      color: const Color(0xFFCCBB88),
-                                      child: const Icon(
-                                        Icons.image,
-                                        size: 40,
-                                        color: Colors.white54,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Transform.translate(
+                                      offset: const Offset(-12, 0),
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.menu_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: _openSidebar,
                                       ),
                                     ),
+                                    Container(
+                                      width: 38,
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? const Color(0xFF2A2A2A)
+                                            : Colors.white.withOpacity(0.3),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Icon(Icons.person, size: 18),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  greeting,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.3,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                // Card Bottom Label
-                                Positioned(
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    color: t.cardBottom,
-                                    child: Text(
-                                      item.title,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: t.cardTitle,
-                                      ),
-                                    ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  subtitle,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                    letterSpacing: 0.2,
+                                    color: Colors.white70,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                  ),
+                  ), // ← tutup SizedBox header
+                  // ── CONTENT PUTIH ──
+                  Expanded(
+                    child: Transform.translate(
+                      offset: const Offset(0, -30),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF121212)
+                                : Colors.white,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 10,
+                                offset: const Offset(0, -2),
+                              ),
+                            ],
+                          ),
+                          child: GridView.builder(
+                            padding: const EdgeInsets.fromLTRB(16, 30, 16, 110),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 18,
+                                  mainAxisSpacing: 18,
+                                  childAspectRatio: 1.0,
+                                ),
+                            itemCount: menuItems.length,
+                            itemBuilder: (context, index) {
+                              final item = menuItems[index];
+                              return GestureDetector(
+                                onTap: () =>
+                                    Navigator.pushNamed(context, item.route),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Stack(
+                                    children: [
+                                      Positioned.fill(
+                                        child: Image.asset(
+                                          item.imagePath,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) =>
+                                              Container(
+                                                color: const Color(0xFFCCBB88),
+                                                child: const Icon(
+                                                  Icons.image,
+                                                  size: 40,
+                                                  color: Colors.white54,
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(10),
+                                          color: t.cardBottom,
+                                          child: Text(
+                                            item.title,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: t.cardTitle,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // ← tutup Expanded content putih
                 ],
-              ),
-
-              // ── Dock Navbar ────────────────────────────────────────────────
+              ), // ← tutup Column
+              // ── Dock Navbar ──
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: Dock(isDark: isDark, activeLabel: 'Home'),
               ),
-            ],
-          ),
-        );
+
+              // ── Sidebar Overlay ──
+              if (_sidebarOpen)
+                SlideTransition(
+                  position: _slideAnim,
+                  child: AppSidebar(isDark: isDark, onClose: _closeSidebar),
+                ),
+            ], // ← tutup children Stack
+          ), // ← tutup Stack
+        ); // ← tutup Scaffold
       },
     );
   }

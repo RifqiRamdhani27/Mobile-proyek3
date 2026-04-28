@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_application/Screens/travel_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -604,12 +605,20 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: items.map((item) {
+          final label = item['label'] as String;
           final isActive = item['label'] == 'Time';
-          return GestureDetector(
+return GestureDetector(
             onTap: () {
-              final label = item['label'] as String;
+              // --- LOGIKA NAVIGASI ---
               if (label == 'Home') {
                 Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false);
+              } 
+              else if (label == 'Search') {
+                // Navigasi ke Travel Screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TravelScreen()), // Pastikan nama class-nya sesuai
+                );
               }
             },
             child: Column(
