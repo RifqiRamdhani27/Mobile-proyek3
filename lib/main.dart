@@ -716,7 +716,7 @@ class ThemeSettingsScreen extends StatelessWidget {
           body: Column(
             children: [
               Container(
-                height: 80,
+                height: 110,
                 decoration: BoxDecoration(
                   color: headerBg,
                   borderRadius: const BorderRadius.only(
@@ -749,7 +749,7 @@ class ThemeSettingsScreen extends StatelessWidget {
                           onPressed: () => Navigator.pop(context),
                         ),
                         Transform.translate(
-                          offset: const Offset(-2, -8),
+                          offset: const Offset(-2, -13),
                           child: Text(
                             'Theme Settings',
                             style: TextStyle(

@@ -6,17 +6,17 @@ class PenjelasanIhramMiqotScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
-    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     return Scaffold(
       backgroundColor: bg,
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -26,8 +26,8 @@ class PenjelasanIhramMiqotScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -39,16 +39,14 @@ class PenjelasanIhramMiqotScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Penjelasan Ihram di Miqot',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: titleClr,
-                        ),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
+                    child: Text(
+                      'Penjelasan Ihram di Miqot',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -74,21 +72,13 @@ class PenjelasanIhramMiqotScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Ihram adalah niat untuk memulai ibadah umroh atau haji yang dilakukan di tempat yang telah ditentukan, yang disebut miqot.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.6,
-                      color: textClr,
-                    ),
+                    style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Miqot adalah batas tempat seseorang harus sudah berniat ihram sebelum memasuki Makkah. Setiap wilayah memiliki miqot masing-masing.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.6,
-                      color: textClr,
-                    ),
+                    style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 4),
@@ -101,22 +91,30 @@ class PenjelasanIhramMiqotScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...['Niat dalam hati', 'Mengucapkan talbiyah', 'Siap menaati aturan ihram']
-                      .map((item) => Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('• ', style: TextStyle(fontSize: 15, color: textClr)),
-                                Expanded(
-                                  child: Text(
-                                    item,
-                                    style: TextStyle(fontSize: 15, color: textClr),
-                                  ),
-                                ),
-                              ],
+                  ...[
+                    'Niat dalam hati',
+                    'Mengucapkan talbiyah',
+                    'Siap menaati aturan ihram',
+                  ].map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '• ',
+                            style: TextStyle(fontSize: 15, color: textClr),
+                          ),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: TextStyle(fontSize: 15, color: textClr),
                             ),
-                          )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     'Allah SWT berfirman dalam QS. Al-Baqarah ayat 196:',
@@ -163,11 +161,7 @@ class PenjelasanIhramMiqotScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Ihram menandakan bahwa kita mulai masuk dalam keadaan ibadah yang suci dan penuh ketaatan.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.6,
-                      color: textClr,
-                    ),
+                    style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 24),

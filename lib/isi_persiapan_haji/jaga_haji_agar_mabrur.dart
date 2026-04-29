@@ -26,7 +26,7 @@ class JagaHajiAgarMabrurScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
               child: SafeArea(
                 bottom: false,
@@ -36,13 +36,34 @@ class JagaHajiAgarMabrurScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text('←', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFC9A84C) : Colors.black)),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
+                        child: Text(
+                          '←',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: isDark
+                                ? const Color(0xFFC9A84C)
+                                : Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text('Jaga Haji Agar Mabrur', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFC9A84C) : Colors.black)),
+                    Transform.translate(
+                      offset: const Offset(15, 2),
+                      child: Text(
+                        'Jaga Haji Agar Mabrur',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? const Color(0xFFC9A84C)
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -54,27 +75,77 @@ class JagaHajiAgarMabrurScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 8),
-                    const Text('Haji Mabrur', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C))),
-                    const SizedBox(height: 16),
-                    Text('Haji mabrur adalah haji yang diterima oleh Allah dan membawa perubahan kebaikan dalam hidup seseorang.', style: TextStyle(fontSize: 15, height: 1.6, color: textClr), textAlign: TextAlign.justify),
-                    const SizedBox(height: 16),
-                    Text('Hadits:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr)),
-                    const SizedBox(height: 8),
-                    _ayatBox('"Haji mabrur tidak ada balasan baginya kecuali surga."', '(HR. Bukhari dan Muslim)'),
-                    Text('Agar haji mabrur:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr)),
-                    const SizedBox(height: 8),
-                    ...bulletItems.map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('• ', style: TextStyle(fontSize: 15, color: textClr)),
-                          Expanded(child: Text(item, style: TextStyle(fontSize: 15, color: textClr))),
-                        ],
+                    const Text(
+                      'Haji Mabrur',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFE6A63C),
                       ),
-                    )),
+                    ),
                     const SizedBox(height: 16),
-                    Text('Haji bukan akhir perjalanan, tetapi awal menjadi pribadi yang lebih taat dan lebih baik.', style: TextStyle(fontSize: 15, height: 1.6, color: textClr), textAlign: TextAlign.justify),
+                    Text(
+                      'Haji mabrur adalah haji yang diterima oleh Allah dan membawa perubahan kebaikan dalam hidup seseorang.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: textClr,
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Hadits:',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: textClr,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _ayatBox(
+                      '"Haji mabrur tidak ada balasan baginya kecuali surga."',
+                      '(HR. Bukhari dan Muslim)',
+                    ),
+                    Text(
+                      'Agar haji mabrur:',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: textClr,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...bulletItems.map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '• ',
+                              style: TextStyle(fontSize: 15, color: textClr),
+                            ),
+                            Expanded(
+                              child: Text(
+                                item,
+                                style: TextStyle(fontSize: 15, color: textClr),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Haji bukan akhir perjalanan, tetapi awal menjadi pribadi yang lebih taat dan lebih baik.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: textClr,
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -92,16 +163,33 @@ class JagaHajiAgarMabrurScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: const Color(0xFFFFF8E7),
-        border: const Border(left: BorderSide(color: Color(0xFFE6A63C), width: 4)),
+        border: const Border(
+          left: BorderSide(color: Color(0xFFE6A63C), width: 4),
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(text, style: const TextStyle(fontSize: 15, height: 1.6, color: Color(0xFF1A1A1A)), textAlign: TextAlign.justify),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 15,
+              height: 1.6,
+              color: Color(0xFF1A1A1A),
+            ),
+            textAlign: TextAlign.justify,
+          ),
           const SizedBox(height: 8),
-          Text(source, style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: Color(0xFF888888))),
+          Text(
+            source,
+            style: const TextStyle(
+              fontSize: 14,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF888888),
+            ),
+          ),
         ],
       ),
     );

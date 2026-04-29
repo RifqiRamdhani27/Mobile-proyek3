@@ -5,10 +5,26 @@ import 'ihram_miqot/sunnah_ihram.dart';
 import 'ihram_miqot/larangan_saat_ihram.dart';
 
 final List<Map<String, String>> menuItems = [
-  {"title": "Penjelasan Ihram di Miqot", "image": "assets/images/ihram_di_miqat.png", "route": "/ihram_miqot/penjelasan_ihram_miqot"},
-  {"title": "Niat Umroh",                "image": "assets/images/niat_umroh.png",      "route": "/ihram_miqot/niat_umroh"},
-  {"title": "Sunnah Saat Ihram",         "image": "assets/images/sunnah_ihram.png",    "route": "/ihram_miqot/sunnah_ihram"},
-  {"title": "Larangan Saat Ihram",       "image": "assets/images/larangan.png",        "route": "/ihram_miqot/larangan_saat_ihram"},
+  {
+    "title": "Penjelasan Ihram di Miqot",
+    "image": "assets/images/ihram_di_miqat.png",
+    "route": "/ihram_miqot/penjelasan_ihram_miqot",
+  },
+  {
+    "title": "Niat Umroh",
+    "image": "assets/images/niat_umroh.png",
+    "route": "/ihram_miqot/niat_umroh",
+  },
+  {
+    "title": "Sunnah Saat Ihram",
+    "image": "assets/images/sunnah_ihram.png",
+    "route": "/ihram_miqot/sunnah_ihram",
+  },
+  {
+    "title": "Larangan Saat Ihram",
+    "image": "assets/images/larangan.png",
+    "route": "/ihram_miqot/larangan_saat_ihram",
+  },
 ];
 
 class IhramMiqotScreen extends StatelessWidget {
@@ -17,19 +33,21 @@ class IhramMiqotScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
-    final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
-    final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
-    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final shadowClr = isDark
+        ? const Color(0xFFD8AB17)
+        : const Color(0xFF000000);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     return Scaffold(
       backgroundColor: bg,
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -39,8 +57,8 @@ class IhramMiqotScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -52,8 +70,8 @@ class IhramMiqotScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
                     child: Text(
                       'Ihram di Miqot',
                       style: TextStyle(
@@ -77,14 +95,23 @@ class IhramMiqotScreen extends StatelessWidget {
                   onTap: () {
                     final route = item['route']!;
                     final screenMap = <String, Widget>{
-                      '/ihram_miqot/penjelasan_ihram_miqot':    PenjelasanIhramMiqotScreen(isDark: isDark),
-                      '/ihram_miqot/niat_umroh':             NiatUmrohScreen(isDark: isDark),
-                      '/ihram_miqot/sunnah_ihram':           SunnahIhramScreen(isDark: isDark),
-                      '/ihram_miqot/larangan_saat_ihram':    LaranganSaatIhramScreen(isDark: isDark),
+                      '/ihram_miqot/penjelasan_ihram_miqot':
+                          PenjelasanIhramMiqotScreen(isDark: isDark),
+                      '/ihram_miqot/niat_umroh': NiatUmrohScreen(
+                        isDark: isDark,
+                      ),
+                      '/ihram_miqot/sunnah_ihram': SunnahIhramScreen(
+                        isDark: isDark,
+                      ),
+                      '/ihram_miqot/larangan_saat_ihram':
+                          LaranganSaatIhramScreen(isDark: isDark),
                     };
                     final screen = screenMap[route];
                     if (screen != null) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => screen),
+                      );
                     }
                   },
                   child: Container(

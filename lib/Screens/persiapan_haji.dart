@@ -35,7 +35,7 @@ class PersiapanHajiScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -45,8 +45,8 @@ class PersiapanHajiScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -58,8 +58,8 @@ class PersiapanHajiScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15),
+                  Transform.translate(
+                    offset: const Offset(10, 2),
                     child: Text(
                       'Persiapan Haji',
                       style: TextStyle(

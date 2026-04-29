@@ -7,12 +7,28 @@ import '../isi_fiqih_umroh/sai.dart';
 import '../isi_fiqih_umroh/gundul.dart';
 
 final List<Map<String, String>> fiqihUmrohMenuItems = [
-  {"title": "Ihram Miqot",                  "image": "assets/images/ihram_miqot.png",      "route": "/ihram_miqot"},
-  {"title": "Thowaf",                        "image": "assets/images/thowaf.png",            "route": "/thowaf"},
-  {"title": "Makam Ibrahim",                 "image": "assets/images/makam_ibrahim.png",     "route": "/makam-ibrahim"},
-  {"title": "Minum Air Zamzam",              "image": "assets/images/minum_air_zamzam.png",  "route": "/minum-air-zamzam"},
-  {"title": "Sa'i",                          "image": "assets/images/sa'i2.png",             "route": "/sai"},
-  {"title": "Gundul / Cukuran Umroh & haji", "image": "assets/images/gundul.png",            "route": "/gundul"},
+  {
+    "title": "Ihram Miqot",
+    "image": "assets/images/ihram_miqot.png",
+    "route": "/ihram_miqot",
+  },
+  {"title": "Thowaf", "image": "assets/images/thowaf.png", "route": "/thowaf"},
+  {
+    "title": "Makam Ibrahim",
+    "image": "assets/images/makam_ibrahim.png",
+    "route": "/makam-ibrahim",
+  },
+  {
+    "title": "Minum Air Zamzam",
+    "image": "assets/images/minum_air_zamzam.png",
+    "route": "/minum-air-zamzam",
+  },
+  {"title": "Sa'i", "image": "assets/images/sa'i2.png", "route": "/sai"},
+  {
+    "title": "Gundul / Cukuran Umroh & haji",
+    "image": "assets/images/gundul.png",
+    "route": "/gundul",
+  },
 ];
 
 class FiqihUmrohScreen extends StatelessWidget {
@@ -21,12 +37,14 @@ class FiqihUmrohScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
-    final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
-    final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
-    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final shadowClr = isDark
+        ? const Color(0xFFD8AB17)
+        : const Color(0xFF000000);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     return PopScope(
       canPop: false,
@@ -38,7 +56,7 @@ class FiqihUmrohScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               color: appBarBg,
               child: SafeArea(
                 bottom: false,
@@ -48,8 +66,8 @@ class FiqihUmrohScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 8),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -61,8 +79,8 @@ class FiqihUmrohScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15),
+                    Transform.translate(
+                      offset: const Offset(15, 2),
                       child: Text(
                         'Fiqih Umroh',
                         style: TextStyle(
@@ -86,16 +104,21 @@ class FiqihUmrohScreen extends StatelessWidget {
                     onTap: () {
                       final route = item['route']!;
                       final screenMap = <String, Widget>{
-                        '/ihram_miqot':      IhramMiqotScreen(isDark: isDark),
-                        '/thowaf':           ThowafScreen(isDark: isDark),
-                        '/makam-ibrahim':    MakamIbrahimScreen(isDark: isDark),
-                        '/minum-air-zamzam': MinumAirZamzamScreen(isDark: isDark),
-                        '/sai':                 SaiScreen(isDark: isDark),
-                        '/gundul':           GundulScreen(isDark: isDark),
+                        '/ihram_miqot': IhramMiqotScreen(isDark: isDark),
+                        '/thowaf': ThowafScreen(isDark: isDark),
+                        '/makam-ibrahim': MakamIbrahimScreen(isDark: isDark),
+                        '/minum-air-zamzam': MinumAirZamzamScreen(
+                          isDark: isDark,
+                        ),
+                        '/sai': SaiScreen(isDark: isDark),
+                        '/gundul': GundulScreen(isDark: isDark),
                       };
                       final screen = screenMap[route];
                       if (screen != null) {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => screen),
+                        );
                       }
                     },
                     child: Container(

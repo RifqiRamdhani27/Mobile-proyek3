@@ -20,7 +20,7 @@ class KeutamaanHajiScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
               child: SafeArea(
                 bottom: false,
@@ -30,8 +30,8 @@ class KeutamaanHajiScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -42,13 +42,17 @@ class KeutamaanHajiScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     const SizedBox(width: 8),
-                    Text(
+                    Transform.translate(
+                    offset: const Offset(10, 2),
+                    child: Text(
                       'Keutamaan Haji',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                        ),
                       ),
                     ),
                   ],

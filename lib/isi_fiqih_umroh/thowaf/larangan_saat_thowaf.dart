@@ -6,15 +6,16 @@ class LaranganSaatThowafScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
     final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     final items = [
       {
         'title': 'Bertengkar atau berkata kasar',
-        'desc': 'Allah berfirman dalam QS. Al-Baqarah ayat 197:\n"Tidak boleh rafats (berkata kotor), berbuat fasik, dan berbantah-bantahan dalam haji."',
+        'desc':
+            'Allah berfirman dalam QS. Al-Baqarah ayat 197:\n"Tidak boleh rafats (berkata kotor), berbuat fasik, dan berbantah-bantahan dalam haji."',
       },
       {
         'title': 'Menyakiti atau mendorong jamaah lain',
@@ -22,7 +23,8 @@ class LaranganSaatThowafScreen extends StatelessWidget {
       },
       {
         'title': 'Melakukan perbuatan maksiat',
-        'desc': 'Seperti berkata kotor, berteriak-teriak tanpa alasan, atau bercanda berlebihan.',
+        'desc':
+            'Seperti berkata kotor, berteriak-teriak tanpa alasan, atau bercanda berlebihan.',
       },
       {
         'title': 'Keluar dari area thowaf tanpa alasan syar\'i',
@@ -30,7 +32,8 @@ class LaranganSaatThowafScreen extends StatelessWidget {
       },
       {
         'title': 'Tidak menjaga kekhusyukan',
-        'desc': 'Terlalu sibuk foto, bercanda, atau berbicara hal duniawi berlebihan.',
+        'desc':
+            'Terlalu sibuk foto, bercanda, atau berbicara hal duniawi berlebihan.',
       },
     ];
 
@@ -39,7 +42,7 @@ class LaranganSaatThowafScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -49,8 +52,8 @@ class LaranganSaatThowafScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -62,16 +65,14 @@ class LaranganSaatThowafScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Larangan Saat Thowaf',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: titleClr,
-                        ),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
+                    child: Text(
+                      'Larangan Saat Thowaf',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -101,46 +102,48 @@ class LaranganSaatThowafScreen extends StatelessWidget {
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 4),
-                  ...items.map((item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '• ',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFE6A63C),
-                              ),
+                  ...items.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFE6A63C),
                             ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item['title']!,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: textClr,
-                                    ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item['title']!,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: textClr,
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    item['desc']!,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      height: 1.57,
-                                      color: textClr.withOpacity(0.85),
-                                    ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  item['desc']!,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    height: 1.57,
+                                    color: textClr.withOpacity(0.85),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   Text(
                     'Thowaf adalah ibadah yang agung, maka harus dilakukan dengan tenang, tertib, dan penuh rasa hormat kepada Allah.',

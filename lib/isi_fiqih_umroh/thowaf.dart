@@ -7,12 +7,36 @@ import 'thowaf/sunnah_saat_thowaf.dart';
 import 'thowaf/macam_macam_thowaf.dart';
 
 final List<Map<String, String>> thowafMenuItems = [
-  {"title": "Penjelasan Thowaf",     "image": "assets/images/thowaf.png",        "route": "/thowaf/penjelasan_thowaf"},
-  {"title": "Tata Cara Thowaf",      "image": "assets/images/niat_umroh.png",    "route": "/thowaf/tata_cara_thowaf"},
-  {"title": "Kewajiban Saat Thowaf", "image": "assets/images/sunnah_ihram.png",  "route": "/thowaf/kewajiban_saat_thowaf"},
-  {"title": "Larangan Saat Thowaf",  "image": "assets/images/larangan.png",      "route": "/thowaf/larangan_saat_thowaf"},
-  {"title": "Sunnah Saat Thowaf",    "image": "assets/images/sujud.png",         "route": "/thowaf/sunnah_saat_thowaf"},
-  {"title": "Macam Macam Thowaf",    "image": "assets/images/macam_thowaf.png",  "route": "/thowaf/macam_macam_thowaf"},
+  {
+    "title": "Penjelasan Thowaf",
+    "image": "assets/images/thowaf.png",
+    "route": "/thowaf/penjelasan_thowaf",
+  },
+  {
+    "title": "Tata Cara Thowaf",
+    "image": "assets/images/niat_umroh.png",
+    "route": "/thowaf/tata_cara_thowaf",
+  },
+  {
+    "title": "Kewajiban Saat Thowaf",
+    "image": "assets/images/sunnah_ihram.png",
+    "route": "/thowaf/kewajiban_saat_thowaf",
+  },
+  {
+    "title": "Larangan Saat Thowaf",
+    "image": "assets/images/larangan.png",
+    "route": "/thowaf/larangan_saat_thowaf",
+  },
+  {
+    "title": "Sunnah Saat Thowaf",
+    "image": "assets/images/sujud.png",
+    "route": "/thowaf/sunnah_saat_thowaf",
+  },
+  {
+    "title": "Macam Macam Thowaf",
+    "image": "assets/images/macam_thowaf.png",
+    "route": "/thowaf/macam_macam_thowaf",
+  },
 ];
 
 class ThowafScreen extends StatelessWidget {
@@ -21,19 +45,21 @@ class ThowafScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
-    final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
-    final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
-    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final shadowClr = isDark
+        ? const Color(0xFFD8AB17)
+        : const Color(0xFF000000);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     return Scaffold(
       backgroundColor: bg,
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -43,8 +69,8 @@ class ThowafScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -56,8 +82,8 @@ class ThowafScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
                     child: Text(
                       'Thowaf',
                       style: TextStyle(
@@ -81,16 +107,30 @@ class ThowafScreen extends StatelessWidget {
                   onTap: () {
                     final route = item['route']!;
                     final screenMap = <String, Widget>{
-                      '/thowaf/penjelasan_thowaf':     PenjelasanThowafScreen(isDark: isDark),
-                      '/thowaf/tata_cara_thowaf':      TataCaraThowafScreen(isDark: isDark),
-                      '/thowaf/kewajiban_saat_thowaf': KewajibanSaatThowafScreen(isDark: isDark),
-                      '/thowaf/larangan_saat_thowaf':  LaranganSaatThowafScreen(isDark: isDark),
-                      '/thowaf/sunnah_saat_thowaf':    SunnahSaatThowafScreen(isDark: isDark),
-                      '/thowaf/macam_macam_thowaf':    MacamMacamThowafScreen(isDark: isDark),
+                      '/thowaf/penjelasan_thowaf': PenjelasanThowafScreen(
+                        isDark: isDark,
+                      ),
+                      '/thowaf/tata_cara_thowaf': TataCaraThowafScreen(
+                        isDark: isDark,
+                      ),
+                      '/thowaf/kewajiban_saat_thowaf':
+                          KewajibanSaatThowafScreen(isDark: isDark),
+                      '/thowaf/larangan_saat_thowaf': LaranganSaatThowafScreen(
+                        isDark: isDark,
+                      ),
+                      '/thowaf/sunnah_saat_thowaf': SunnahSaatThowafScreen(
+                        isDark: isDark,
+                      ),
+                      '/thowaf/macam_macam_thowaf': MacamMacamThowafScreen(
+                        isDark: isDark,
+                      ),
                     };
                     final screen = screenMap[route];
                     if (screen != null) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => screen),
+                      );
                     }
                   },
                   child: Container(
