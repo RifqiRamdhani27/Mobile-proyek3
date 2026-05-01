@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
+import 'package:flutter_application/config.dart';
 
 const Color kGold = Color(0xFFF5B400);
 const Color kGoldDark = Color(0xFFD4A017);
-
-const String _baseUrl = 'http://127.0.0.1:8000';
 
 class ChatMenu {
   final int menuNumber;
@@ -18,7 +17,7 @@ class ChatMenu {
 
 class ChatbotService {
   static Future<List<ChatMenu>> getMenu() async {
-    final res = await http.get(Uri.parse('$_baseUrl/api/chatbot/menu'));
+    final res = await http.get(Uri.parse('$BASE_URL/api/chatbot/menu'));
     if (res.statusCode == 200) {
       List data = jsonDecode(res.body);
       return data.map((e) => ChatMenu.fromJson(e)).toList();
@@ -28,7 +27,7 @@ class ChatbotService {
 
   static Future<Map<String, dynamic>> getResponse(int menuNumber) async {
     final res = await http.post(
-      Uri.parse('$_baseUrl/api/chatbot'),
+      Uri.parse('$BASE_URL/api/chatbot'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'menu_number': menuNumber}),
     );
@@ -56,11 +55,17 @@ class _ChatbotBoxState extends State<ChatbotBox>
   void initState() {
     super.initState();
     _anim = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 400));
-    _slide = Tween(begin: 20.0, end: 0.0)
-        .animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic));
-    _fade = Tween(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _anim, curve: Curves.easeOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _slide = Tween(
+      begin: 20.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic));
+    _fade = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOut));
     _anim.forward();
     _initChat();
   }
@@ -70,7 +75,8 @@ class _ChatbotBoxState extends State<ChatbotBox>
       {'type': 'bot', 'text': "Assalamu'alaikum Warahmatullahi Wabarakatuh."},
       {
         'type': 'bot',
-        'text': "Aku Asisten Pribadi RAVOLA.\nSilakan pilih informasi di bawah ini:"
+        'text':
+            "Aku Asisten Pribadi RAVOLA.\nSilakan pilih informasi di bawah ini:",
       },
     ]);
     _loadMenu(isFollowUp: false);
@@ -81,7 +87,10 @@ class _ChatbotBoxState extends State<ChatbotBox>
       final menus = await ChatbotService.getMenu();
       setState(() {
         if (isFollowUp) {
-          _items.add({'type': 'bot', 'text': 'Ada lagi yang ingin Anda tanyakan?'});
+          _items.add({
+            'type': 'bot',
+            'text': 'Ada lagi yang ingin Anda tanyakan?',
+          });
         }
         _items.add({
           'type': 'menu',
@@ -221,9 +230,7 @@ class _ChatbotBoxState extends State<ChatbotBox>
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-      ),
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Row(
         children: [
           // Avatar — logo-cbb.png
@@ -235,7 +242,9 @@ class _ChatbotBoxState extends State<ChatbotBox>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: kGoldDark.withOpacity(0.5), width: 1.5),
+                    color: kGoldDark.withOpacity(0.5),
+                    width: 1.5,
+                  ),
                 ),
                 child: ClipOval(
                   child: Image.asset(
@@ -307,7 +316,11 @@ class _ChatbotBoxState extends State<ChatbotBox>
                   ),
                 ],
               ),
-              child: const Icon(Icons.close, size: 13, color: Color(0xFFB8860B)),
+              child: const Icon(
+                Icons.close,
+                size: 13,
+                color: Color(0xFFB8860B),
+              ),
             ),
           ),
         ],
@@ -380,12 +393,14 @@ class _ChatbotBoxState extends State<ChatbotBox>
 
     return Column(
       children: [
-        ...menus.map((m) => _buildMenuCard(
-              number: m.menuNumber,
-              title: m.title,
-              disabled: disabled,
-              onTap: () => _sendMenu(m.menuNumber, itemIndex),
-            )),
+        ...menus.map(
+          (m) => _buildMenuCard(
+            number: m.menuNumber,
+            title: m.title,
+            disabled: disabled,
+            onTap: () => _sendMenu(m.menuNumber, itemIndex),
+          ),
+        ),
         if (isFollowUp)
           _buildMenuCard(
             number: 10,
@@ -510,7 +525,10 @@ class _ChatbotBoxState extends State<ChatbotBox>
                         decoration: const BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Color(0xFFC98A00), width: 2),
-                            right: BorderSide(color: Color(0xFFC98A00), width: 2),
+                            right: BorderSide(
+                              color: Color(0xFFC98A00),
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),

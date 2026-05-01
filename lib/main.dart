@@ -12,9 +12,18 @@ import 'Screens/fiqih_haji.dart';
 import 'Screens/waktu-sholat.dart';
 import 'Screens/travel_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'Screens/google_login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // ─── Entry Point ─────────────────────────────────────────────────────────────
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load konfigurasi dari file .env
+  await dotenv.load(fileName: ".env");
+
   runApp(const RavolaApp());
 }
 
@@ -24,6 +33,15 @@ class ThemeNotifier extends ValueNotifier<bool> {
 }
 
 final themeNotifier = ThemeNotifier();
+
+// ─── User Session ─────────────────────────────────────────────────────────────
+class UserSession {
+  final String name;
+  final String? photoUrl;
+  UserSession({required this.name, this.photoUrl});
+}
+
+final userNotifier = ValueNotifier<UserSession?>(null);
 
 // ─── Root App ─────────────────────────────────────────────────────────────────
 class RavolaApp extends StatelessWidget {
@@ -51,6 +69,7 @@ class RavolaApp extends StatelessWidget {
             '/lokasi-ziarah': (context) => LokasiZiarahScreen(isDark: isDark),
             '/fiqih-haji': (context) => FiqihHajiScreen(isDark: isDark),
             '/waktu-sholat': (context) => WaktuSholatScreen(isDark: isDark),
+            '/google-login': (context) => GoogleLoginScreen(isDark: isDark),
             '/search': (context) => const TravelScreen(),
             '/theme-settings': (context) => ThemeSettingsScreen(isDark: isDark),
           },
@@ -594,22 +613,97 @@ class AppSidebar extends StatelessWidget {
                       child: Divider(color: dividerColor, height: 1),
                     ),
 
-                    _SidebarItem(
-                      icon: Icons.login_rounded,
-                      label: 'Login',
-                      isDark: isDark,
-                      gold: gold,
-                      textColor: textDark,
-                      onTap: () {
-                        onClose();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text(
-                              'Fitur login akan segera hadir',
-                            ),
-                            backgroundColor: gold,
-                            behavior: SnackBarBehavior.floating,
-                          ),
+                    ValueListenableBuilder<UserSession?>(
+                      valueListenable: userNotifier,
+                      builder: (context, user, _) {
+                        return _SidebarItem(
+                          icon: user != null
+                              ? Icons.manage_accounts_outlined
+                              : Icons.login_rounded,
+                          label: user != null ? 'Ganti Akun' : 'Login',
+                          isDark: isDark,
+                          gold: gold,
+                          textColor: textDark,
+                          onTap: () async {
+                            onClose();
+                            if (user != null) {
+                              // Sign out dulu biar bisa pilih akun lain
+                              await GoogleSignIn().signOut();
+                            }
+                            Navigator.pushNamed(context, '/google-login');
+                          },
+                        );
+                      },
+                    ),
+
+                    ValueListenableBuilder<UserSession?>(
+                      valueListenable: userNotifier,
+                      builder: (context, user, _) {
+                        if (user == null) return const SizedBox.shrink();
+                        return _SidebarItem(
+                          icon: Icons.logout_rounded,
+                          label: 'Logout',
+                          isDark: isDark,
+                          gold: gold,
+                          textColor: textDark,
+                          onTap: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                backgroundColor: isDark
+                                    ? const Color(0xFF1E1E1E)
+                                    : const Color(0xFFFFFBF0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                title: Text(
+                                  'Keluar Akun',
+                                  style: TextStyle(
+                                    color: gold,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                content: Text(
+                                  'Apakah Anda yakin ingin keluar?',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? const Color(0xFFF0E6C8)
+                                        : const Color(0xFF1A1200),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: Text(
+                                      'Batal',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.white54
+                                            : Colors.black45,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    child: Text(
+                                      'Keluar',
+                                      style: TextStyle(
+                                        color: gold,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await GoogleSignIn().signOut();
+                              userNotifier.value = null;
+                              onClose();
+                            }
+                          },
                         );
                       },
                     ),
@@ -631,9 +725,9 @@ class AppSidebar extends StatelessWidget {
               ),
             ),
           ),
-        ], // ← tutup children Stack AppSidebar
-      ), // ← tutup Stack
-    ); // ← tutup GestureDetector
+        ],
+      ),
+    );
   }
 }
 
@@ -954,7 +1048,6 @@ class _HomeScreenState extends State<HomeScreen>
   bool _sidebarOpen = false;
   late AnimationController _sidebarCtrl;
   late Animation<Offset> _slideAnim;
-  final String? _loggedInName = null;
 
   @override
   void initState() {
@@ -993,13 +1086,6 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (context, isDark, _) {
         final t = isDark ? AppTheme.dark : AppTheme.light;
 
-        final greeting = _loggedInName != null
-            ? "Assalamu'alaikum, $_loggedInName"
-            : "Assalamu'alaikum, Calon Jama'ah";
-        final subtitle = _loggedInName != null
-            ? "Selamat datang kembali"
-            : "Selamat datang di Ravola";
-
         return Scaffold(
           extendBody: true,
           backgroundColor: t.background,
@@ -1010,7 +1096,7 @@ class _HomeScreenState extends State<HomeScreen>
                 children: [
                   // ── HEADER ──
                   SizedBox(
-                    height: 240,
+                    height: 270,
                     child: Stack(
                       children: [
                         Positioned.fill(
@@ -1053,38 +1139,73 @@ class _HomeScreenState extends State<HomeScreen>
                                         onPressed: _openSidebar,
                                       ),
                                     ),
-                                    Container(
-                                      width: 38,
-                                      height: 38,
-                                      decoration: BoxDecoration(
-                                        color: isDark
-                                            ? const Color(0xFF2A2A2A)
-                                            : Colors.white.withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: const Icon(Icons.person, size: 18),
+                                    ValueListenableBuilder<UserSession?>(
+                                      valueListenable: userNotifier,
+                                      builder: (context, user, _) {
+                                        return GestureDetector(
+                                          onTap: () => Navigator.pushNamed(
+                                            context,
+                                            '/google-login',
+                                          ),
+                                          child: CircleAvatar(
+                                            radius: 19,
+                                            backgroundImage:
+                                                user?.photoUrl != null
+                                                ? NetworkImage(user!.photoUrl!)
+                                                : null,
+                                            backgroundColor: Colors.white
+                                                .withOpacity(0.3),
+                                            child: user?.photoUrl == null
+                                                ? const Icon(
+                                                    Icons.person,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  )
+                                                : null,
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 14),
-                                Text(
-                                  greeting,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.3,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  subtitle,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    letterSpacing: 0.2,
-                                    color: Colors.white70,
-                                  ),
+                                ValueListenableBuilder<UserSession?>(
+                                  valueListenable: userNotifier,
+                                  builder: (context, user, _) {
+                                    final firstName =
+                                        user?.name.split(' ').first ?? '';
+                                    final greeting = user != null
+                                        ? "Assalamu'alaikum, $firstName"
+                                        : "Assalamu'alaikum, Calon Jama'ah";
+                                    final subtitle = user != null
+                                        ? "Selamat datang kembali"
+                                        : "Selamat datang di Ravola";
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          greeting,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.3,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          subtitle,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                            letterSpacing: 0.2,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 ),
                               ],
                             ),

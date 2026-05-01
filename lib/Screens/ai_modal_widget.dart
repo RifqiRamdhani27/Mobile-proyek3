@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+// 1. IMPORT file config kamu
+import 'package:flutter_application/config.dart';
 
 const Color kGold = Color(0xFFF5B400);
 const Color kGoldLight = Color(0xFFFFF8E1);
@@ -59,8 +61,11 @@ class _MLModalState extends State<_MLModal>
       final budget = _budgetCtrl.text.replaceAll('.', '');
       final saving = _savingCtrl.text.replaceAll('.', '');
 
+      // 2. MODIFIKASI URL: Mengambil IP dari BASE_URL tapi port diganti ke 5000 (Flask)
+      final String mlUrl = BASE_URL.replaceAll('8000', '5000');
+
       final response = await http.post(
-        Uri.parse('http://127.0.0.1:5000/predict'),
+        Uri.parse('$mlUrl/predict'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -68,29 +73,32 @@ class _MLModalState extends State<_MLModal>
         body: jsonEncode({'budget': budget, 'saving': saving}),
       );
 
-      final data = jsonDecode(response.body);
-
-      setState(() {
-        _isLoading = false;
-        _showResult = true;
-        _predictionData = data;
-      });
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _isLoading = false;
+          _showResult = true;
+          _predictionData = data;
+        });
+      } else {
+        throw Exception('Server Error');
+      }
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal terhubung ke server.')),
+          const SnackBar(content: Text('Gagal terhubung ke server AI.')),
         );
       }
     }
   }
 
   void _reset() => setState(() {
-        _showResult = false;
-        _predictionData = null;
-        _budgetCtrl.clear();
-        _savingCtrl.clear();
-      });
+    _showResult = false;
+    _predictionData = null;
+    _budgetCtrl.clear();
+    _savingCtrl.clear();
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +179,11 @@ class _MLModalState extends State<_MLModal>
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.mosque, color: Colors.black, size: 18),
+                    child: const Icon(
+                      Icons.mosque,
+                      color: Colors.black,
+                      size: 18,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Column(
@@ -266,9 +278,16 @@ class _MLModalState extends State<_MLModal>
                     Expanded(
                       child: RichText(
                         text: const TextSpan(
-                          style: TextStyle(color: Colors.grey, fontSize: 10, height: 1.5),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 10,
+                            height: 1.5,
+                          ),
                           children: [
-                            TextSpan(text: 'Analisis berdasarkan data historis harga Haji '),
+                            TextSpan(
+                              text:
+                                  'Analisis berdasarkan data historis harga Haji ',
+                            ),
                             TextSpan(
                               text: '16 tahun',
                               style: TextStyle(
@@ -405,20 +424,28 @@ class _MLModalState extends State<_MLModal>
 
     String message;
     if (gap <= 3) {
-      message = 'Perencanaan finansial Anda sangat matang. Target $targetYear sangat presisi untuk diraih.';
+      message =
+          'Perencanaan finansial Anda sangat matang. Target $targetYear sangat presisi untuk diraih.';
     } else if (gap <= 10) {
-      message = 'Anda berada di jalur tepat untuk keberangkatan tahun $targetYear. Terus pertahankan konsistensi.';
+      message =
+          'Anda berada di jalur tepat untuk keberangkatan tahun $targetYear. Terus pertahankan konsistensi.';
     } else if (gap <= 20) {
-      message = 'Sistem memproyeksikan keberangkatan tahun $targetYear. Pertimbangkan alokasi pendapatan tambahan.';
+      message =
+          'Sistem memproyeksikan keberangkatan tahun $targetYear. Pertimbangkan alokasi pendapatan tambahan.';
     } else {
-      message = 'Proyeksi berada pada tahun $targetYear. Tinjau kembali alokasi bulanan untuk memperkuat daya simpan.';
+      message =
+          'Proyeksi berada pada tahun $targetYear. Tinjau kembali alokasi bulanan untuk memperkuat daya simpan.';
     }
 
     return Column(
       children: [
         const Text(
           'Estimasi Keberangkatan',
-          style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -463,7 +490,11 @@ class _MLModalState extends State<_MLModal>
               const SizedBox(height: 6),
               Text(
                 '• Tren Rutin: Eskalasi biaya ±$slopeFormatted/tahun.',
-                style: const TextStyle(color: Colors.grey, fontSize: 10, height: 1.6),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 10,
+                  height: 1.6,
+                ),
               ),
               const Text(
                 '• Kebijakan: Penyesuaian subsidi ±Rp 10.000.000 (Pasca 2023).',
@@ -472,7 +503,11 @@ class _MLModalState extends State<_MLModal>
               const SizedBox(height: 8),
               Text(
                 message,
-                style: const TextStyle(color: Colors.white70, fontSize: 11, height: 1.5),
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  height: 1.5,
+                ),
               ),
             ],
           ),
@@ -491,7 +526,10 @@ class _MLModalState extends State<_MLModal>
                     border: Border.all(color: Colors.white24),
                   ),
                   child: const Center(
-                    child: Text('Tutup', style: TextStyle(color: Colors.white, fontSize: 13)),
+                    child: Text(
+                      'Tutup',
+                      style: TextStyle(color: Colors.white, fontSize: 13),
+                    ),
                   ),
                 ),
               ),
@@ -567,7 +605,9 @@ class _MLModalState extends State<_MLModal>
                 center: Alignment(-0.3, -0.3),
                 colors: [Color(0xFF2A2A2A), Colors.black],
               ),
-              border: Border.all(color: const Color(0xFFFFB400).withOpacity(0.6)),
+              border: Border.all(
+                color: const Color(0xFFFFB400).withOpacity(0.6),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFFFFAA00).withOpacity(0.4),
@@ -596,7 +636,10 @@ class _MLModalState extends State<_MLModal>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Contoh:', style: TextStyle(color: Colors.grey, fontSize: 9)),
+                const Text(
+                  'Contoh:',
+                  style: TextStyle(color: Colors.grey, fontSize: 9),
+                ),
                 TextField(
                   controller: ctrl,
                   keyboardType: TextInputType.number,
@@ -607,7 +650,10 @@ class _MLModalState extends State<_MLModal>
                   ),
                   decoration: InputDecoration(
                     hintText: hint,
-                    hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -625,7 +671,7 @@ class _MLModalState extends State<_MLModal>
 }
 
 // ══════════════════════════════════════════════════════════════════
-//  SMALL WIDGETS
+//  SMALL WIDGETS & PAINTERS (Sama seperti sebelumnya)
 // ══════════════════════════════════════════════════════════════════
 
 class _GoldDivider extends StatelessWidget {
@@ -658,10 +704,6 @@ class _GoldDividerH extends StatelessWidget {
     );
   }
 }
-
-// ══════════════════════════════════════════════════════════════════
-//  CUSTOM PAINTERS
-// ══════════════════════════════════════════════════════════════════
 
 class _SpinnerPainter extends CustomPainter {
   final bool static_;
@@ -715,12 +757,10 @@ class _SimpleBarChartPainter extends CustomPainter {
     const bars = [0.4, 0.55, 0.5, 0.65, 0.6, 0.75, 0.85, 1.0];
     final barW = size.width / (bars.length * 2);
     final paint = Paint()..strokeCap = StrokeCap.round;
-
     for (int i = 0; i < bars.length; i++) {
       final x = i * barW * 2 + barW * 0.5;
       final barH = size.height * 0.75 * bars[i];
       final y = size.height * 0.85 - barH;
-
       paint.shader = LinearGradient(
         colors: [
           const Color(0xFFFFD54F).withOpacity(0.9),
@@ -729,7 +769,6 @@ class _SimpleBarChartPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Rect.fromLTWH(x, y, barW * 1.2, barH));
-
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(x, y, barW * 1.2, barH),
@@ -738,7 +777,6 @@ class _SimpleBarChartPainter extends CustomPainter {
         paint,
       );
     }
-
     canvas.drawLine(
       Offset(0, size.height * 0.85),
       Offset(size.width, size.height * 0.85),
@@ -751,10 +789,6 @@ class _SimpleBarChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(_) => false;
 }
-
-// ══════════════════════════════════════════════════════════════════
-//  RUPIAH INPUT FORMATTER
-// ══════════════════════════════════════════════════════════════════
 
 class _RupiahFormatter extends TextInputFormatter {
   @override

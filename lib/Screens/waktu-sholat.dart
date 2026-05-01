@@ -26,17 +26,30 @@ class _IslamicBgPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final bg   = isDark ? const Color(0xFF121212) : const Color(0xFFFAFAF7);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFFAFAF7);
     final gold = const Color(0xFFC9A84C);
-    final op   = isDark ? 0.42 : 0.45;
+    final op = isDark ? 0.42 : 0.45;
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = bg);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = bg,
+    );
 
-    final stroke = Paint()..color = gold.withOpacity(op + 0.1)..style = PaintingStyle.stroke..strokeWidth = 0.8;
-    final fill   = Paint()..color = gold.withOpacity(op)..style = PaintingStyle.fill;
+    final stroke = Paint()
+      ..color = gold.withOpacity(op + 0.1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+    final fill = Paint()
+      ..color = gold.withOpacity(op)
+      ..style = PaintingStyle.fill;
 
     void arc(Offset s, Offset e, Offset c) {
-      canvas.drawPath(Path()..moveTo(s.dx, s.dy)..quadraticBezierTo(c.dx, c.dy, e.dx, e.dy), stroke);
+      canvas.drawPath(
+        Path()
+          ..moveTo(s.dx, s.dy)
+          ..quadraticBezierTo(c.dx, c.dy, e.dx, e.dy),
+        stroke,
+      );
     }
 
     arc(Offset(0, 60), Offset(60, 0), Offset(0, 0));
@@ -45,31 +58,54 @@ class _IslamicBgPainter extends CustomPainter {
     canvas.drawCircle(const Offset(28, 6), 3, fill);
     canvas.drawCircle(const Offset(6, 28), 3, fill);
 
-    arc(Offset(size.width, 60), Offset(size.width - 60, 0), Offset(size.width, 0));
-    arc(Offset(size.width, 40), Offset(size.width - 40, 0), Offset(size.width, 0));
+    arc(
+      Offset(size.width, 60),
+      Offset(size.width - 60, 0),
+      Offset(size.width, 0),
+    );
+    arc(
+      Offset(size.width, 40),
+      Offset(size.width - 40, 0),
+      Offset(size.width, 0),
+    );
     canvas.drawCircle(Offset(size.width, 0), 5, fill);
     canvas.drawCircle(Offset(size.width - 28, 6), 3, fill);
     canvas.drawCircle(Offset(size.width - 6, 28), 3, fill);
 
-    arc(Offset(0, size.height - 60), Offset(60, size.height), Offset(0, size.height));
+    arc(
+      Offset(0, size.height - 60),
+      Offset(60, size.height),
+      Offset(0, size.height),
+    );
     canvas.drawCircle(Offset(0, size.height), 5, fill);
     canvas.drawCircle(Offset(28, size.height - 6), 3, fill);
     canvas.drawCircle(Offset(6, size.height - 28), 3, fill);
 
-    arc(Offset(size.width, size.height - 60), Offset(size.width - 60, size.height), Offset(size.width, size.height));
+    arc(
+      Offset(size.width, size.height - 60),
+      Offset(size.width - 60, size.height),
+      Offset(size.width, size.height),
+    );
     canvas.drawCircle(Offset(size.width, size.height), 5, fill);
     canvas.drawCircle(Offset(size.width - 28, size.height - 6), 3, fill);
     canvas.drawCircle(Offset(size.width - 6, size.height - 28), 3, fill);
 
     void star(Offset center, double r, Color color) {
-      final p = Paint()..color = color..style = PaintingStyle.fill;
+      final p = Paint()
+        ..color = color
+        ..style = PaintingStyle.fill;
       for (final rot in [0.0, math.pi / 4]) {
-        final pts    = <Offset>[];
+        final pts = <Offset>[];
         final angles = [0, 45, 90, 135, 180, 225, 270, 315];
-        final radii  = [r, r / 4, r, r / 4, r, r / 4, r, r / 4];
+        final radii = [r, r / 4, r, r / 4, r, r / 4, r, r / 4];
         for (int i = 0; i < 8; i++) {
           final a = (angles[i] * math.pi / 180) + rot - math.pi / 2;
-          pts.add(Offset(center.dx + radii[i] * math.cos(a), center.dy + radii[i] * math.sin(a)));
+          pts.add(
+            Offset(
+              center.dx + radii[i] * math.cos(a),
+              center.dy + radii[i] * math.sin(a),
+            ),
+          );
         }
         final path = Path()..moveTo(pts[0].dx, pts[0].dy);
         for (final pt in pts.skip(1)) path.lineTo(pt.dx, pt.dy);
@@ -81,10 +117,17 @@ class _IslamicBgPainter extends CustomPainter {
     star(Offset(size.width / 2, 160), 35, gold.withOpacity(op));
     star(Offset(size.width / 2, 700), 35, gold.withOpacity(op));
     star(Offset(60, size.height / 2), 20, gold.withOpacity(op * 0.8));
-    star(Offset(size.width - 60, size.height / 2), 20, gold.withOpacity(op * 0.8));
+    star(
+      Offset(size.width - 60, size.height / 2),
+      20,
+      gold.withOpacity(op * 0.8),
+    );
 
     void vine(Color c, double y, double sw) {
-      final p = Paint()..color = c..style = PaintingStyle.stroke..strokeWidth = sw;
+      final p = Paint()
+        ..color = c
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = sw;
       canvas.drawPath(
         Path()
           ..moveTo(20, y)
@@ -102,9 +145,21 @@ class _IslamicBgPainter extends CustomPainter {
     vine(gold.withOpacity(op), size.height - 90, 0.5);
     vine(gold.withOpacity(op * 0.7), size.height / 2, 0.6);
 
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 3, Paint()..color = gold.withOpacity(op));
-    canvas.drawCircle(Offset(120, size.height / 2), 2, Paint()..color = gold.withOpacity(op));
-    canvas.drawCircle(Offset(280, size.height / 2), 2, Paint()..color = gold.withOpacity(op));
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      3,
+      Paint()..color = gold.withOpacity(op),
+    );
+    canvas.drawCircle(
+      Offset(120, size.height / 2),
+      2,
+      Paint()..color = gold.withOpacity(op),
+    );
+    canvas.drawCircle(
+      Offset(280, size.height / 2),
+      2,
+      Paint()..color = gold.withOpacity(op),
+    );
 
     void diamond(Offset c, double h) {
       canvas.drawPath(
@@ -114,16 +169,23 @@ class _IslamicBgPainter extends CustomPainter {
           ..lineTo(c.dx, c.dy + h)
           ..lineTo(c.dx - h / 2, c.dy)
           ..close(),
-        Paint()..color = gold.withOpacity(op)..style = PaintingStyle.fill,
+        Paint()
+          ..color = gold.withOpacity(op)
+          ..style = PaintingStyle.fill,
       );
     }
 
     for (final pt in [
-      const Offset(50, 250), const Offset(350, 250),
-      const Offset(50, 600), const Offset(350, 600),
-      const Offset(130, 350), const Offset(270, 350),
-      const Offset(130, 550), const Offset(270, 550),
-    ]) diamond(pt, 8);
+      const Offset(50, 250),
+      const Offset(350, 250),
+      const Offset(50, 600),
+      const Offset(350, 600),
+      const Offset(130, 350),
+      const Offset(270, 350),
+      const Offset(130, 550),
+      const Offset(270, 550),
+    ])
+      diamond(pt, 8);
   }
 
   @override
@@ -141,18 +203,18 @@ class WaktuSholatScreen extends StatefulWidget {
 
 class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
   List<Map<String, String>> sholatTimes = [
-    {"name": "Subuh",   "time": "04:42"},
-    {"name": "Dzuhur",  "time": "12:03"},
-    {"name": "Ashar",   "time": "15:12"},
+    {"name": "Subuh", "time": "04:42"},
+    {"name": "Dzuhur", "time": "12:03"},
+    {"name": "Ashar", "time": "15:12"},
     {"name": "Maghrib", "time": "18:07"},
-    {"name": "Isya",    "time": "19:17"},
+    {"name": "Isya", "time": "19:17"},
   ];
 
-  bool   loading        = true;
-  String jamSekarang    = "";
-  String namaKota       = "Mengambil lokasi...";
+  bool loading = true;
+  String jamSekarang = "";
+  String namaKota = "Mengambil lokasi...";
   String berikutnyaName = "";
-  int    sisaJam = 0, sisaMenit = 0, sisaDetik = 0;
+  int sisaJam = 0, sisaMenit = 0, sisaDetik = 0;
   Timer? _timer;
 
   @override
@@ -200,51 +262,66 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
     if (selisih < 0) selisih += 24 * 3600;
 
     setState(() {
-      jamSekarang    = "$jam:$mnt";
+      jamSekarang = "$jam:$mnt";
       berikutnyaName = target['name'] as String;
-      sisaJam        = selisih ~/ 3600;
-      sisaMenit      = (selisih % 3600) ~/ 60;
-      sisaDetik      = selisih % 60;
+      sisaJam = selisih ~/ 3600;
+      sisaMenit = (selisih % 3600) ~/ 60;
+      sisaDetik = selisih % 60;
     });
   }
 
   Future<void> fetchJadwal() async {
-    setState(() { loading = true; namaKota = "Mengambil lokasi..."; });
+    setState(() {
+      loading = true;
+      namaKota = "Mengambil lokasi...";
+    });
     try {
       LocationPermission perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
-      if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
-        setState(() { namaKota = "Jakarta"; loading = false; });
+      if (perm == LocationPermission.denied)
+        perm = await Geolocator.requestPermission();
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever) {
+        setState(() {
+          namaKota = "Jakarta";
+          loading = false;
+        });
         return;
       }
-      final pos        = await Geolocator.getCurrentPosition();
-      final lat        = pos.latitude;
-      final lng        = pos.longitude;
+      final pos = await Geolocator.getCurrentPosition();
+      final lat = pos.latitude;
+      final lng = pos.longitude;
       final placemarks = await placemarkFromCoordinates(lat, lng);
       if (placemarks.isNotEmpty) {
         setState(() {
-          namaKota = placemarks[0].locality ??
-                     placemarks[0].subAdministrativeArea ??
-                     placemarks[0].administrativeArea ?? "Lokasi";
+          namaKota =
+              placemarks[0].locality ??
+              placemarks[0].subAdministrativeArea ??
+              placemarks[0].administrativeArea ??
+              "Lokasi";
         });
       }
-      final res  = await http.get(Uri.parse(
-        'https://api.aladhan.com/v1/timings?latitude=$lat&longitude=$lng&method=11',
-      ));
+      final res = await http.get(
+        Uri.parse(
+          'https://api.aladhan.com/v1/timings?latitude=$lat&longitude=$lng&method=11',
+        ),
+      );
       final data = jsonDecode(res.body);
-      final t    = data['data']['timings'];
+      final t = data['data']['timings'];
       setState(() {
         sholatTimes = [
-          {"name": "Subuh",   "time": (t['Fajr']    as String).substring(0, 5)},
-          {"name": "Dzuhur",  "time": (t['Dhuhr']   as String).substring(0, 5)},
-          {"name": "Ashar",   "time": (t['Asr']     as String).substring(0, 5)},
+          {"name": "Subuh", "time": (t['Fajr'] as String).substring(0, 5)},
+          {"name": "Dzuhur", "time": (t['Dhuhr'] as String).substring(0, 5)},
+          {"name": "Ashar", "time": (t['Asr'] as String).substring(0, 5)},
           {"name": "Maghrib", "time": (t['Maghrib'] as String).substring(0, 5)},
-          {"name": "Isya",    "time": (t['Isha']    as String).substring(0, 5)},
+          {"name": "Isya", "time": (t['Isha'] as String).substring(0, 5)},
         ];
         loading = false;
       });
     } catch (_) {
-      setState(() { namaKota = "Jakarta"; loading = false; });
+      setState(() {
+        namaKota = "Jakarta";
+        loading = false;
+      });
     }
   }
 
@@ -266,29 +343,31 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
     final isDark = widget.isDark;
 
     // ── Colors 1:1 TSX ────────────────────────────────────────────────────
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFFDF8EE);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFFDF8EE);
     final clockClr = isDark ? const Color(0xFFF4B400) : const Color(0xFF1A1209);
     final brandClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF3A2A00);
-    final tagBg    = isDark ? const Color(0x18FFFFFF) : const Color(0x25000000);
-    final tagClr   = isDark ? const Color(0xFFC9A84C) : const Color(0xFFEAEAEA);
-    final floatBg  = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final tagBg = isDark ? const Color(0x18FFFFFF) : const Color(0x25000000);
+    final tagClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFFEAEAEA);
+    final floatBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final floatBdr = isDark ? const Color(0xFF3A3000) : const Color(0xFFE8C840);
     final labelClr = isDark ? const Color(0xFFB89230) : const Color(0xFF9A8040);
-    final valClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF3A2900);
-    final cdClr    = isDark ? const Color(0xFFF4B400) : const Color(0xFFD4A017);
-    final cardBg   = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final cardBdr  = isDark ? const Color(0xFF3A3000) : const Color(0xFF9B8244);
-    final curBg    = isDark ? const Color(0xFF211904) : const Color(0xFFFFF3CD);
-    final curBdr   = const Color(0xFFD4A017);
-    final nameClr  = isDark ? const Color(0xFF9F7B16) : const Color(0xFF2F2F2F);
-    final timeClr  = isDark ? const Color(0xFFF4B400) : const Color(0xFFB37D00);
-    final timeOff  = isDark ? const Color(0xFF9F7B16) : const Color(0xFFCDAB57);
-    final barBg    = isDark ? const Color(0xFF9F7B16) : const Color(0xFFCDAB57);
+    final valClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF3A2900);
+    final cdClr = isDark ? const Color(0xFFF4B400) : const Color(0xFFD4A017);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardBdr = isDark ? const Color(0xFF3A3000) : const Color(0xFF9B8244);
+    final curBg = isDark ? const Color(0xFF211904) : const Color(0xFFFFF3CD);
+    final curBdr = const Color(0xFFD4A017);
+    final nameClr = isDark ? const Color(0xFF9F7B16) : const Color(0xFF2F2F2F);
+    final timeClr = isDark ? const Color(0xFFF4B400) : const Color(0xFFB37D00);
+    final timeOff = isDark ? const Color(0xFF9F7B16) : const Color(0xFFCDAB57);
+    final barBg = isDark ? const Color(0xFF9F7B16) : const Color(0xFFCDAB57);
     final heroGrad = isDark
         ? [const Color(0xFF2E2E2E), const Color(0xFF1B1919)]
         : [const Color(0xFFFFD000), const Color(0xFFD68E00)];
 
-    final activeIndex = sholatTimes.indexWhere((s) => s['name'] == berikutnyaName);
+    final activeIndex = sholatTimes.indexWhere(
+      (s) => s['name'] == berikutnyaName,
+    );
 
     return Scaffold(
       backgroundColor: bg,
@@ -306,7 +385,9 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                   children: [
                     // goldBlock: absolute top:0 left:0 right:-0.4 height:230 borderBottomRightRadius:70
                     Positioned(
-                      top: 0, left: 0, right: -0.4,
+                      top: 0,
+                      left: 0,
+                      right: -0.4,
                       child: Container(
                         height: 230,
                         decoration: BoxDecoration(
@@ -320,8 +401,14 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                           ),
                           border: isDark
                               ? Border(
-                                  bottom: BorderSide(color: const Color(0xFFC9A84C), width: 0.5),
-                                  right:  BorderSide(color: const Color(0xFFC9A84C), width: 0.5),
+                                  bottom: BorderSide(
+                                    color: const Color(0xFFC9A84C),
+                                    width: 0.5,
+                                  ),
+                                  right: BorderSide(
+                                    color: const Color(0xFFC9A84C),
+                                    width: 0.5,
+                                  ),
                                 )
                               : null,
                         ),
@@ -330,19 +417,29 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
 
                     // nav: paddingHorizontal:18 paddingTop:48
                     Positioned(
-                      top: 0, left: 0, right: 0,
+                      top: 0,
+                      left: 0,
+                      right: 0,
                       child: SafeArea(
                         bottom: false,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 18, right: 18, top: 48),
+                          padding: const EdgeInsets.only(
+                            left: 18,
+                            right: 18,
+                            top: 38,
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               // brand: marginLeft:3 marginTop:35
                               Padding(
-                                padding: const EdgeInsets.only(left: 3, top: 35),
-                                child: Text('RAVOLA',
+                                padding: const EdgeInsets.only(
+                                  left: 3,
+                                  top: 85,
+                                ),
+                                child: Text(
+                                  'RAVOLA',
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -359,44 +456,68 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                                   children: [
                                     // locBtn: w:26 h:26 marginTop:28 right:-15
                                     Transform.translate(
-                                      offset: const Offset(-15, 0),
+                                      offset: const Offset(3, 0),
                                       child: GestureDetector(
                                         onTap: fetchJadwal,
                                         child: Container(
                                           width: 26,
                                           height: 26,
-                                          margin: const EdgeInsets.only(top: 28),
+                                          margin: const EdgeInsets.only(
+                                            top: 28,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: tagBg,
-                                            borderRadius: BorderRadius.circular(13),
+                                            borderRadius: BorderRadius.circular(
+                                              13,
+                                            ),
                                           ),
-                                          child: Icon(Icons.location_on, size: 12, color: tagClr),
+                                          child: Icon(
+                                            Icons.location_on,
+                                            size: 12,
+                                            color: tagClr,
+                                          ),
                                         ),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
                                     // tagPill + kotaText
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         // tagPill: borderRadius:20 px:10 py:7.5 marginTop:45
                                         Container(
-                                          margin: const EdgeInsets.only(top: 45),
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7.5),
+                                          margin: const EdgeInsets.only(
+                                            top: 45,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 7.5,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: tagBg,
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
                                           ),
-                                          child: Text('Waktu Sholat',
-                                            style: TextStyle(fontSize: 10, letterSpacing: 0.3, color: tagClr),
+                                          child: Text(
+                                            'Waktu Sholat',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              letterSpacing: 0.3,
+                                              color: tagClr,
+                                            ),
                                           ),
                                         ),
                                         // kotaText: fontSize:9 marginTop:3 opacity:0.85 right:2
                                         Transform.translate(
                                           offset: const Offset(-2, 0),
                                           child: Padding(
-                                            padding: const EdgeInsets.only(top: 3),
-                                            child: Text(namaKota,
+                                            padding: const EdgeInsets.only(
+                                              top: 3,
+                                            ),
+                                            child: Text(
+                                              namaKota,
                                               style: TextStyle(
                                                 fontSize: 9,
                                                 letterSpacing: 0.3,
@@ -418,10 +539,13 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
 
                     // clockWrap: paddingHorizontal:18 paddingTop:4 marginTop:-23
                     Positioned(
-                      top: 100, left: 0, right: 0,
+                      top: 100,
+                      left: 0,
+                      right: 0,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 18, top: 4),
-                        child: Text(jamSekarang,
+                        child: Text(
+                          jamSekarang,
                           style: TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.w500,
@@ -452,19 +576,34 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // floatLabel: fontSize:10 letterSpacing:1
-                                Text('BERIKUTNYA',
-                                  style: TextStyle(fontSize: 10, letterSpacing: 1, color: labelClr)),
+                                Text(
+                                  'BERIKUTNYA',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    letterSpacing: 1,
+                                    color: labelClr,
+                                  ),
+                                ),
                                 const SizedBox(height: 2),
                                 // floatVal: fontSize:16 fontWeight:500 marginTop:2
-                                Text(berikutnyaName.isEmpty ? '--' : berikutnyaName,
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: valClr)),
+                                Text(
+                                  berikutnyaName.isEmpty
+                                      ? '--'
+                                      : berikutnyaName,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: valClr,
+                                  ),
+                                ),
                               ],
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 // floatCd: fontSize:26 fontWeight:500 lineHeight:28
-                                Text(formatCountdown(),
+                                Text(
+                                  formatCountdown(),
                                   style: TextStyle(
                                     fontSize: 26,
                                     fontWeight: FontWeight.w500,
@@ -473,8 +612,13 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                                   ),
                                 ),
                                 // floatCdLabel: fontSize:10
-                                Text(formatLabel(),
-                                  style: TextStyle(fontSize: 10, color: labelClr)),
+                                Text(
+                                  formatLabel(),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: labelClr,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -489,7 +633,12 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
               // body: padding:20 paddingTop:125
               Expanded(
                 child: loading
-                    ? Center(child: Text('Mengambil jadwal...', style: TextStyle(color: labelClr)))
+                    ? Center(
+                        child: Text(
+                          'Mengambil jadwal...',
+                          style: TextStyle(color: labelClr),
+                        ),
+                      )
                     : SingleChildScrollView(
                         padding: const EdgeInsets.fromLTRB(20, 125, 20, 20),
                         child: Wrap(
@@ -497,13 +646,16 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                           spacing: 10,
                           runSpacing: 10,
                           children: List.generate(sholatTimes.length, (i) {
-                            final item   = sholatTimes[i];
-                            final isCur  = i == activeIndex;
+                            final item = sholatTimes[i];
+                            final isCur = i == activeIndex;
                             final isLast = i == sholatTimes.length - 1;
                             // card: width:"48%" — cardFull: width:"100%"
                             final cardW = isLast
                                 ? double.infinity
-                                : (MediaQuery.of(context).size.width - 20 * 2 - 10) / 2;
+                                : (MediaQuery.of(context).size.width -
+                                          20 * 2 -
+                                          10) /
+                                      2;
 
                             return SizedBox(
                               width: cardW,
@@ -522,11 +674,18 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     // cardName: fontSize:10 letterSpacing:1 marginBottom:4
-                                    Text(item['name']!.toUpperCase(),
-                                      style: TextStyle(fontSize: 10, letterSpacing: 1, color: nameClr)),
+                                    Text(
+                                      item['name']!.toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        letterSpacing: 1,
+                                        color: nameClr,
+                                      ),
+                                    ),
                                     const SizedBox(height: 4),
                                     // cardTime: fontSize:20 fontWeight:500
-                                    Text(item['time']!,
+                                    Text(
+                                      item['time']!,
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w500,
@@ -549,7 +708,8 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: cdClr,
-                                                  borderRadius: BorderRadius.circular(2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
                                                 ),
                                               ),
                                             )
@@ -568,7 +728,9 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
 
           // ── DOCK ──────────────────────────────────────────────────────────
           Positioned(
-            bottom: 0, left: 0, right: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
             child: _buildDock(context, isDark),
           ),
         ],
@@ -577,15 +739,15 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
   }
 
   Widget _buildDock(BuildContext context, bool isDark) {
-    final dockBg    = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFD3AB3F);
-    final dockIcon  = isDark ? const Color(0xFFC9A84C) : Colors.white;
+    final dockBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFD3AB3F);
+    final dockIcon = isDark ? const Color(0xFFC9A84C) : Colors.white;
     final activeDot = isDark ? const Color(0xFFC9A84C) : Colors.white;
 
     final items = [
-      {'icon': Icons.home,        'label': 'Home'},
-      {'icon': Icons.search,      'label': 'Search'},
+      {'icon': Icons.home, 'label': 'Home'},
+      {'icon': Icons.search, 'label': 'Search'},
       {'icon': Icons.access_time, 'label': 'Time'},
-      {'icon': Icons.favorite,    'label': 'Health'},
+      {'icon': Icons.favorite, 'label': 'Health'},
     ];
 
     return Container(
@@ -607,31 +769,38 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
         children: items.map((item) {
           final label = item['label'] as String;
           final isActive = item['label'] == 'Time';
-return GestureDetector(
+          return GestureDetector(
             onTap: () {
               // --- LOGIKA NAVIGASI ---
               if (label == 'Home') {
                 Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false);
-              } 
-              else if (label == 'Search') {
+              } else if (label == 'Search') {
                 // Navigasi ke Travel Screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TravelScreen()), // Pastikan nama class-nya sesuai
+                  MaterialPageRoute(
+                    builder: (context) => const TravelScreen(),
+                  ), // Pastikan nama class-nya sesuai
                 );
               }
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(item['icon'] as IconData,
+                Icon(
+                  item['icon'] as IconData,
                   color: isActive ? activeDot : dockIcon.withOpacity(0.6),
-                  size: 24),
+                  size: 24,
+                ),
                 if (isActive)
                   Container(
-                    width: 5, height: 5,
+                    width: 5,
+                    height: 5,
                     margin: const EdgeInsets.only(top: 4),
-                    decoration: BoxDecoration(color: activeDot, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                      color: activeDot,
+                      shape: BoxShape.circle,
+                    ),
                   ),
               ],
             ),
