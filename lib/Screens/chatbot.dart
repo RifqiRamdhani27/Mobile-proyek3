@@ -308,7 +308,7 @@ class _ChatbotBoxState extends State<ChatbotBox>
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close, size: 18),
+            icon: const Icon(Icons.close, size: 22, color: kGoldDark),
             onPressed: widget.onClose,
           ),
         ],
@@ -384,7 +384,10 @@ class _ChatbotBoxState extends State<ChatbotBox>
             children: [
               Icon(_menuIcon(number), size: 14, color: kGoldDark),
               const SizedBox(width: 10),
-              Text(title, style: const TextStyle(fontSize: 12)),
+              Text(
+                title,
+                style: const TextStyle(fontSize: 12, color: Color(0xFF4A4A4A)),
+              ),
             ],
           ),
         ),

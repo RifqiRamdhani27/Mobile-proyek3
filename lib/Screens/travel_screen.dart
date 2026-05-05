@@ -98,6 +98,7 @@ class _TravelScreenState extends State<TravelScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           CustomScrollView(

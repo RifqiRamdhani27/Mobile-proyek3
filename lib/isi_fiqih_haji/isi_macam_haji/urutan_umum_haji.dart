@@ -35,7 +35,7 @@ class UrutanUmumHajiScreen extends StatelessWidget {
           children: [
             // AppBar
             Container(
-              height: 95,
+              height: 115,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: appBarBg,
               child: SafeArea(
@@ -45,8 +45,8 @@ class UrutanUmumHajiScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -58,16 +58,14 @@ class UrutanUmumHajiScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Text(
-                          'Urutan Umum Perjalanan Haji',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: titleClr,
-                          ),
+                    Transform.translate(
+                      offset: const Offset(10, 2),
+                      child: Text(
+                        'Urutan Umum Perjalanan Haji',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
                         ),
                       ),
                     ),

@@ -37,7 +37,7 @@ class PerbedaanJenisHajiScreen extends StatelessWidget {
           children: [
             // AppBar
             Container(
-              height: 95,
+              height: 115,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: appBarBg,
               child: SafeArea(
@@ -47,8 +47,8 @@ class PerbedaanJenisHajiScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -60,16 +60,14 @@ class PerbedaanJenisHajiScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Text(
-                          'Perbedaan Masing-masing Haji',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: titleClr,
-                          ),
+                    Transform.translate(
+                      offset: const Offset(10, 2),
+                      child: Text(
+                        'Perbedaan Masing-masing Haji',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
                         ),
                       ),
                     ),
@@ -128,25 +126,34 @@ class PerbedaanJenisHajiScreen extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  ...points.map((point) => Padding(
-                                        padding: const EdgeInsets.only(bottom: 2),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text("• ", style: TextStyle(color: textClr, fontSize: 14)),
-                                            Expanded(
-                                              child: Text(
-                                                point,
-                                                style: TextStyle(
-                                                  color: textClr,
-                                                  fontSize: 14,
-                                                  height: 1.4,
-                                                ),
+                                  ...points.map(
+                                    (point) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 2),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "• ",
+                                            style: TextStyle(
+                                              color: textClr,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              point,
+                                              style: TextStyle(
+                                                color: textClr,
+                                                fontSize: 14,
+                                                height: 1.4,
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      )),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

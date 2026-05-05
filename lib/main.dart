@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-// ─── Entry Point ─────────────────────────────────────────────────────────────
+// Entry Point
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -27,14 +27,14 @@ Future<void> main() async {
   runApp(const RavolaApp());
 }
 
-// ─── Theme Notifier ───────────────────────────────────────────────────────────
+// Theme Notifier
 class ThemeNotifier extends ValueNotifier<bool> {
   ThemeNotifier() : super(false);
 }
 
 final themeNotifier = ThemeNotifier();
 
-// ─── User Session ─────────────────────────────────────────────────────────────
+// User Session
 class UserSession {
   final String name;
   final String? photoUrl;
@@ -43,7 +43,7 @@ class UserSession {
 
 final userNotifier = ValueNotifier<UserSession?>(null);
 
-// ─── Root App ─────────────────────────────────────────────────────────────────
+// Root App
 class RavolaApp extends StatelessWidget {
   const RavolaApp({super.key});
 
@@ -54,9 +54,9 @@ class RavolaApp extends StatelessWidget {
       builder: (context, isDark, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            brightness: isDark ? Brightness.dark : Brightness.light,
-          ),
+          theme: ThemeData(brightness: Brightness.light, useMaterial3: true),
+          darkTheme: ThemeData(brightness: Brightness.dark, useMaterial3: true),
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
           home: const HomeScreen(),
           routes: {
             '/persiapan-haji': (context) => PersiapanHajiScreen(isDark: isDark),
@@ -79,7 +79,7 @@ class RavolaApp extends StatelessWidget {
   }
 }
 
-// ─── Menu Items ───────────────────────────────────────────────────────────────
+// Menu Items
 class MenuItem {
   final String title;
   final String imagePath;
@@ -135,7 +135,7 @@ const List<MenuItem> menuItems = [
   ),
 ];
 
-// ─── Theme Colors ─────────────────────────────────────────────────────────────
+// Theme Colors
 class AppTheme {
   final Color background;
   final Color cardBottom;
@@ -172,7 +172,7 @@ class AppTheme {
   );
 }
 
-// ─── Islamic Background ───────────────────────────────────────────────────────
+// Islamic Background
 class IslamicBackground extends StatelessWidget {
   final bool isDark;
   const IslamicBackground({super.key, required this.isDark});
@@ -413,7 +413,7 @@ class IslamicBackgroundPainter extends CustomPainter {
   bool shouldRepaint(IslamicBackgroundPainter old) => old.isDark != isDark;
 }
 
-// ─── Dock Navbar ──────────────────────────────────────────────────────────────
+// Navbar Bawah
 class Dock extends StatelessWidget {
   final bool isDark;
   final String activeLabel;
@@ -492,7 +492,7 @@ class Dock extends StatelessWidget {
   }
 }
 
-// ─── Sidebar Menu ─────────────────────────────────────────────────────────────
+// Sidebar Kiri
 class AppSidebar extends StatelessWidget {
   final bool isDark;
   final VoidCallback onClose;
@@ -1035,7 +1035,7 @@ class _ThemeOptionCard extends StatelessWidget {
   }
 }
 
-// ─── Home Screen ──────────────────────────────────────────────────────────────
+// Home Screen
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -1060,6 +1060,17 @@ class _HomeScreenState extends State<HomeScreen>
         .animate(
           CurvedAnimation(parent: _sidebarCtrl, curve: Curves.easeOutCubic),
         );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Precache semua gambar menu agar langsung tampil (cache di RAM)
+    for (var item in menuItems) {
+      precacheImage(AssetImage(item.imagePath), context);
+    }
+    // Precache background home
+    precacheImage(const AssetImage('assets/images/bg-home.png'), context);
   }
 
   void _openSidebar() {
@@ -1091,10 +1102,10 @@ class _HomeScreenState extends State<HomeScreen>
           backgroundColor: t.background,
           body: Stack(
             children: [
-              // ── Main Column ──
+              // Main Column
               Column(
                 children: [
-                  // ── HEADER ──
+                  // HEADER
                   SizedBox(
                     height: 270,
                     child: Stack(
@@ -1103,6 +1114,7 @@ class _HomeScreenState extends State<HomeScreen>
                           child: Image.asset(
                             'assets/images/bg-home.png',
                             fit: BoxFit.cover,
+                            gaplessPlayback: true,
                           ),
                         ),
                         Positioned.fill(
@@ -1213,8 +1225,8 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ],
                     ),
-                  ), // ← tutup SizedBox header
-                  // ── CONTENT PUTIH ──
+                  ),
+                  // BACKGROUND PUTIH
                   Expanded(
                     child: Transform.translate(
                       offset: const Offset(0, -30),
@@ -1263,15 +1275,20 @@ class _HomeScreenState extends State<HomeScreen>
                                         child: Image.asset(
                                           item.imagePath,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              Container(
-                                                color: const Color(0xFFCCBB88),
-                                                child: const Icon(
-                                                  Icons.image,
-                                                  size: 40,
-                                                  color: Colors.white54,
-                                                ),
-                                              ),
+                                          gaplessPlayback:
+                                              true, // Cegah kedipan saat rebuild
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                                    color: const Color(
+                                                      0xFFCCBB88,
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.image,
+                                                      size: 40,
+                                                      color: Colors.white54,
+                                                    ),
+                                                  ),
                                         ),
                                       ),
                                       Positioned(
@@ -1301,10 +1318,11 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                     ),
-                  ), // ← tutup Expanded content putih
+                  ),
                 ],
-              ), // ← tutup Column
-              // ── Dock Navbar ──
+              ),
+
+              // Style Navbar Bawah
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -1312,15 +1330,15 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Dock(isDark: isDark, activeLabel: 'Home'),
               ),
 
-              // ── Sidebar Overlay ──
+              // Sidebar Overlay
               if (_sidebarOpen)
                 SlideTransition(
                   position: _slideAnim,
                   child: AppSidebar(isDark: isDark, onClose: _closeSidebar),
                 ),
-            ], // ← tutup children Stack
-          ), // ← tutup Stack
-        ); // ← tutup Scaffold
+            ],
+          ),
+        );
       },
     );
   }
