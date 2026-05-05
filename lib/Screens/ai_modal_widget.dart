@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-// 1. IMPORT file config kamu
-import 'package:flutter_application/config.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const Color kGold = Color(0xFFF5B400);
 const Color kGoldLight = Color(0xFFFFF8E1);
@@ -61,8 +60,8 @@ class _MLModalState extends State<_MLModal>
       final budget = _budgetCtrl.text.replaceAll('.', '');
       final saving = _savingCtrl.text.replaceAll('.', '');
 
-      // 2. MODIFIKASI URL: Mengambil IP dari BASE_URL tapi port diganti ke 5000 (Flask)
-      final String mlUrl = BASE_URL.replaceAll('8000', '5000');
+      final String mlUrl =
+          dotenv.env['FLASK_ENGINE_URL'] ?? 'https://ravola.pythonanywhere.com';
 
       final response = await http.post(
         Uri.parse('$mlUrl/predict'),

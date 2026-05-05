@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/config.dart';
+import 'package:encrypt/encrypt.dart' as enc;
 
 class GoogleLoginScreen extends StatefulWidget {
   final bool isDark;
@@ -76,7 +77,62 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
     super.dispose();
   }
 
-  // ── Google Sign-In Logic ───────────────────────────────────────────────────
+  // Google Sign-In Logic
+  Future<Map<String, String>> _solveChallenge(String url) async {
+    // Kita harus pake User-Agent yang konsisten.
+    final headers = {
+      'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    };
+
+    // Kita akses URL target,
+    // untuk memancing server Hosting mengeluarkan "Soal Ujian" (HTML Challenge)
+    final firstResponse = await http.get(Uri.parse(url), headers: headers);
+    final html = firstResponse.body;
+
+    // VALIDASI: Cek apakah di dalam HTML ada kata 'slowAES'.
+    // Kalau nggak ada, berarti server lagi nggak kasih tantangan
+    if (!html.contains('slowAES')) {
+      return {};
+    }
+
+    // PASANG RADAR (RegExp): Mencari pola teks a=toNumbers("..."),
+    // b=toNumbers("..."), dan c=toNumbers("...")
+    final regA = RegExp(r'a=toNumbers\("([a-f0-9]+)"\)');
+    final regB = RegExp(r'b=toNumbers\("([a-f0-9]+)"\)');
+    final regC = RegExp(r'c=toNumbers\("([a-f0-9]+)"\)');
+
+    // EKSTRAKSI: Ambil isi di dalam tanda kurung (angkanya aja) dari hasil radar tadi
+    // group(1) artinya mengambil data yang ada di dalam ( ... ) pada RegExp
+    final a = regA.firstMatch(html)?.group(1) ?? '';
+    final b = regB.firstMatch(html)?.group(1) ?? '';
+    final c = regC.firstMatch(html)?.group(1) ?? '';
+
+    final key = enc.Key.fromBase16(a);
+    // 1. Kita nyuruh library: "Jadikan angka 'a' tadi sebagai Kunci AES"
+    final iv = enc.IV.fromBase16(b);
+    // 2. Kita nyuruh library: "Jadikan angka 'b' tadi sebagai IV (Initial Vector)"
+    final ciphertext = enc.Encrypted.fromBase16(c);
+    final encrypter = enc.Encrypter(
+      enc.AES(key, mode: enc.AESMode.cbc, padding: null),
+    );
+    // 3. Kita nyuruh library: "Nih teka-tekinya (c),
+    // tolong pecahin pake mesin AES Mode CBC!"
+
+    final decrypted = encrypter.decryptBytes(ciphertext, iv: iv);
+    // 4. DI SINI PROSES HITUNGNYA: Library ngeluarin hasil dekripsi
+
+    // Setelah dihitung sama library, hasilnya masih berupa deretan angka byte.
+    // Kita harus ubah jadi teks Hexadecimal lagi biar bisa dikirim balik ke server
+    final cookieValue = decrypted
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join('');
+    // Mengubah hasil hitungan jadi kode Cookie yang dimengerti server
+
+    return {'__test': cookieValue};
+    // Inilah jawaban ujiannya!
+  }
+
   Future<void> _handleGoogleSignIn() async {
     setState(() {
       _isLoading = true;
@@ -84,62 +140,90 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
     });
 
     try {
-      // 1. Trigger Google Sign-In native flow
       await _googleSignIn.signOut();
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
-        // User cancelled
         setState(() => _isLoading = false);
         return;
       }
 
-      // 2. Ambil authentication tokens
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
       final String? idToken = googleAuth.idToken;
 
+      print(' GOOGLE LOGIN DEBUG ');
+      print('idToken: $idToken');
+      print('BASE_URL: $BASE_URL');
+
       if (idToken == null) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Gagal mendapatkan token. Silahkan Coba lagi.';
+          _errorMessage = 'Gagal mendapatkan token.';
         });
         return;
       }
 
-      // 3. Kirim idToken ke Laravel backend
+      final targetUrl = '$BASE_URL/api/auth/google/mobile';
+
+      // Kita menyuruh fungsi _solveChallenge buat nyari
+      // angka a, b, c di server, ngitung pake AES, dan suruh ngasih hasilnya.
+      final cookies = await _solveChallenge(targetUrl);
+
+      // RAPIHIN JAWABAN: Hasil dari _solveChallenge itu kan masih bentuk Map (data mentah).
+      // Di sini kita ubah jadi format teks yang dimengerti Server,
+      // contohnya: "__test=hasil_itung_tadi"
+      final cookieHeader = cookies.entries
+          .map((e) => '${e.key}=${e.value}')
+          .join('; ');
+
+      // CEK KARTU: Cuma buat mastiin di debug console kalau kodenya beneran dapet.
+      print('Bypass Cookie: $cookieHeader');
+
+      // KIRIM DATA ASLI : sekarang kita sudah punya "Kartu Akses" (Cookie) buat nembus satpam InfinityFree.
       final response = await http.post(
-        Uri.parse('$BASE_URL/api/auth/google/mobile'),
+        // '?i=1' buat kode tambahan kalau kita udah lolos verifikasi browser
+        Uri.parse('$targetUrl?i=1'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+
+          // KARTU AKSES: Ini yang paling penting! Tanpa ini, request kita bakal ditolak lagi.
+          'Cookie': cookieHeader,
+
+          // Tetap harus pakai User-Agent yang sama biar nggak dicurigai.
+          'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         },
+        // Ini data asli yang mau kita simpan ke database MySQL lewat PHP
         body: jsonEncode({'id_token': idToken}),
       );
+
+      print('STATUS: ${response.statusCode}');
+      print('BODY: ${response.body}');
+
+      print('STATUS CODE: ${response.statusCode}');
+      print('RESPONSE BODY: ${response.body}');
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['success'] == true) {
-        // 4. Simpan token Laravel (gunakan shared_preferences / flutter_secure_storage)
-        final String laravelToken = data['token'];
-        final Map<String, dynamic> user = data['user'];
-
-        // TODO: Simpan token ke storage
-        // await storage.write(key: 'auth_token', value: laravelToken);
-
         if (mounted) {
           _showSuccessAndNavigate(
-            user['name'] ?? googleUser.displayName ?? 'User',
+            data['user']['name'] ?? googleUser.displayName ?? 'User',
           );
         }
       } else {
         setState(() {
-          _errorMessage = data['message'] ?? 'Login gagal. Coba lagi.';
+          _errorMessage = data['message'] ?? 'Login gagal.';
         });
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('ERROR TYPE: ${e.runtimeType}');
+      print('ERROR: $e');
+      print('STACKTRACE: $stackTrace');
       setState(() {
-        _errorMessage = 'Terjadi kesalahan. Periksa koneksi internet.';
+        _errorMessage = '$e'; // tampilkan error asli sementara
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -152,7 +236,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
     Navigator.pop(context, {'name': name, 'loggedIn': true});
   }
 
-  // ── UI ────────────────────────────────────────────────────────────────────
+  // User Interface
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDark;
@@ -170,7 +254,6 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
       backgroundColor: bgColor,
       body: Stack(
         children: [
-          // ── Rotating Islamic Pattern Background ──
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _rotateAnim,
@@ -183,7 +266,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
             ),
           ),
 
-          // ── Main Content ──
+          // Main Content
           SafeArea(
             child: Column(
               children: [
@@ -218,7 +301,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
                           children: [
                             const SizedBox(height: 20),
 
-                            // ── Logo ──
+                            // Logo
                             Container(
                               width: 100,
                               height: 100,
@@ -254,7 +337,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
 
                             const SizedBox(height: 28),
 
-                            // ── Title ──
+                            // Title
                             Text(
                               'RAVOLA',
                               style: TextStyle(
@@ -276,7 +359,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
 
                             const SizedBox(height: 40),
 
-                            // ── Login Card ──
+                            // Login Card
                             Container(
                               padding: const EdgeInsets.all(28),
                               decoration: BoxDecoration(
@@ -347,7 +430,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
 
                                   const SizedBox(height: 28),
 
-                                  // ── Error Message ──
+                                  // Error Message
                                   if (_errorMessage != null) ...[
                                     Container(
                                       padding: const EdgeInsets.symmetric(
