@@ -12,17 +12,15 @@ class MacamMacamHajiScreen extends StatelessWidget {
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     final List<Map<String, String>> steps = [
-      {
-        "title": "Haji Ifrad",
-        "desc": "Melaksanakan haji saja tanpa umroh.",
-      },
+      {"title": "Haji Ifrad", "desc": "Melaksanakan haji saja tanpa umroh."},
       {
         "title": "Haji Qiran",
         "desc": "Melaksanakan haji dan umroh dalam satu niat sekaligus.",
       },
       {
         "title": "Haji Tamattu'",
-        "desc": "Melaksanakan umroh terlebih dahulu, kemudian haji dalam satu musim haji dengan dua niat terpisah.",
+        "desc":
+            "Melaksanakan umroh terlebih dahulu, kemudian haji dalam satu musim haji dengan dua niat terpisah.",
       },
     ];
 
@@ -36,7 +34,7 @@ class MacamMacamHajiScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: appBarBg,
               child: SafeArea(
@@ -46,8 +44,8 @@ class MacamMacamHajiScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -59,16 +57,14 @@ class MacamMacamHajiScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Text(
-                          'Macam-Macam Haji',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: titleClr,
-                          ),
+                    Transform.translate(
+                      offset: const Offset(10, 2),
+                      child: Text(
+                        'Macam-Macam Haji',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
                         ),
                       ),
                     ),

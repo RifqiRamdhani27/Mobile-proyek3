@@ -6,8 +6,8 @@ class NiatUmrohScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
     final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
@@ -16,7 +16,7 @@ class NiatUmrohScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -26,8 +26,8 @@ class NiatUmrohScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -39,16 +39,14 @@ class NiatUmrohScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Niat Umroh',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: titleClr,
-                        ),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
+                    child: Text(
+                      'Niat Umroh',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -80,7 +78,11 @@ class NiatUmrohScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Lafadz niat umroh:',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: textClr,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Container(
@@ -101,10 +103,15 @@ class NiatUmrohScreen extends StatelessWidget {
                   Text.rich(
                     TextSpan(
                       text: 'Artinya:\n',
-                      style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: textClr,
+                      ),
                       children: [
                         TextSpan(
-                          text: '"Aku penuhi panggilan-Mu untuk melaksanakan umroh."',
+                          text:
+                              '"Aku penuhi panggilan-Mu untuk melaksanakan umroh."',
                           style: const TextStyle(fontStyle: FontStyle.italic),
                         ),
                       ],
@@ -114,7 +121,11 @@ class NiatUmrohScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Setelah niat, disunnahkan membaca talbiyah:',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: textClr,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Container(

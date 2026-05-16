@@ -19,7 +19,7 @@ class MotivasiBerhajiScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
               child: SafeArea(
                 bottom: false,
@@ -29,25 +29,31 @@ class MotivasiBerhajiScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                            color: isDark
+                                ? const Color(0xFFC9A84C)
+                                : Colors.black,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Motivasi Berhaji',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                    Transform.translate(
+                      offset: const Offset(15, 2),
+                      child: Text(
+                        'Motivasi Berhaji',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? const Color(0xFFC9A84C)
+                              : Colors.black,
+                        ),
                       ),
                     ),
                   ],
@@ -72,13 +78,21 @@ class MotivasiBerhajiScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       'Haji adalah panggilan istimewa dari Allah Subhānahu wa Ta\'ālā kepada hamba-Nya yang mampu. Perintah haji secara langsung disebutkan dalam Al-Qur\'an.',
-                      style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: textClr,
+                      ),
                       textAlign: TextAlign.justify,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'QS. Ali \'Imran ayat 97:',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: textClr,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     _ayatBox(
@@ -87,7 +101,11 @@ class MotivasiBerhajiScreen extends StatelessWidget {
                     ),
                     Text(
                       'QS. Al-Hajj ayat 27:',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: textClr,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     _ayatBox(
@@ -97,7 +115,11 @@ class MotivasiBerhajiScreen extends StatelessWidget {
                     Text(
                       'Dari ayat-ayat tersebut, kita memahami bahwa haji adalah kewajiban bagi yang mampu dan merupakan panggilan Allah kepada seluruh manusia. Motivasi terbesar dalam berhaji adalah untuk meraih ridha Allah, menghapus dosa, serta menjadi pribadi yang lebih baik setelah kembali dari tanah suci.\n\n'
                       'Semoga Allah memudahkan kita untuk memenuhi panggilan-Nya dan mendapatkan haji yang mabrur. Aamiin.',
-                      style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: textClr,
+                      ),
                       textAlign: TextAlign.justify,
                     ),
                     const SizedBox(height: 24),
@@ -128,13 +150,21 @@ class MotivasiBerhajiScreen extends StatelessWidget {
         children: [
           Text(
             text,
-            style: const TextStyle(fontSize: 15, height: 1.6, color: Color(0xFF1A1A1A)),
+            style: const TextStyle(
+              fontSize: 15,
+              height: 1.6,
+              color: Color(0xFF1A1A1A),
+            ),
             textAlign: TextAlign.justify,
           ),
           const SizedBox(height: 8),
           Text(
             source,
-            style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: Color(0xFF888888)),
+            style: const TextStyle(
+              fontSize: 14,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF888888),
+            ),
           ),
         ],
       ),

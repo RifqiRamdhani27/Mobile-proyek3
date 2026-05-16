@@ -6,8 +6,8 @@ class SyaratWajibHajiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
     final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
@@ -24,7 +24,7 @@ class SyaratWajibHajiScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -34,21 +34,27 @@ class SyaratWajibHajiScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: titleClr),
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Syarat Wajib Haji',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: titleClr),
+                  Transform.translate(
+                    offset: const Offset(10, 2),
+                    child: Text(
+                      'Syarat Wajib Haji',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -65,7 +71,11 @@ class SyaratWajibHajiScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Syarat Wajib Haji',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C)),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFE6A63C),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -86,14 +96,22 @@ class SyaratWajibHajiScreen extends StatelessWidget {
                             width: 24,
                             child: Text(
                               '${i + 1}.',
-                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C)),
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFE6A63C),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               item,
-                              style: TextStyle(fontSize: 15, height: 1.47, color: textClr),
+                              style: TextStyle(
+                                fontSize: 15,
+                                height: 1.47,
+                                color: textClr,
+                              ),
                             ),
                           ),
                         ],

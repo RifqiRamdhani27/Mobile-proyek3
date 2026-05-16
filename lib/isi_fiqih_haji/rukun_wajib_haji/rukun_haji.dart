@@ -12,13 +12,11 @@ class RukunHajiScreen extends StatelessWidget {
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     final List<Map<String, String>> steps = [
-      {
-        "title": "Ihram",
-        "desc": "Niat memulai ibadah haji dari miqot.",
-      },
+      {"title": "Ihram", "desc": "Niat memulai ibadah haji dari miqot."},
       {
         "title": "Wukuf di Arafah",
-        "desc": "Berdiam diri di Arafah pada tanggal 9 Dzulhijjah.\nRasulullah ﷺ bersabda: \"Haji itu adalah Arafah.\" (HR. Tirmidzi)",
+        "desc":
+            "Berdiam diri di Arafah pada tanggal 9 Dzulhijjah.\nRasulullah ﷺ bersabda: \"Haji itu adalah Arafah.\" (HR. Tirmidzi)",
       },
       {
         "title": "Thawaf Ifadah",
@@ -30,7 +28,8 @@ class RukunHajiScreen extends StatelessWidget {
       },
       {
         "title": "Tahallul",
-        "desc": "Mencukur atau memotong rambut sebagai tanda selesai rangkaian utama haji.",
+        "desc":
+            "Mencukur atau memotong rambut sebagai tanda selesai rangkaian utama haji.",
       },
     ];
 
@@ -44,7 +43,7 @@ class RukunHajiScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: appBarBg,
               child: SafeArea(
@@ -54,8 +53,8 @@ class RukunHajiScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -67,16 +66,14 @@ class RukunHajiScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Text(
-                          'Rukun Haji',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: titleClr,
-                          ),
+                    Transform.translate(
+                      offset: const Offset(10, 2),
+                      child: Text(
+                        'Rukun Haji',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
                         ),
                       ),
                     ),
@@ -136,7 +133,8 @@ class RukunHajiScreen extends StatelessWidget {
                                     item['desc']!,
                                     style: TextStyle(
                                       fontSize: 14,
-                                      height: 1.57, // Perbaikan: Menggunakan height
+                                      height:
+                                          1.57, // Perbaikan: Menggunakan height
                                       color: textClr.withOpacity(0.85),
                                     ),
                                   ),

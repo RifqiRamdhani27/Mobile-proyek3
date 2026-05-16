@@ -6,17 +6,30 @@ class MacamMacamThowafScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
     final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     final items = [
-      {'title': 'Thowaf Qudum',   'desc': 'Dilakukan saat pertama kali tiba di Makkah (bagi jamaah haji).'},
-      {'title': 'Thowaf Ifadah',  'desc': 'Termasuk rukun haji, dilakukan setelah wukuf di Arafah.'},
-      {'title': 'Thowaf Wada\'',  'desc': 'Dilakukan sebelum meninggalkan Makkah sebagai perpisahan.'},
-      {'title': 'Thowaf Umroh',   'desc': 'Termasuk rukun umroh.'},
-      {'title': 'Thowaf Sunnah',  'desc': 'Thowaf yang dilakukan kapan saja sebagai ibadah sunnah.'},
+      {
+        'title': 'Thowaf Qudum',
+        'desc':
+            'Dilakukan saat pertama kali tiba di Makkah (bagi jamaah haji).',
+      },
+      {
+        'title': 'Thowaf Ifadah',
+        'desc': 'Termasuk rukun haji, dilakukan setelah wukuf di Arafah.',
+      },
+      {
+        'title': 'Thowaf Wada\'',
+        'desc': 'Dilakukan sebelum meninggalkan Makkah sebagai perpisahan.',
+      },
+      {'title': 'Thowaf Umroh', 'desc': 'Termasuk rukun umroh.'},
+      {
+        'title': 'Thowaf Sunnah',
+        'desc': 'Thowaf yang dilakukan kapan saja sebagai ibadah sunnah.',
+      },
     ];
 
     return Scaffold(
@@ -24,7 +37,7 @@ class MacamMacamThowafScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -34,8 +47,8 @@ class MacamMacamThowafScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -47,16 +60,14 @@ class MacamMacamThowafScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Macam-Macam Thowaf',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: titleClr,
-                        ),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
+                    child: Text(
+                      'Macam-Macam Thowaf',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -86,46 +97,48 @@ class MacamMacamThowafScreen extends StatelessWidget {
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 4),
-                  ...items.map((item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '• ',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFE6A63C),
-                              ),
+                  ...items.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFE6A63C),
                             ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item['title']!,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: textClr,
-                                    ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item['title']!,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: textClr,
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    item['desc']!,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      height: 1.57,
-                                      color: textClr.withOpacity(0.85),
-                                    ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  item['desc']!,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    height: 1.57,
+                                    color: textClr.withOpacity(0.85),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   Text(
                     'Setiap jenis thowaf memiliki waktu dan ketentuan masing-masing.',

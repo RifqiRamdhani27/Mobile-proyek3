@@ -30,7 +30,7 @@ class KesalahanUmumScreen extends StatelessWidget {
           children: [
             // AppBar
             Container(
-              height: 95,
+              height: 115,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: appBarBg,
               child: SafeArea(
@@ -40,8 +40,8 @@ class KesalahanUmumScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -53,16 +53,14 @@ class KesalahanUmumScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Text(
-                          'Kesalahan Umum Saat Haji',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: titleClr,
-                          ),
+                    Transform.translate(
+                      offset: const Offset(10, 2),
+                      child: Text(
+                        'Kesalahan Umum Saat Haji',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
                         ),
                       ),
                     ),
@@ -88,36 +86,32 @@ class KesalahanUmumScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       "Beberapa kesalahan yang sering terjadi:",
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: textClr,
-                      ),
+                      style: TextStyle(fontSize: 15, color: textClr),
                     ),
                     const SizedBox(height: 8),
-                    ...kesalahan.map((item) => Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "• ",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Color(0xFFE6A63C),
-                                ),
+                    ...kesalahan.map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "• ",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Color(0xFFE6A63C),
                               ),
-                              Expanded(
-                                child: Text(
-                                  item,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: textClr,
-                                  ),
-                                ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                item,
+                                style: TextStyle(fontSize: 15, color: textClr),
                               ),
-                            ],
-                          ),
-                        )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       "Haji adalah ibadah besar, maka harus dilakukan dengan ilmu dan kesabaran.",

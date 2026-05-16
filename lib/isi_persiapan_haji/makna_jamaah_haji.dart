@@ -19,7 +19,7 @@ class MaknaJamaahHajiScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
               child: SafeArea(
                 bottom: false,
@@ -29,25 +29,32 @@ class MaknaJamaahHajiScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                            color: isDark
+                                ? const Color(0xFFC9A84C)
+                                : Colors.black,
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      'Makna Jamaah Haji',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                    Transform.translate(
+                      offset: const Offset(15, 2),
+                      child: Text(
+                        'Makna Jamaah Haji',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? const Color(0xFFC9A84C)
+                              : Colors.black,
+                        ),
                       ),
                     ),
                   ],
@@ -79,7 +86,11 @@ class MaknaJamaahHajiScreen extends StatelessWidget {
                       'kepada manusia agar mereka datang melaksanakan ibadah haji.\n\n'
                       'Kenapa?, karena rumah Allah, Baitullah, telah dibangun. Tinggal mereka '
                       'datang menuju Baitullah untuk berhaji. Allah Subḥānahu wa Ta\'ālā berfirman:',
-                      style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: textClr,
+                      ),
                       textAlign: TextAlign.justify,
                     ),
                     const SizedBox(height: 16),
@@ -108,7 +119,11 @@ class MaknaJamaahHajiScreen extends StatelessWidget {
                       '"Dan berserulah kepada manusia untuk mengerjakan haji, niscaya mereka '
                       'akan datang kepadamu dengan berjalan kaki dan mengendarai unta, yang '
                       'datang dari segenap penjuru yang jauh." (Qs. Al Hajj ayat 27)',
-                      style: TextStyle(fontSize: 15, height: 1.6, color: textClr),
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: textClr,
+                      ),
                       textAlign: TextAlign.justify,
                     ),
                     const SizedBox(height: 24),

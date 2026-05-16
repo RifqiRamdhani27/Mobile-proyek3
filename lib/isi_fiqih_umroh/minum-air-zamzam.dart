@@ -5,10 +5,26 @@ import 'air_zamzam/keutamaan_air_zamzam.dart';
 import 'air_zamzam/kesalahan.dart';
 
 final List<Map<String, String>> minumAirZamzamMenuItems = [
-  {"title": "Sejarah Air Zamzam",           "image": "assets/images/air1.png",    "route": "/air_zamzam/sejarah_air_zamzam"},
-  {"title": "Penjelasan Air Zamzam",         "image": "assets/images/niat_umroh.png", "route": "/air_zamzam/penjelasan_air_zamzam"},
-  {"title": "Keutamaan Air Zamzam",          "image": "assets/images/air2.png",    "route": "/air_zamzam/keutamaan_air_zamzam"},
-  {"title": "Kesalahan Seputar Air Zamzam",  "image": "assets/images/larangan.png","route": "/air_zamzam/kesalahan_seputar_air_zamzam"},
+  {
+    "title": "Sejarah Air Zamzam",
+    "image": "assets/images/air1.png",
+    "route": "/air_zamzam/sejarah_air_zamzam",
+  },
+  {
+    "title": "Penjelasan Air Zamzam",
+    "image": "assets/images/niat_umroh.png",
+    "route": "/air_zamzam/penjelasan_air_zamzam",
+  },
+  {
+    "title": "Keutamaan Air Zamzam",
+    "image": "assets/images/air2.png",
+    "route": "/air_zamzam/keutamaan_air_zamzam",
+  },
+  {
+    "title": "Kesalahan Seputar Air Zamzam",
+    "image": "assets/images/larangan.png",
+    "route": "/air_zamzam/kesalahan_seputar_air_zamzam",
+  },
 ];
 
 class MinumAirZamzamScreen extends StatelessWidget {
@@ -17,19 +33,21 @@ class MinumAirZamzamScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
-    final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
-    final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
-    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final shadowClr = isDark
+        ? const Color(0xFFD8AB17)
+        : const Color(0xFF000000);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     return Scaffold(
       backgroundColor: bg,
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -39,8 +57,8 @@ class MinumAirZamzamScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
                         style: TextStyle(
@@ -52,8 +70,8 @@ class MinumAirZamzamScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
                     child: Text(
                       'Minum Air Zamzam',
                       style: TextStyle(
@@ -77,14 +95,22 @@ class MinumAirZamzamScreen extends StatelessWidget {
                   onTap: () {
                     final route = item['route']!;
                     final screenMap = <String, Widget>{
-                      '/air_zamzam/sejarah_air_zamzam':          SejarahAirZamzamScreen(isDark: isDark),
-                      '/air_zamzam/penjelasan_air_zamzam':       PenjelasanAirZamzamScreen(isDark: isDark),
-                      '/air_zamzam/keutamaan_air_zamzam':        KeutamaanAirZamzamScreen(isDark: isDark),
-                      '/air_zamzam/kesalahan_seputar_air_zamzam':KesalahanSeputarAirZamzamScreen(isDark: isDark),
+                      '/air_zamzam/sejarah_air_zamzam': SejarahAirZamzamScreen(
+                        isDark: isDark,
+                      ),
+                      '/air_zamzam/penjelasan_air_zamzam':
+                          PenjelasanAirZamzamScreen(isDark: isDark),
+                      '/air_zamzam/keutamaan_air_zamzam':
+                          KeutamaanAirZamzamScreen(isDark: isDark),
+                      '/air_zamzam/kesalahan_seputar_air_zamzam':
+                          KesalahanSeputarAirZamzamScreen(isDark: isDark),
                     };
                     final screen = screenMap[route];
                     if (screen != null) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => screen),
+                      );
                     }
                   },
                   child: Container(
