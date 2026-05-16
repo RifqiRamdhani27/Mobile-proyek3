@@ -29,7 +29,7 @@ class Travel {
 }
 
 class TravelService {
-  static const String baseUrl = "http://127.0.0.1:8000";
+  static const String baseUrl = "https://ravola-travel.wuaze.com";
 
   static Future<List<Travel>> getTravels({String? search}) async {
     final uri = Uri.parse("$baseUrl/api/travel").replace(
