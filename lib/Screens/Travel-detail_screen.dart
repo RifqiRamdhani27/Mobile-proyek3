@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_application/config.dart';
+import 'package:encrypt/encrypt.dart' as enc;
 
 const Color kGold = Color(0xFFF5B400);
 const Color kGoldLight = Color(0xFFFFF8E1);
@@ -21,9 +23,16 @@ class TravelDetail {
   TravelDetail({
     required this.id,
     required this.nama,
-    this.logo, this.deskripsi, this.alamat, this.email, this.telepon,
-    this.nomorSkUmrah, this.nomorSkHaji,
-    this.jumlahJamaah, this.jumlahPaket, this.izinKemenag,
+    this.logo,
+    this.deskripsi,
+    this.alamat,
+    this.email,
+    this.telepon,
+    this.nomorSkUmrah,
+    this.nomorSkHaji,
+    this.jumlahJamaah,
+    this.jumlahPaket,
+    this.izinKemenag,
     this.galeri = const [],
   });
 
@@ -55,17 +64,67 @@ class TravelDetail {
 
 // ─── SERVICE ──────────────────────────────────────────────────────────────────
 class TravelDetailService {
-  static const baseUrl = 'http://127.0.0.1:8000';
+  static const String _userAgent =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
-  static Future<TravelDetail> getDetail(int id) async {
-    final res = await http.get(
-      Uri.parse('$baseUrl/api/travel/$id'),
-      headers: {'Accept': 'application/json'},
+  // ── Cookie bypass (sama persis) ───────────────────────────────────────────
+  static Future<Map<String, String>> _solveChallenge(String url) async {
+    final firstResponse = await http.get(
+      Uri.parse(url),
+      headers: {'User-Agent': _userAgent},
     );
-    if (res.statusCode == 200) {
-      return TravelDetail.fromJson(jsonDecode(res.body));
+    final html = firstResponse.body;
+
+    if (!html.contains('slowAES')) return {};
+
+    final regA = RegExp(r'a=toNumbers\("([a-f0-9]+)"\)');
+    final regB = RegExp(r'b=toNumbers\("([a-f0-9]+)"\)');
+    final regC = RegExp(r'c=toNumbers\("([a-f0-9]+)"\)');
+
+    final a = regA.firstMatch(html)?.group(1) ?? '';
+    final b = regB.firstMatch(html)?.group(1) ?? '';
+    final c = regC.firstMatch(html)?.group(1) ?? '';
+
+    final key = enc.Key.fromBase16(a);
+    final iv = enc.IV.fromBase16(b);
+    final ciphertext = enc.Encrypted.fromBase16(c);
+    final encrypter = enc.Encrypter(
+      enc.AES(key, mode: enc.AESMode.cbc, padding: null),
+    );
+
+    final decrypted = encrypter.decryptBytes(ciphertext, iv: iv);
+    final cookieValue = decrypted
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join('');
+
+    return {'__test': cookieValue};
+  }
+
+  // ── Fetch detail travel (dengan cookie bypass) ────────────────────────────
+  static Future<TravelDetail> getDetail(int id) async {
+    final targetUrl = '$BASE_URL/api/travel/$id';
+
+    // 1. Solve challenge
+    final cookies = await _solveChallenge(targetUrl);
+    final cookieHeader = cookies.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join('; ');
+
+    // 2. GET dengan ?i=1 + cookie + user-agent
+    final response = await http.get(
+      Uri.parse('$targetUrl?i=1'),
+      headers: {
+        'Accept': 'application/json',
+        'Cookie': cookieHeader,
+        'User-Agent': _userAgent,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return TravelDetail.fromJson(jsonDecode(response.body));
     }
-    throw Exception('Gagal load detail: ${res.statusCode}');
+    throw Exception('Gagal load detail: ${response.statusCode}');
   }
 }
 
@@ -95,9 +154,15 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   Future<void> _load() async {
     try {
       final d = await TravelDetailService.getDetail(widget.travelId);
-      setState(() { detail = d; isLoading = false; });
+      setState(() {
+        detail = d;
+        isLoading = false;
+      });
     } catch (e) {
-      setState(() { error = e.toString(); isLoading = false; });
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
     }
   }
 
@@ -108,9 +173,13 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: kGold))
           : error.isNotEmpty
-              ? Center(child: Text(error, style: const TextStyle(color: Colors.grey)))
-              : Stack(children: [
-                  CustomScrollView(slivers: [
+          ? Center(
+              child: Text(error, style: const TextStyle(color: Colors.grey)),
+            )
+          : Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
                     _buildHero(),
                     SliverToBoxAdapter(child: _buildBackBtn()),
                     SliverToBoxAdapter(child: _buildStats()),
@@ -118,11 +187,13 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                     if (detail!.galeri.isNotEmpty)
                       SliverToBoxAdapter(child: _buildGaleri()),
                     const SliverToBoxAdapter(child: SizedBox(height: 80)),
-                  ]),
-                  if (_lightboxOpen) _buildLightbox(),
-                  if (detail!.telepon != null && detail!.telepon!.isNotEmpty)
-                    _buildWAFloat(),
-                ]),
+                  ],
+                ),
+                if (_lightboxOpen) _buildLightbox(),
+                if (detail!.telepon != null && detail!.telepon!.isNotEmpty)
+                  _buildWAFloat(),
+              ],
+            ),
     );
   }
 
@@ -186,9 +257,10 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                 ),
                 const SizedBox(height: 16),
                 // dots
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  _dot(true), _dot(false), _dot(false),
-                ]),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [_dot(true), _dot(false), _dot(false)],
+                ),
               ],
             ),
           ),
@@ -214,35 +286,43 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   Widget _buildBackBtn() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Row(children: [
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            width: 42, height: 42,
-            decoration: BoxDecoration(
-              color: kGold,
-              shape: BoxShape.circle,
-              border: Border.all(color: kDark, width: 2),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: kGold,
+                shape: BoxShape.circle,
+                border: Border.all(color: kDark, width: 2),
+              ),
+              child: const Icon(Icons.chevron_left, color: kDark, size: 26),
             ),
-            child: const Icon(Icons.chevron_left, color: kDark, size: 26),
           ),
-        ),
-        const SizedBox(width: 10),
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: kGold,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: kDark, width: 2),
-            ),
-            child: const Text('Detail Travel',
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: kGold,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: kDark, width: 2),
+              ),
+              child: const Text(
+                'Detail Travel',
                 style: TextStyle(
-                    color: kDark, fontWeight: FontWeight.w700, fontSize: 14)),
+                  color: kDark,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 
@@ -250,29 +330,41 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   Widget _buildStats() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 36, 20, 16),
-      child: Row(children: [
-        Expanded(child: _statCard(
-          icon: Icons.group,
-          value: '${detail!.jumlahJamaah ?? 0}++ Jamaah',
-          desc: 'Telah melayani ribuan jamaah umroh dan haji dengan aman.',
-        )),
-        const SizedBox(width: 10),
-        Expanded(child: _statCard(
-          icon: Icons.verified_user,
-          value: 'Izin Resmi Kemenag',
-          desc: 'Berizin resmi dengan identifikasi A.',
-        )),
-        const SizedBox(width: 10),
-        Expanded(child: _statCard(
-          icon: Icons.card_travel,
-          value: '${detail!.jumlahPaket ?? 0} Paket',
-          desc: 'Pilihan paket ibadah yang tersedia.',
-        )),
-      ]),
+      child: Row(
+        children: [
+          Expanded(
+            child: _statCard(
+              icon: Icons.group,
+              value: '${detail!.jumlahJamaah ?? 0}++ Jamaah',
+              desc: 'Telah melayani ribuan jamaah umroh dan haji dengan aman.',
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _statCard(
+              icon: Icons.verified_user,
+              value: 'Izin Resmi Kemenag',
+              desc: 'Berizin resmi dengan identifikasi A.',
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _statCard(
+              icon: Icons.card_travel,
+              value: '${detail!.jumlahPaket ?? 0} Paket',
+              desc: 'Pilihan paket ibadah yang tersedia.',
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _statCard({required IconData icon, required String value, required String desc}) {
+  Widget _statCard({
+    required IconData icon,
+    required String value,
+    required String desc,
+  }) {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 36, 12, 16),
       decoration: BoxDecoration(
@@ -280,14 +372,24 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: kGold, width: 1.5),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(value,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
             style: const TextStyle(
-                fontSize: 11, fontWeight: FontWeight.w800, color: kDark)),
-        const SizedBox(height: 6),
-        Text(desc,
-            style: const TextStyle(fontSize: 10, color: kDark, height: 1.6)),
-      ]),
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              color: kDark,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            desc,
+            style: const TextStyle(fontSize: 10, color: kDark, height: 1.6),
+          ),
+        ],
+      ),
     );
   }
 
@@ -295,126 +397,218 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   Widget _buildDescAndInfo() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(children: [
-        // Desc card
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFEEEEEE)),
-            boxShadow: [BoxShadow(color: kGold.withOpacity(0.08), blurRadius: 12)],
-          ),
-          child: Column(children: [
-            // Logo + description
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                // Logo circle
-                Container(
-                  width: 80, height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: kGold, width: 3),
-                    boxShadow: [BoxShadow(color: kGold.withOpacity(0.3), blurRadius: 12)],
-                  ),
-                  child: ClipOval(
-                    child: detail!.logo != null && detail!.logo!.isNotEmpty
-                        ? Image.network(detail!.logo!, fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => Container(
-                              color: kGoldLight,
-                              child: const Icon(Icons.mosque, color: kGold, size: 36)))
-                        : Container(
-                            color: kGoldLight,
-                            child: const Icon(Icons.mosque, color: kGold, size: 36)),
+      child: Column(
+        children: [
+          // Desc card
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFEEEEEE)),
+              boxShadow: [
+                BoxShadow(color: kGold.withOpacity(0.08), blurRadius: 12),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Logo + description
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Logo circle
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: kGold, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: kGold.withOpacity(0.3),
+                              blurRadius: 12,
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child:
+                              detail!.logo != null && detail!.logo!.isNotEmpty
+                              ? Image.network(
+                                  detail!.logo!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => Container(
+                                    color: kGoldLight,
+                                    child: const Icon(
+                                      Icons.mosque,
+                                      color: kGold,
+                                      size: 36,
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  color: kGoldLight,
+                                  child: const Icon(
+                                    Icons.mosque,
+                                    color: kGold,
+                                    size: 36,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      // Pink desc box
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFFF5F5), Color(0xFFFDE8E8)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.red.withOpacity(0.08),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 2,
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFFF5A0A0),
+                                      Color(0xFFF5C0A0),
+                                      Color(0xFFF5E0A0),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'DESKRIPSI PERUSAHAAN',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: kDark,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                detail!.deskripsi ??
+                                    'Deskripsi perusahaan belum tersedia.',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xFF4A5068),
+                                  height: 1.7,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 14),
-                // Pink desc box
-                Expanded(child: Container(
-                  padding: const EdgeInsets.all(14),
+                // Map
+                if (detail!.alamat != null && detail!.alamat!.isNotEmpty)
+                  _buildMap(),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // Info card
+          Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Colors.white, Color(0xFFFFFCF4)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFEEEEEE)),
+              boxShadow: [
+                BoxShadow(color: kGold.withOpacity(0.08), blurRadius: 12),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Gold top bar
+                Container(
+                  height: 3,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFFFF5F5), Color(0xFFFDE8E8)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFFFD166),
+                        Color(0xFFF5A623),
+                        Color(0xFFD4860A),
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.red.withOpacity(0.08)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                   ),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(
-                      height: 2,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFFF5A0A0), Color(0xFFF5C0A0), Color(0xFFF5E0A0)]),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text('DESKRIPSI PERUSAHAAN',
-                        style: TextStyle(
-                            fontSize: 10, fontWeight: FontWeight.w800,
-                            color: kDark, letterSpacing: 1)),
-                    const SizedBox(height: 6),
-                    Text(
-                      detail!.deskripsi ?? 'Deskripsi perusahaan belum tersedia.',
-                      style: const TextStyle(
-                          fontSize: 11, color: Color(0xFF4A5068), height: 1.7)),
-                  ]),
-                )),
-              ]),
-            ),
-            // Map
-            if (detail!.alamat != null && detail!.alamat!.isNotEmpty)
-              _buildMap(),
-          ]),
-        ),
-
-        const SizedBox(height: 14),
-
-        // Info card
-        Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.white, Color(0xFFFFFCF4)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFEEEEEE)),
-            boxShadow: [BoxShadow(color: kGold.withOpacity(0.08), blurRadius: 12)],
-          ),
-          child: Column(children: [
-            // Gold top bar
-            Container(height: 3,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFFD166), Color(0xFFF5A623), Color(0xFFD4860A)]),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              )),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Color(0xFFFFD166), Color(0xFFF5A623), Color(0xFFD4860A)],
-                  ).createShader(bounds),
-                  child: const Text('INFORMASI TRAVEL',
-                      style: TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.w900,
-                          color: Colors.white, letterSpacing: 1.5)),
                 ),
-                const Divider(color: Color(0x33F5A623), height: 20),
-                _infoRow(Icons.business, 'Nama Perusahaan', detail!.nama),
-                _infoRow(Icons.phone, 'Nomor Telepon', detail!.telepon ?? '-'),
-                _infoRow(Icons.email, 'Alamat Email', detail!.email ?? '-'),
-                _infoRow(Icons.description, 'Nomor SK Umrah', detail!.nomorSkUmrah ?? '-'),
-                _infoRow(Icons.description_outlined, 'Nomor SK Haji', detail!.nomorSkHaji ?? '-'),
-              ]),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            Color(0xFFFFD166),
+                            Color(0xFFF5A623),
+                            Color(0xFFD4860A),
+                          ],
+                        ).createShader(bounds),
+                        child: const Text(
+                          'INFORMASI TRAVEL',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ),
+                      const Divider(color: Color(0x33F5A623), height: 20),
+                      _infoRow(Icons.business, 'Nama Perusahaan', detail!.nama),
+                      _infoRow(
+                        Icons.phone,
+                        'Nomor Telepon',
+                        detail!.telepon ?? '-',
+                      ),
+                      _infoRow(
+                        Icons.email,
+                        'Alamat Email',
+                        detail!.email ?? '-',
+                      ),
+                      _infoRow(
+                        Icons.description,
+                        'Nomor SK Umrah',
+                        detail!.nomorSkUmrah ?? '-',
+                      ),
+                      _infoRow(
+                        Icons.description_outlined,
+                        'Nomor SK Haji',
+                        detail!.nomorSkHaji ?? '-',
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ]),
-        ),
-        const SizedBox(height: 14),
-      ]),
+          ),
+          const SizedBox(height: 14),
+        ],
+      ),
     );
   }
 
@@ -427,82 +621,153 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         color: Color(0xFFF8F9FE),
       ),
-      child: Column(children: [
-        const Divider(height: 1, color: Color(0xFFEEEEEE)),
-        Row(children: [
-          // Map placeholder with link
-          GestureDetector(
-            onTap: () async {
-              final uri = Uri.parse(
-                  'https://maps.google.com/?q=${Uri.encodeComponent(detail!.alamat ?? '')}');
-              if (await canLaunchUrl(uri)) launchUrl(uri);
-            },
-            child: Container(
-              width: 140, height: 110,
-              color: const Color(0xFFE8ECF0),
-              child: Stack(alignment: Alignment.center, children: [
-                const Icon(Icons.map, size: 40, color: Color(0xFFBBBBBB)),
-                Positioned(
-                  bottom: 6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)],
-                    ),
-                    child: Row(children: const [
-                      Icon(Icons.open_in_new, size: 10, color: Colors.blue),
-                      SizedBox(width: 4),
-                      Text('Maps', style: TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.w600)),
-                    ]),
+      child: Column(
+        children: [
+          const Divider(height: 1, color: Color(0xFFEEEEEE)),
+          Row(
+            children: [
+              // Map placeholder with link
+              GestureDetector(
+                onTap: () async {
+                  final uri = Uri.parse(
+                    'https://maps.google.com/?q=${Uri.encodeComponent(detail!.alamat ?? '')}',
+                  );
+                  if (await canLaunchUrl(uri)) launchUrl(uri);
+                },
+                child: Container(
+                  width: 140,
+                  height: 110,
+                  color: const Color(0xFFE8ECF0),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      const Icon(Icons.map, size: 40, color: Color(0xFFBBBBBB)),
+                      Positioned(
+                        bottom: 6,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: const [
+                              Icon(
+                                Icons.open_in_new,
+                                size: 10,
+                                color: Colors.blue,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Maps',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ]),
-            ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        detail!.nama,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          color: kDark,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        detail!.alamat ?? '',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF4A5068),
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-          Expanded(child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(detail!.nama,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w800, fontSize: 12, color: kDark)),
-              const SizedBox(height: 4),
-              Text(detail!.alamat ?? '',
-                  style: const TextStyle(
-                      fontSize: 11, color: Color(0xFF4A5068), height: 1.6)),
-            ]),
-          )),
-        ]),
-      ]),
+        ],
+      ),
     );
   }
 
   Widget _infoRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(children: [
-        Container(
-          width: 30, height: 30,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFD166), Color(0xFFF5A623), Color(0xFFD4860A)]),
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [BoxShadow(color: kGold.withOpacity(0.35), blurRadius: 8)],
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFFFFD166),
+                  Color(0xFFF5A623),
+                  Color(0xFFD4860A),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(color: kGold.withOpacity(0.35), blurRadius: 8),
+              ],
+            ),
+            child: Icon(icon, size: 14, color: Colors.white),
           ),
-          child: Icon(icon, size: 14, color: Colors.white),
-        ),
-        const SizedBox(width: 10),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label,
-              style: const TextStyle(fontSize: 10, color: Color(0xFF8892AA))),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: kDark),
-              overflow: TextOverflow.ellipsis, maxLines: 2),
-        ])),
-        const Divider(),
-      ]),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF8892AA),
+                  ),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: kDark,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+        ],
+      ),
     );
   }
 
@@ -510,72 +775,98 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   Widget _buildGaleri() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        // Section title with gradient
-        ShaderMask(
-          shaderCallback: (b) => const LinearGradient(
-            colors: [Color(0xFF2C3E50), Color(0xFFD4A017), Color(0xFFF5A623)],
-          ).createShader(b),
-          child: const Text('GALERI KEBERSAMAAN',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Section title with gradient
+          ShaderMask(
+            shaderCallback: (b) => const LinearGradient(
+              colors: [Color(0xFF2C3E50), Color(0xFFD4A017), Color(0xFFF5A623)],
+            ).createShader(b),
+            child: const Text(
+              'GALERI KEBERSAMAAN',
               style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w900,
-                  letterSpacing: 2, color: Colors.white)),
-        ),
-        Container(
-          width: 60, height: 3, margin: const EdgeInsets.only(top: 8, bottom: 18),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFD166), Color(0xFFF5A623), Color(0xFFD4860A)]),
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        // Grid
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 4 / 3,
-          ),
-          itemCount: detail!.galeri.length,
-          itemBuilder: (ctx, i) => GestureDetector(
-            onTap: () => setState(() {
-              _lightboxIndex = i;
-              _lightboxOpen = true;
-            }),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Stack(fit: StackFit.expand, children: [
-                Image.network(
-                  detail!.galeri[i],
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    color: kGoldLight,
-                    child: const Icon(Icons.image_not_supported, color: kGold)),
-                ),
-                // Hover overlay (always subtle)
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.2),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                ),
-                const Center(
-                  child: Icon(Icons.zoom_in, color: Colors.white70, size: 28),
-                ),
-              ]),
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+                color: Colors.white,
+              ),
             ),
           ),
-        ),
-      ]),
+          Container(
+            width: 60,
+            height: 3,
+            margin: const EdgeInsets.only(top: 8, bottom: 18),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFFFFD166),
+                  Color(0xFFF5A623),
+                  Color(0xFFD4860A),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Grid
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 4 / 3,
+            ),
+            itemCount: detail!.galeri.length,
+            itemBuilder: (ctx, i) => GestureDetector(
+              onTap: () => setState(() {
+                _lightboxIndex = i;
+                _lightboxOpen = true;
+              }),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.network(
+                      detail!.galeri[i],
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Container(
+                        color: kGoldLight,
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          color: kGold,
+                        ),
+                      ),
+                    ),
+                    // Hover overlay (always subtle)
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.2),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                    const Center(
+                      child: Icon(
+                        Icons.zoom_in,
+                        color: Colors.white70,
+                        size: 28,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -586,82 +877,108 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
       onTap: () => setState(() => _lightboxOpen = false),
       child: Container(
         color: Colors.black.withOpacity(0.92),
-        child: Stack(alignment: Alignment.center, children: [
-          // Image
-          GestureDetector(
-            onTap: () {},
-            child: Image.network(
-              photos[_lightboxIndex],
-              fit: BoxFit.contain,
-              errorBuilder: (_, _, _) =>
-                  const Icon(Icons.broken_image, color: Colors.white, size: 60),
-            ),
-          ),
-          // Counter
-          Positioned(
-            bottom: 40,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Image
+            GestureDetector(
+              onTap: () {},
+              child: Image.network(
+                photos[_lightboxIndex],
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) => const Icon(
+                  Icons.broken_image,
+                  color: Colors.white,
+                  size: 60,
+                ),
               ),
-              child: Text('${_lightboxIndex + 1} / ${photos.length}',
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
             ),
-          ),
-          // Close
-          Positioned(
-            top: 50, right: 20,
-            child: GestureDetector(
-              onTap: () => setState(() => _lightboxOpen = false),
+            // Counter
+            Positioned(
+              bottom: 40,
               child: Container(
-                width: 42, height: 42,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.12),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Icon(Icons.close, color: Colors.white, size: 18),
+                child: Text(
+                  '${_lightboxIndex + 1} / ${photos.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
-          ),
-          // Prev
-          if (_lightboxIndex > 0)
+            // Close
             Positioned(
-              left: 16,
+              top: 50,
+              right: 20,
               child: GestureDetector(
-                onTap: () => setState(() => _lightboxIndex--),
+                onTap: () => setState(() => _lightboxOpen = false),
                 child: Container(
-                  width: 44, height: 44,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.12),
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white.withOpacity(0.2)),
                   ),
-                  child: const Icon(Icons.chevron_left, color: Colors.white, size: 28),
+                  child: const Icon(Icons.close, color: Colors.white, size: 18),
                 ),
               ),
             ),
-          // Next
-          if (_lightboxIndex < photos.length - 1)
-            Positioned(
-              right: 16,
-              child: GestureDetector(
-                onTap: () => setState(() => _lightboxIndex++),
-                child: Container(
-                  width: 44, height: 44,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+            // Prev
+            if (_lightboxIndex > 0)
+              Positioned(
+                left: 16,
+                child: GestureDetector(
+                  onTap: () => setState(() => _lightboxIndex--),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: const Icon(
+                      Icons.chevron_left,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ),
-                  child: const Icon(Icons.chevron_right, color: Colors.white, size: 28),
                 ),
               ),
-            ),
-        ]),
+            // Next
+            if (_lightboxIndex < photos.length - 1)
+              Positioned(
+                right: 16,
+                child: GestureDetector(
+                  onTap: () => setState(() => _lightboxIndex++),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -669,7 +986,8 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   // ─── WA FLOAT ───────────────────────────────────────────────────────────────
   Widget _buildWAFloat() {
     return Positioned(
-      bottom: 26, right: 22,
+      bottom: 26,
+      right: 22,
       child: GestureDetector(
         onTap: () async {
           final phone = detail!.telepon!.replaceAll(RegExp(r'[^0-9]'), '');
@@ -677,13 +995,19 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
           if (await canLaunchUrl(uri)) launchUrl(uri);
         },
         child: Container(
-          width: 54, height: 54,
+          width: 54,
+          height: 54,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF2DEA6E), Color(0xFF25D366), Color(0xFF1DA851)]),
+              colors: [Color(0xFF2DEA6E), Color(0xFF25D366), Color(0xFF1DA851)],
+            ),
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(color: const Color(0xFF25D366).withOpacity(0.5), blurRadius: 20, spreadRadius: 2),
+              BoxShadow(
+                color: const Color(0xFF25D366).withOpacity(0.5),
+                blurRadius: 20,
+                spreadRadius: 2,
+              ),
             ],
           ),
           child: const Icon(Icons.chat, color: Colors.white, size: 26),

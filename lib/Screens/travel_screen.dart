@@ -7,6 +7,8 @@ import 'chatbot.dart';
 import 'travel_login_gate.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/Screens/google_login_screen.dart';
+import 'package:flutter_application/config.dart';
+import 'package:encrypt/encrypt.dart' as enc;
 
 const Color kGold = Color(0xFFF5B400);
 const Color kGoldLight = Color(0xFFFFF8E1);
@@ -44,23 +46,75 @@ class Travel {
 
 // ─── SERVICE ──────────────────────────────────────────────────────────────────
 class TravelService {
-  // Ganti ke URL API Laravel lokal / production kamu
-  static const String baseUrl = "http://10.0.2.2:8000"; // emulator → localhost
+  static const String _userAgent =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
-  static Future<List<Travel>> getTravels({String? search}) async {
-    final uri = Uri.parse("$baseUrl/api/travel").replace(
-      queryParameters:
-      search != null && search.isNotEmpty ? {'search': search} : null,
+  // ── Cookie bypass (sama persis dengan GoogleLoginScreen) ──────────────────
+  static Future<Map<String, String>> _solveChallenge(String url) async {
+    final headers = {'User-Agent': _userAgent};
+
+    final firstResponse = await http.get(Uri.parse(url), headers: headers);
+    final html = firstResponse.body;
+
+    if (!html.contains('slowAES')) return {};
+
+    final regA = RegExp(r'a=toNumbers\("([a-f0-9]+)"\)');
+    final regB = RegExp(r'b=toNumbers\("([a-f0-9]+)"\)');
+    final regC = RegExp(r'c=toNumbers\("([a-f0-9]+)"\)');
+
+    final a = regA.firstMatch(html)?.group(1) ?? '';
+    final b = regB.firstMatch(html)?.group(1) ?? '';
+    final c = regC.firstMatch(html)?.group(1) ?? '';
+
+    final key = enc.Key.fromBase16(a);
+    final iv = enc.IV.fromBase16(b);
+    final ciphertext = enc.Encrypted.fromBase16(c);
+    final encrypter = enc.Encrypter(
+      enc.AES(key, mode: enc.AESMode.cbc, padding: null),
     );
+
+    final decrypted = encrypter.decryptBytes(ciphertext, iv: iv);
+    final cookieValue = decrypted
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join('');
+
+    return {'__test': cookieValue};
+  }
+
+  // ── Fetch list travel (dengan cookie bypass) ──────────────────────────────
+  static Future<List<Travel>> getTravels({String? search}) async {
+    final targetUrl = '$BASE_URL/api/travel';
+
+    // 1. Solve challenge dulu
+    final cookies = await _solveChallenge(targetUrl);
+    final cookieHeader = cookies.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join('; ');
+
+    // 2. Build URI dengan search param + ?i=1
+    final uri = Uri.parse('$targetUrl?i=1').replace(
+      queryParameters: {
+        if (search != null && search.isNotEmpty) 'search': search,
+        'i': '1',
+      },
+    );
+
+    // 3. GET dengan cookie & user-agent
     final response = await http.get(
       uri,
-      headers: {'Accept': 'application/json'},
+      headers: {
+        'Accept': 'application/json',
+        'Cookie': cookieHeader,
+        'User-Agent': _userAgent,
+      },
     );
+
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body);
       return data.map((e) => Travel.fromJson(e)).toList();
     } else {
-      throw Exception("Gagal load data (${response.statusCode})");
+      throw Exception('Gagal load data (${response.statusCode})');
     }
   }
 }
@@ -118,9 +172,7 @@ class _TravelScreenState extends State<TravelScreen> {
   Future<void> _goToLogin() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => GoogleLoginScreen(isDark: false),
-      ),
+      MaterialPageRoute(builder: (_) => GoogleLoginScreen(isDark: false)),
     );
     // Kalau login berhasil, fetch data travel
     if (result != null && result['loggedIn'] == true) {
@@ -332,7 +384,10 @@ class _TravelScreenState extends State<TravelScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFD4A017), width: 1.5),
+                  border: Border.all(
+                    color: const Color(0xFFD4A017),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -410,12 +465,12 @@ class _TravelScreenState extends State<TravelScreen> {
                     border: Border.all(color: kGold, width: 1.5),
                     boxShadow: isActive
                         ? [
-                      BoxShadow(
-                        color: kGold.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ]
+                            BoxShadow(
+                              color: kGold.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ]
                         : [],
                   ),
                   child: Text(
@@ -475,7 +530,7 @@ class _TravelScreenState extends State<TravelScreen> {
           childAspectRatio: 0.72,
         ),
         delegate: SliverChildBuilderDelegate(
-              (context, index) => _buildCard(filtered[index]),
+          (context, index) => _buildCard(filtered[index]),
           childCount: filtered.length,
         ),
       ),
@@ -487,7 +542,7 @@ class _TravelScreenState extends State<TravelScreen> {
     final isFav = favorites.contains(t.id);
     final isResmi =
         (t.nomorSkUmrah?.isNotEmpty ?? false) ||
-            (t.nomorSkHaji?.isNotEmpty ?? false);
+        (t.nomorSkHaji?.isNotEmpty ?? false);
 
     return Container(
       decoration: BoxDecoration(
@@ -510,12 +565,12 @@ class _TravelScreenState extends State<TravelScreen> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(17)),
             child: t.logo != null && t.logo!.isNotEmpty
                 ? Image.network(
-              t.logo!,
-              height: 85,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _placeholderImg(),
-            )
+                    t.logo!,
+                    height: 85,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _placeholderImg(),
+                  )
                 : _placeholderImg(),
           ),
 
