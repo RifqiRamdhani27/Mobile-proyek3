@@ -257,7 +257,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _rotateAnim,
-              builder: (_, __) => CustomPaint(
+              builder: (_, _) => CustomPaint(
                 painter: _IslamicBgPainter(
                   isDark: isDark,
                   rotation: _rotateAnim.value,

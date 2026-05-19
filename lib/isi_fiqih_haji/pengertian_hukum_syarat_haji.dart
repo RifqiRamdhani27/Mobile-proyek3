@@ -136,7 +136,7 @@ class PengertianHukumSyaratHajiScreen extends StatelessWidget {
                           item['image']!,
                           width: 40,
                           height: 40,
-                          errorBuilder: (_, __, ___) => const Icon(
+                          errorBuilder: (_, _, _) => const Icon(
                             Icons.image,
                             size: 40,
                             color: Colors.grey,

@@ -321,7 +321,7 @@ class _ChatbotBoxState extends State<ChatbotBox>
       controller: _scrollCtrl,
       padding: const EdgeInsets.all(12),
       itemCount: _items.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (_, i) {
         final item = _items[i];
         if (item['type'] == 'bot') return _buildBotBubble(item);

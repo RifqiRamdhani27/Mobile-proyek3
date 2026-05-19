@@ -144,7 +144,7 @@ class MacamMacamHajiScreen extends StatelessWidget {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                     const SizedBox(height: 12),
                     Text(
                       "Ketiga jenis ini sah, tinggal memilih sesuai kondisi dan kemampuan jamaah.",

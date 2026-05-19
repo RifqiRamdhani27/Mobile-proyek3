@@ -108,7 +108,9 @@ class _IslamicBgPainter extends CustomPainter {
           );
         }
         final path = Path()..moveTo(pts[0].dx, pts[0].dy);
-        for (final pt in pts.skip(1)) path.lineTo(pt.dx, pt.dy);
+        for (final pt in pts.skip(1)) {
+          path.lineTo(pt.dx, pt.dy);
+        }
         path.close();
         canvas.drawPath(path, p);
       }
@@ -184,8 +186,9 @@ class _IslamicBgPainter extends CustomPainter {
       const Offset(270, 350),
       const Offset(130, 550),
       const Offset(270, 550),
-    ])
+    ]) {
       diamond(pt, 8);
+    }
   }
 
   @override
@@ -277,8 +280,9 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
     });
     try {
       LocationPermission perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied)
+      if (perm == LocationPermission.denied) {
         perm = await Geolocator.requestPermission();
+      }
       if (perm == LocationPermission.denied ||
           perm == LocationPermission.deniedForever) {
         setState(() {

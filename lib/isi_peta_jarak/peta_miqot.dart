@@ -72,7 +72,7 @@ class PetaMiqotScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 280,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const SizedBox(
+                        errorBuilder: (_, _, _) => const SizedBox(
                           height: 280,
                           child: Center(
                             child: Icon(
@@ -92,7 +92,7 @@ class PetaMiqotScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 280,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const SizedBox(
+                        errorBuilder: (_, _, _) => const SizedBox(
                           height: 280,
                           child: Center(
                             child: Icon(

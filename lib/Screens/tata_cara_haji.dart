@@ -97,7 +97,7 @@ class TataCaraHajiScreen extends StatelessWidget {
                             "assets/images/tata_cara_haji.png",
                             fit: BoxFit.cover,
                             width: double.infinity,
-                            errorBuilder: (_, __, ___) => Container(
+                            errorBuilder: (_, _, _) => Container(
                               color: const Color(0xFFCCBB88),
                               child: const Icon(
                                 Icons.image,

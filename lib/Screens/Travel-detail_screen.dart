@@ -320,7 +320,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                   child: ClipOval(
                     child: detail!.logo != null && detail!.logo!.isNotEmpty
                         ? Image.network(detail!.logo!, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
+                            errorBuilder: (_, _, _) => Container(
                               color: kGoldLight,
                               child: const Icon(Icons.mosque, color: kGold, size: 36)))
                         : Container(
@@ -551,7 +551,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                 Image.network(
                   detail!.galeri[i],
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     color: kGoldLight,
                     child: const Icon(Icons.image_not_supported, color: kGold)),
                 ),
@@ -593,7 +593,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
             child: Image.network(
               photos[_lightboxIndex],
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) =>
+              errorBuilder: (_, _, _) =>
                   const Icon(Icons.broken_image, color: Colors.white, size: 60),
             ),
           ),
