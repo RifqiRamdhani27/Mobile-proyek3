@@ -374,7 +374,9 @@ class IslamicBackgroundPainter extends CustomPainter {
       );
     }
     final path = Path()..moveTo(points[0].dx, points[0].dy);
-    for (final p in points.skip(1)) path.lineTo(p.dx, p.dy);
+    for (final p in points.skip(1)) {
+      path.lineTo(p.dx, p.dy);
+    }
     path.close();
     canvas.drawPath(path, paint);
   }

@@ -160,7 +160,7 @@ class PerbedaanJenisHajiScreen extends StatelessWidget {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                     const SizedBox(height: 12),
                     Text(
                       "Sebagian besar jamaah Indonesia biasanya melaksanakan haji tamattu'.",

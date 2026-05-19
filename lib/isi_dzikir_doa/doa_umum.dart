@@ -107,7 +107,7 @@ class DoaUmumScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item['judul']! as String,
+                          item['judul']!,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -120,7 +120,7 @@ class DoaUmumScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           alignment: Alignment.center,
                           child: Text(
-                            item['arab']! as String,
+                            item['arab']!,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,

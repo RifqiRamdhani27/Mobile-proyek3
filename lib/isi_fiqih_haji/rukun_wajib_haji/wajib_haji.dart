@@ -134,7 +134,7 @@ class WajibHajiScreen extends StatelessWidget {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                     const SizedBox(height: 12),
                     Text(
                       "Berbeda dengan rukun, wajib haji bisa diganti dengan dam jika terlewat.",

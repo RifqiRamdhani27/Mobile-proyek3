@@ -144,7 +144,7 @@ class RukunHajiScreen extends StatelessWidget {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                     const SizedBox(height: 24),
                   ],
                 ),
