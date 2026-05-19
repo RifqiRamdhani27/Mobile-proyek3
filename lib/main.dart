@@ -16,6 +16,7 @@ import 'Screens/google_login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'Screens/kiblat.dart'; // ← TAMBAHAN: import halaman kiblat
 
 // Entry Point
 Future<void> main() async {
@@ -72,6 +73,7 @@ class RavolaApp extends StatelessWidget {
             '/google-login': (context) => GoogleLoginScreen(isDark: isDark),
             '/search': (context) => const TravelScreen(),
             '/theme-settings': (context) => ThemeSettingsScreen(isDark: isDark),
+            '/kiblat': (context) => QiblaPage(isDark: isDark),
           },
         );
       },
@@ -428,65 +430,77 @@ class Dock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = isDark ? AppTheme.dark : AppTheme.light;
-    final items = [
-      {'icon': Icons.home, 'label': 'Home'},
-      {'icon': Icons.search, 'label': 'Search'},
-      {'icon': Icons.access_time, 'label': 'Time'},
-      {'icon': Icons.favorite, 'label': 'Health'},
-    ];
-
     return Container(
       height: 70,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       decoration: BoxDecoration(
-        color: t.dockBg,
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Color(0xFFD4AF37), // Emas Mustard (pengganti kuning cerah)
+            Color(0xFFC6712C), // Orange Terakota (pengganti orange menyala)
+            Color(0xFF630D0D), // Maroon Gelap (pengganti merah)
+          ],
+          stops: [0.1, 0.5, 0.9], // Mengatur sebaran warna agar lebih smooth
+        ),
         borderRadius: BorderRadius.circular(35),
         boxShadow: [
           BoxShadow(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.map((item) {
-          final isActive = item['label'] == activeLabel;
-          return GestureDetector(
-            onTap: () {
-              final label = item['label'] as String;
-              if (label == 'Time') {
-                Navigator.pushNamed(context, '/waktu-sholat');
-              } else if (label == 'Search') {
-                Navigator.pushNamed(context, '/search');
-              } else {
-                onTap?.call(label);
-              }
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item['icon'] as IconData,
-                  color: isActive ? t.activeDot : t.dockIcon.withOpacity(0.6),
-                  size: 24,
-                ),
-                if (isActive)
-                  Container(
-                    width: 5,
-                    height: 5,
-                    margin: const EdgeInsets.only(top: 4),
-                    decoration: BoxDecoration(
-                      color: t.activeDot,
-                      shape: BoxShape.circle,
+        children:
+            [
+              {'icon': Icons.home, 'label': 'Home'},
+              {'icon': Icons.search, 'label': 'Search'},
+              {'icon': Icons.access_time, 'label': 'Time'},
+              {'icon': Icons.explore, 'label': 'Kiblat'},
+              {'icon': Icons.favorite, 'label': 'Health'},
+            ].map((item) {
+              final isActive = item['label'] == activeLabel;
+              return GestureDetector(
+                onTap: () {
+                  final label = item['label'] as String;
+                  if (label == 'Time') {
+                    Navigator.pushNamed(context, '/waktu-sholat');
+                  } else if (label == 'Search') {
+                    Navigator.pushNamed(context, '/search');
+                  } else if (label == 'Kiblat') {
+                    Navigator.pushNamed(context, '/kiblat');
+                  } else {
+                    onTap?.call(label);
+                  }
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      item['icon'] as IconData,
+                      color: isActive
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.5),
+                      size: 24,
                     ),
-                  ),
-              ],
-            ),
-          );
-        }).toList(),
+                    if (isActive)
+                      Container(
+                        width: 4,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }).toList(),
       ),
     );
   }
@@ -516,12 +530,9 @@ class AppSidebar extends StatelessWidget {
       onTap: onClose,
       child: Stack(
         children: [
-          // Overlay
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.45)),
           ),
-
-          // Sidebar panel
           GestureDetector(
             onTap: () {},
             child: Align(
@@ -542,7 +553,6 @@ class AppSidebar extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.fromLTRB(20, 56, 20, 20),
@@ -593,9 +603,7 @@ class AppSidebar extends StatelessWidget {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 8),
-
                     _SidebarItem(
                       icon: Icons.palette_outlined,
                       label: 'Theme Settings',
@@ -607,12 +615,10 @@ class AppSidebar extends StatelessWidget {
                         Navigator.pushNamed(context, '/theme-settings');
                       },
                     ),
-
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Divider(color: dividerColor, height: 1),
                     ),
-
                     ValueListenableBuilder<UserSession?>(
                       valueListenable: userNotifier,
                       builder: (context, user, _) {
@@ -627,7 +633,6 @@ class AppSidebar extends StatelessWidget {
                           onTap: () async {
                             onClose();
                             if (user != null) {
-                              // Sign out dulu biar bisa pilih akun lain
                               await GoogleSignIn().signOut();
                             }
                             Navigator.pushNamed(context, '/google-login');
@@ -635,7 +640,6 @@ class AppSidebar extends StatelessWidget {
                         );
                       },
                     ),
-
                     ValueListenableBuilder<UserSession?>(
                       valueListenable: userNotifier,
                       builder: (context, user, _) {
@@ -707,9 +711,7 @@ class AppSidebar extends StatelessWidget {
                         );
                       },
                     ),
-
                     const Spacer(),
-
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Text(
@@ -1065,11 +1067,9 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Precache semua gambar menu agar langsung tampil (cache di RAM)
     for (var item in menuItems) {
       precacheImage(AssetImage(item.imagePath), context);
     }
-    // Precache background home
     precacheImage(const AssetImage('assets/images/bg-home.png'), context);
   }
 
@@ -1102,10 +1102,8 @@ class _HomeScreenState extends State<HomeScreen>
           backgroundColor: t.background,
           body: Stack(
             children: [
-              // Main Column
               Column(
                 children: [
-                  // HEADER
                   SizedBox(
                     height: 270,
                     child: Stack(
@@ -1226,7 +1224,6 @@ class _HomeScreenState extends State<HomeScreen>
                       ],
                     ),
                   ),
-                  // BACKGROUND PUTIH
                   Expanded(
                     child: Transform.translate(
                       offset: const Offset(0, -30),
@@ -1275,8 +1272,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         child: Image.asset(
                                           item.imagePath,
                                           fit: BoxFit.cover,
-                                          gaplessPlayback:
-                                              true, // Cegah kedipan saat rebuild
+                                          gaplessPlayback: true,
                                           errorBuilder:
                                               (context, error, stackTrace) =>
                                                   Container(
@@ -1322,7 +1318,6 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               ),
 
-              // Style Navbar Bawah
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -1330,7 +1325,6 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Dock(isDark: isDark, activeLabel: 'Home'),
               ),
 
-              // Sidebar Overlay
               if (_sidebarOpen)
                 SlideTransition(
                   position: _slideAnim,

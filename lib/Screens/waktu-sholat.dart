@@ -739,73 +739,81 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
   }
 
   Widget _buildDock(BuildContext context, bool isDark) {
-    final dockBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFD3AB3F);
-    final dockIcon = isDark ? const Color(0xFFC9A84C) : Colors.white;
-    final activeDot = isDark ? const Color(0xFFC9A84C) : Colors.white;
-
-    final items = [
-      {'icon': Icons.home, 'label': 'Home'},
-      {'icon': Icons.search, 'label': 'Search'},
-      {'icon': Icons.access_time, 'label': 'Time'},
-      {'icon': Icons.favorite, 'label': 'Health'},
-    ];
-
     return Container(
       height: 70,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       decoration: BoxDecoration(
-        color: dockBg,
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Color(0xFFD4AF37), // Emas Mustard
+            Color(0xFFC6712C), // Orange Terakota
+            Color(0xFF630D0D), // Maroon Gelap
+          ],
+          stops: [0.1, 0.5, 0.9],
+        ),
         borderRadius: BorderRadius.circular(35),
         boxShadow: [
           BoxShadow(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.map((item) {
-          final label = item['label'] as String;
-          final isActive = item['label'] == 'Time';
-          return GestureDetector(
-            onTap: () {
-              // --- LOGIKA NAVIGASI ---
-              if (label == 'Home') {
-                Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false);
-              } else if (label == 'Search') {
-                // Navigasi ke Travel Screen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TravelScreen(),
-                  ), // Pastikan nama class-nya sesuai
-                );
-              }
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item['icon'] as IconData,
-                  color: isActive ? activeDot : dockIcon.withOpacity(0.6),
-                  size: 24,
-                ),
-                if (isActive)
-                  Container(
-                    width: 5,
-                    height: 5,
-                    margin: const EdgeInsets.only(top: 4),
-                    decoration: BoxDecoration(
-                      color: activeDot,
-                      shape: BoxShape.circle,
+        children:
+            [
+              {'icon': Icons.home, 'label': 'Home'},
+              {'icon': Icons.search, 'label': 'Search'},
+              {'icon': Icons.access_time, 'label': 'Time'},
+              {'icon': Icons.explore, 'label': 'Kiblat'},
+              {'icon': Icons.favorite, 'label': 'Health'},
+            ].map((item) {
+              final label = item['label'] as String;
+              final isActive = label == 'Time';
+              return GestureDetector(
+                onTap: () {
+                  if (label == 'Home') {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/',
+                      (r) => false,
+                    );
+                  } else if (label == 'Search') {
+                    Navigator.pushNamed(context, '/search');
+                  } else if (label == 'Kiblat') {
+                    Navigator.pushNamed(context, '/kiblat');
+                  } else if (label == 'Time' && !isActive) {
+                    Navigator.pushNamed(context, '/waktu-sholat');
+                  }
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      item['icon'] as IconData,
+                      color: isActive
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.5),
+                      size: 24,
                     ),
-                  ),
-              ],
-            ),
-          );
-        }).toList(),
+                    if (isActive)
+                      Container(
+                        width: 4,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }).toList(),
       ),
     );
   }
