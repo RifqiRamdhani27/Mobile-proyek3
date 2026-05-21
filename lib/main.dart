@@ -12,20 +12,39 @@ import 'Screens/fiqih_haji.dart';
 import 'Screens/waktu-sholat.dart';
 import 'Screens/travel_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'Screens/google_login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'Screens/kiblat.dart'; // ← TAMBAHAN: import halaman kiblat
 
-// ─── Entry Point ─────────────────────────────────────────────────────────────
-void main() {
+// Entry Point
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load konfigurasi dari file .env
+  await dotenv.load(fileName: ".env");
+
   runApp(const RavolaApp());
 }
 
-// ─── Theme Notifier ───────────────────────────────────────────────────────────
+// Theme Notifier
 class ThemeNotifier extends ValueNotifier<bool> {
   ThemeNotifier() : super(false);
 }
 
 final themeNotifier = ThemeNotifier();
 
-// ─── Root App ─────────────────────────────────────────────────────────────────
+// User Session
+class UserSession {
+  final String name;
+  final String? photoUrl;
+  UserSession({required this.name, this.photoUrl});
+}
+
+final userNotifier = ValueNotifier<UserSession?>(null);
+
+// Root App
 class RavolaApp extends StatelessWidget {
   const RavolaApp({super.key});
 
@@ -36,9 +55,9 @@ class RavolaApp extends StatelessWidget {
       builder: (context, isDark, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            brightness: isDark ? Brightness.dark : Brightness.light,
-          ),
+          theme: ThemeData(brightness: Brightness.light, useMaterial3: true),
+          darkTheme: ThemeData(brightness: Brightness.dark, useMaterial3: true),
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
           home: const HomeScreen(),
           routes: {
             '/persiapan-haji': (context) => PersiapanHajiScreen(isDark: isDark),
@@ -51,8 +70,10 @@ class RavolaApp extends StatelessWidget {
             '/lokasi-ziarah': (context) => LokasiZiarahScreen(isDark: isDark),
             '/fiqih-haji': (context) => FiqihHajiScreen(isDark: isDark),
             '/waktu-sholat': (context) => WaktuSholatScreen(isDark: isDark),
+            '/google-login': (context) => GoogleLoginScreen(isDark: isDark),
             '/search': (context) => const TravelScreen(),
             '/theme-settings': (context) => ThemeSettingsScreen(isDark: isDark),
+            '/kiblat': (context) => QiblaPage(isDark: isDark),
           },
         );
       },
@@ -60,7 +81,7 @@ class RavolaApp extends StatelessWidget {
   }
 }
 
-// ─── Menu Items ───────────────────────────────────────────────────────────────
+// Menu Items
 class MenuItem {
   final String title;
   final String imagePath;
@@ -116,7 +137,7 @@ const List<MenuItem> menuItems = [
   ),
 ];
 
-// ─── Theme Colors ─────────────────────────────────────────────────────────────
+// Theme Colors
 class AppTheme {
   final Color background;
   final Color cardBottom;
@@ -153,7 +174,7 @@ class AppTheme {
   );
 }
 
-// ─── Islamic Background ───────────────────────────────────────────────────────
+// Islamic Background
 class IslamicBackground extends StatelessWidget {
   final bool isDark;
   const IslamicBackground({super.key, required this.isDark});
@@ -355,7 +376,9 @@ class IslamicBackgroundPainter extends CustomPainter {
       );
     }
     final path = Path()..moveTo(points[0].dx, points[0].dy);
-    for (final p in points.skip(1)) path.lineTo(p.dx, p.dy);
+    for (final p in points.skip(1)) {
+      path.lineTo(p.dx, p.dy);
+    }
     path.close();
     canvas.drawPath(path, paint);
   }
@@ -394,7 +417,7 @@ class IslamicBackgroundPainter extends CustomPainter {
   bool shouldRepaint(IslamicBackgroundPainter old) => old.isDark != isDark;
 }
 
-// ─── Dock Navbar ──────────────────────────────────────────────────────────────
+// Navbar Bawah
 class Dock extends StatelessWidget {
   final bool isDark;
   final String activeLabel;
@@ -409,71 +432,83 @@ class Dock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = isDark ? AppTheme.dark : AppTheme.light;
-    final items = [
-      {'icon': Icons.home, 'label': 'Home'},
-      {'icon': Icons.search, 'label': 'Search'},
-      {'icon': Icons.access_time, 'label': 'Time'},
-      {'icon': Icons.favorite, 'label': 'Health'},
-    ];
-
     return Container(
       height: 70,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       decoration: BoxDecoration(
-        color: t.dockBg,
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Color(0xFFD4AF37), // Emas Mustard (pengganti kuning cerah)
+            Color(0xFFC6712C), // Orange Terakota (pengganti orange menyala)
+            Color(0xFF630D0D), // Maroon Gelap (pengganti merah)
+          ],
+          stops: [0.1, 0.5, 0.9], // Mengatur sebaran warna agar lebih smooth
+        ),
         borderRadius: BorderRadius.circular(35),
         boxShadow: [
           BoxShadow(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.map((item) {
-          final isActive = item['label'] == activeLabel;
-          return GestureDetector(
-            onTap: () {
-              final label = item['label'] as String;
-              if (label == 'Time') {
-                Navigator.pushNamed(context, '/waktu-sholat');
-              } else if (label == 'Search') {
-                Navigator.pushNamed(context, '/search');
-              } else {
-                onTap?.call(label);
-              }
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item['icon'] as IconData,
-                  color: isActive ? t.activeDot : t.dockIcon.withOpacity(0.6),
-                  size: 24,
-                ),
-                if (isActive)
-                  Container(
-                    width: 5,
-                    height: 5,
-                    margin: const EdgeInsets.only(top: 4),
-                    decoration: BoxDecoration(
-                      color: t.activeDot,
-                      shape: BoxShape.circle,
+        children:
+            [
+              {'icon': Icons.home, 'label': 'Home'},
+              {'icon': Icons.search, 'label': 'Search'},
+              {'icon': Icons.access_time, 'label': 'Time'},
+              {'icon': Icons.explore, 'label': 'Kiblat'},
+              {'icon': Icons.favorite, 'label': 'Health'},
+            ].map((item) {
+              final isActive = item['label'] == activeLabel;
+              return GestureDetector(
+                onTap: () {
+                  final label = item['label'] as String;
+                  if (label == 'Time') {
+                    Navigator.pushNamed(context, '/waktu-sholat');
+                  } else if (label == 'Search') {
+                    Navigator.pushNamed(context, '/search');
+                  } else if (label == 'Kiblat') {
+                    Navigator.pushNamed(context, '/kiblat');
+                  } else {
+                    onTap?.call(label);
+                  }
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      item['icon'] as IconData,
+                      color: isActive
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.5),
+                      size: 24,
                     ),
-                  ),
-              ],
-            ),
-          );
-        }).toList(),
+                    if (isActive)
+                      Container(
+                        width: 4,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }).toList(),
       ),
     );
   }
 }
 
-// ─── Sidebar Menu ─────────────────────────────────────────────────────────────
+// Sidebar Kiri
 class AppSidebar extends StatelessWidget {
   final bool isDark;
   final VoidCallback onClose;
@@ -497,12 +532,9 @@ class AppSidebar extends StatelessWidget {
       onTap: onClose,
       child: Stack(
         children: [
-          // Overlay
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.45)),
           ),
-
-          // Sidebar panel
           GestureDetector(
             onTap: () {},
             child: Align(
@@ -523,7 +555,6 @@ class AppSidebar extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.fromLTRB(20, 56, 20, 20),
@@ -574,9 +605,7 @@ class AppSidebar extends StatelessWidget {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 8),
-
                     _SidebarItem(
                       icon: Icons.palette_outlined,
                       label: 'Theme Settings',
@@ -588,34 +617,103 @@ class AppSidebar extends StatelessWidget {
                         Navigator.pushNamed(context, '/theme-settings');
                       },
                     ),
-
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Divider(color: dividerColor, height: 1),
                     ),
-
-                    _SidebarItem(
-                      icon: Icons.login_rounded,
-                      label: 'Login',
-                      isDark: isDark,
-                      gold: gold,
-                      textColor: textDark,
-                      onTap: () {
-                        onClose();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text(
-                              'Fitur login akan segera hadir',
-                            ),
-                            backgroundColor: gold,
-                            behavior: SnackBarBehavior.floating,
-                          ),
+                    ValueListenableBuilder<UserSession?>(
+                      valueListenable: userNotifier,
+                      builder: (context, user, _) {
+                        return _SidebarItem(
+                          icon: user != null
+                              ? Icons.manage_accounts_outlined
+                              : Icons.login_rounded,
+                          label: user != null ? 'Ganti Akun' : 'Login',
+                          isDark: isDark,
+                          gold: gold,
+                          textColor: textDark,
+                          onTap: () async {
+                            onClose();
+                            if (user != null) {
+                              await GoogleSignIn().signOut();
+                            }
+                            Navigator.pushNamed(context, '/google-login');
+                          },
                         );
                       },
                     ),
-
+                    ValueListenableBuilder<UserSession?>(
+                      valueListenable: userNotifier,
+                      builder: (context, user, _) {
+                        if (user == null) return const SizedBox.shrink();
+                        return _SidebarItem(
+                          icon: Icons.logout_rounded,
+                          label: 'Logout',
+                          isDark: isDark,
+                          gold: gold,
+                          textColor: textDark,
+                          onTap: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                backgroundColor: isDark
+                                    ? const Color(0xFF1E1E1E)
+                                    : const Color(0xFFFFFBF0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                title: Text(
+                                  'Keluar Akun',
+                                  style: TextStyle(
+                                    color: gold,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                content: Text(
+                                  'Apakah Anda yakin ingin keluar?',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? const Color(0xFFF0E6C8)
+                                        : const Color(0xFF1A1200),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: Text(
+                                      'Batal',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.white54
+                                            : Colors.black45,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    child: Text(
+                                      'Keluar',
+                                      style: TextStyle(
+                                        color: gold,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await GoogleSignIn().signOut();
+                              userNotifier.value = null;
+                              onClose();
+                            }
+                          },
+                        );
+                      },
+                    ),
                     const Spacer(),
-
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Text(
@@ -631,9 +729,9 @@ class AppSidebar extends StatelessWidget {
               ),
             ),
           ),
-        ], // ← tutup children Stack AppSidebar
-      ), // ← tutup Stack
-    ); // ← tutup GestureDetector
+        ],
+      ),
+    );
   }
 }
 
@@ -941,7 +1039,7 @@ class _ThemeOptionCard extends StatelessWidget {
   }
 }
 
-// ─── Home Screen ──────────────────────────────────────────────────────────────
+// Home Screen
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -954,7 +1052,6 @@ class _HomeScreenState extends State<HomeScreen>
   bool _sidebarOpen = false;
   late AnimationController _sidebarCtrl;
   late Animation<Offset> _slideAnim;
-  final String? _loggedInName = null;
 
   @override
   void initState() {
@@ -967,6 +1064,15 @@ class _HomeScreenState extends State<HomeScreen>
         .animate(
           CurvedAnimation(parent: _sidebarCtrl, curve: Curves.easeOutCubic),
         );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    for (var item in menuItems) {
+      precacheImage(AssetImage(item.imagePath), context);
+    }
+    precacheImage(const AssetImage('assets/images/bg-home.png'), context);
   }
 
   void _openSidebar() {
@@ -993,30 +1099,22 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (context, isDark, _) {
         final t = isDark ? AppTheme.dark : AppTheme.light;
 
-        final greeting = _loggedInName != null
-            ? "Assalamu'alaikum, $_loggedInName"
-            : "Assalamu'alaikum, Calon Jama'ah";
-        final subtitle = _loggedInName != null
-            ? "Selamat datang kembali"
-            : "Selamat datang di Ravola";
-
         return Scaffold(
           extendBody: true,
           backgroundColor: t.background,
           body: Stack(
             children: [
-              // ── Main Column ──
               Column(
                 children: [
-                  // ── HEADER ──
                   SizedBox(
-                    height: 240,
+                    height: 270,
                     child: Stack(
                       children: [
                         Positioned.fill(
                           child: Image.asset(
                             'assets/images/bg-home.png',
                             fit: BoxFit.cover,
+                            gaplessPlayback: true,
                           ),
                         ),
                         Positioned.fill(
@@ -1053,38 +1151,73 @@ class _HomeScreenState extends State<HomeScreen>
                                         onPressed: _openSidebar,
                                       ),
                                     ),
-                                    Container(
-                                      width: 38,
-                                      height: 38,
-                                      decoration: BoxDecoration(
-                                        color: isDark
-                                            ? const Color(0xFF2A2A2A)
-                                            : Colors.white.withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: const Icon(Icons.person, size: 18),
+                                    ValueListenableBuilder<UserSession?>(
+                                      valueListenable: userNotifier,
+                                      builder: (context, user, _) {
+                                        return GestureDetector(
+                                          onTap: () => Navigator.pushNamed(
+                                            context,
+                                            '/google-login',
+                                          ),
+                                          child: CircleAvatar(
+                                            radius: 19,
+                                            backgroundImage:
+                                                user?.photoUrl != null
+                                                ? NetworkImage(user!.photoUrl!)
+                                                : null,
+                                            backgroundColor: Colors.white
+                                                .withOpacity(0.3),
+                                            child: user?.photoUrl == null
+                                                ? const Icon(
+                                                    Icons.person,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  )
+                                                : null,
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 14),
-                                Text(
-                                  greeting,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.3,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  subtitle,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    letterSpacing: 0.2,
-                                    color: Colors.white70,
-                                  ),
+                                ValueListenableBuilder<UserSession?>(
+                                  valueListenable: userNotifier,
+                                  builder: (context, user, _) {
+                                    final firstName =
+                                        user?.name.split(' ').first ?? '';
+                                    final greeting = user != null
+                                        ? "Assalamu'alaikum, $firstName"
+                                        : "Assalamu'alaikum, Calon Jama'ah";
+                                    final subtitle = user != null
+                                        ? "Selamat datang kembali"
+                                        : "Selamat datang di Ravola";
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          greeting,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.3,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          subtitle,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                            letterSpacing: 0.2,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -1092,8 +1225,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ],
                     ),
-                  ), // ← tutup SizedBox header
-                  // ── CONTENT PUTIH ──
+                  ),
                   Expanded(
                     child: Transform.translate(
                       offset: const Offset(0, -30),
@@ -1142,15 +1274,19 @@ class _HomeScreenState extends State<HomeScreen>
                                         child: Image.asset(
                                           item.imagePath,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                              Container(
-                                                color: const Color(0xFFCCBB88),
-                                                child: const Icon(
-                                                  Icons.image,
-                                                  size: 40,
-                                                  color: Colors.white54,
-                                                ),
-                                              ),
+                                          gaplessPlayback: true,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                                    color: const Color(
+                                                      0xFFCCBB88,
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.image,
+                                                      size: 40,
+                                                      color: Colors.white54,
+                                                    ),
+                                                  ),
                                         ),
                                       ),
                                       Positioned(
@@ -1180,10 +1316,10 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                     ),
-                  ), // ← tutup Expanded content putih
+                  ),
                 ],
-              ), // ← tutup Column
-              // ── Dock Navbar ──
+              ),
+
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -1191,15 +1327,14 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Dock(isDark: isDark, activeLabel: 'Home'),
               ),
 
-              // ── Sidebar Overlay ──
               if (_sidebarOpen)
                 SlideTransition(
                   position: _slideAnim,
                   child: AppSidebar(isDark: isDark, onClose: _closeSidebar),
                 ),
-            ], // ← tutup children Stack
-          ), // ← tutup Stack
-        ); // ← tutup Scaffold
+            ],
+          ),
+        );
       },
     );
   }

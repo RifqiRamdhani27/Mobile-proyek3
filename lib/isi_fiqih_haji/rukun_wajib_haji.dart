@@ -3,8 +3,16 @@ import '../isi_fiqih_haji/rukun_wajib_haji/rukun_haji.dart';
 import '../isi_fiqih_haji/rukun_wajib_haji/wajib_haji.dart';
 
 final List<Map<String, String>> rukunWajibHajiMenuItems = [
-  {"title": "Rukun Haji", "image": "assets/images/hukum.png",  "route": "/rukun_wajib_haji/rukun_haji"},
-  {"title": "Wajib Haji", "image": "assets/images/syarat.png", "route": "/rukun_wajib_haji/wajib_haji"},
+  {
+    "title": "Rukun Haji",
+    "image": "assets/images/hukum.png",
+    "route": "/rukun_wajib_haji/rukun_haji",
+  },
+  {
+    "title": "Wajib Haji",
+    "image": "assets/images/syarat.png",
+    "route": "/rukun_wajib_haji/wajib_haji",
+  },
 ];
 
 class RukunWajibHajiScreen extends StatelessWidget {
@@ -13,19 +21,21 @@ class RukunWajibHajiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
-    final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
-    final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
-    final appBarBg  = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
-    final titleClr  = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF2F2F2);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF000000);
+    final shadowClr = isDark
+        ? const Color(0xFFD8AB17)
+        : const Color(0xFF000000);
+    final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
+    final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
     return Scaffold(
       backgroundColor: bg,
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -35,21 +45,27 @@ class RukunWajibHajiScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: titleClr),
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Rukun & Wajib Haji',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: titleClr),
+                  Transform.translate(
+                    offset: const Offset(10, 2),
+                    child: Text(
+                      'Rukun & Wajib Haji',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -67,12 +83,19 @@ class RukunWajibHajiScreen extends StatelessWidget {
                   onTap: () {
                     final route = item['route']!;
                     final screenMap = <String, Widget>{
-                      '/rukun_wajib_haji/rukun_haji': RukunHajiScreen(isDark: isDark),
-                      '/rukun_wajib_haji/wajib_haji': WajibHajiScreen(isDark: isDark),
+                      '/rukun_wajib_haji/rukun_haji': RukunHajiScreen(
+                        isDark: isDark,
+                      ),
+                      '/rukun_wajib_haji/wajib_haji': WajibHajiScreen(
+                        isDark: isDark,
+                      ),
                     };
                     final screen = screenMap[route];
                     if (screen != null) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => screen),
+                      );
                     }
                   },
                   child: Container(
@@ -96,13 +119,21 @@ class RukunWajibHajiScreen extends StatelessWidget {
                           item['image']!,
                           width: 40,
                           height: 40,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 40, color: Colors.grey),
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.image,
+                            size: 40,
+                            color: Colors.grey,
+                          ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
                             item['title']!,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: textClr),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textClr,
+                            ),
                           ),
                         ),
                       ],

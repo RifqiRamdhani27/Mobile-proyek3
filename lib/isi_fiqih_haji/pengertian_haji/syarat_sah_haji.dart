@@ -6,8 +6,8 @@ class SyaratSahHajiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
     final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
@@ -16,7 +16,7 @@ class SyaratSahHajiScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -26,21 +26,27 @@ class SyaratSahHajiScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: titleClr),
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Syarat Sah Haji',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: titleClr),
+                  Transform.translate(
+                    offset: const Offset(10, 2),
+                    child: Text(
+                      'Syarat Sah Haji',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -57,7 +63,11 @@ class SyaratSahHajiScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Syarat Sah Haji',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C)),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFE6A63C),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -68,7 +78,11 @@ class SyaratSahHajiScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     "Allah berfirman dalam QS. Ali 'Imran ayat 97:",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: textClr,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Container(
@@ -77,7 +91,11 @@ class SyaratSahHajiScreen extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       'وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ مَنِ اسْتَطَاعَ إِلَيْهِ سَبِيلًا',
-                      style: TextStyle(fontSize: 20, height: 1.8, color: textClr),
+                      style: TextStyle(
+                        fontSize: 20,
+                        height: 1.8,
+                        color: textClr,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -86,7 +104,9 @@ class SyaratSahHajiScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFF8E7),
                       borderRadius: BorderRadius.circular(8),
-                      border: const Border(left: BorderSide(color: Color(0xFFE6A63C), width: 4)),
+                      border: const Border(
+                        left: BorderSide(color: Color(0xFFE6A63C), width: 4),
+                      ),
                     ),
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -94,13 +114,22 @@ class SyaratSahHajiScreen extends StatelessWidget {
                       children: const [
                         Text(
                           '"Mengerjakan haji adalah kewajiban manusia terhadap Allah, yaitu bagi orang yang mampu mengadakan perjalanan ke Baitullah."',
-                          style: TextStyle(fontSize: 15, height: 1.6, fontStyle: FontStyle.italic, color: Color(0xFF1A1A1A)),
+                          style: TextStyle(
+                            fontSize: 15,
+                            height: 1.6,
+                            fontStyle: FontStyle.italic,
+                            color: Color(0xFF1A1A1A),
+                          ),
                           textAlign: TextAlign.justify,
                         ),
                         SizedBox(height: 8),
                         Text(
                           "(QS. Ali 'Imran: 97)",
-                          style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: Color(0xFF888888)),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            color: Color(0xFF888888),
+                          ),
                         ),
                       ],
                     ),

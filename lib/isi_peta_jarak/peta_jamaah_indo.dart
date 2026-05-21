@@ -18,7 +18,7 @@ class PetaJamaahIndoScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
               child: SafeArea(
                 bottom: false,
@@ -28,26 +28,31 @@ class PetaJamaahIndoScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                            color: isDark
+                                ? const Color(0xFFC9A84C)
+                                : Colors.black,
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
+                    Transform.translate(
+                      offset: const Offset(15, 2),
                       child: Text(
                         'Peta Arofah Muzdalifah Mina',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                          color: isDark
+                              ? const Color(0xFFC9A84C)
+                              : Colors.black,
                         ),
                       ),
                     ),
@@ -67,9 +72,15 @@ class PetaJamaahIndoScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 280,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const SizedBox(
+                        errorBuilder: (_, _, _) => const SizedBox(
                           height: 280,
-                          child: Center(child: Icon(Icons.image, size: 60, color: Colors.grey)),
+                          child: Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 60,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -81,9 +92,15 @@ class PetaJamaahIndoScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 280,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const SizedBox(
+                        errorBuilder: (_, _, _) => const SizedBox(
                           height: 280,
-                          child: Center(child: Icon(Icons.image, size: 60, color: Colors.grey)),
+                          child: Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 60,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
                     ),

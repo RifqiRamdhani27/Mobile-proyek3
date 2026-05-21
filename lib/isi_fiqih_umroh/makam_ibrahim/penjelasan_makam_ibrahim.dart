@@ -67,7 +67,7 @@ class PenjelasanMakamIbrahimScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 160,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox(
+                      errorBuilder: (_, _, _) => const SizedBox(
                         height: 160,
                         child: Center(
                           child: Icon(

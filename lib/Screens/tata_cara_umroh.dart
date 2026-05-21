@@ -17,7 +17,7 @@ class TataCaraUmrohScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
     final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
@@ -32,7 +32,7 @@ class TataCaraUmrohScreen extends StatelessWidget {
           children: [
             // ── AppBar ──────────────────────────────────────────────────────
             Container(
-              height: 95,
+              height: 115,
               color: appBarBg,
               child: SafeArea(
                 bottom: false,
@@ -42,8 +42,8 @@ class TataCaraUmrohScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 8),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
@@ -55,8 +55,8 @@ class TataCaraUmrohScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15),
+                    Transform.translate(
+                      offset: const Offset(15, 2),
                       child: Text(
                         'Tata Cara Umroh',
                         style: TextStyle(
@@ -97,10 +97,13 @@ class TataCaraUmrohScreen extends StatelessWidget {
                             "assets/images/tata_cara_umroh.png",
                             fit: BoxFit.cover,
                             width: double.infinity,
-                            errorBuilder: (_, __, ___) => Container(
+                            errorBuilder: (_, _, _) => Container(
                               color: const Color(0xFFCCBB88),
-                              child: const Icon(Icons.image,
-                                  size: 60, color: Colors.white54),
+                              child: const Icon(
+                                Icons.image,
+                                size: 60,
+                                color: Colors.white54,
+                              ),
                             ),
                           ),
                         ),

@@ -4,52 +4,62 @@ const _lokasiMekkah = [
   {
     'nama': "Masjidil Haram & Ka'bah",
     'lokasi': 'Pusat Kota Mekkah',
-    'desc': "Masjid terbesar di dunia. Di dalamnya terdapat Ka'bah sebagai kiblat umat Islam, Maqam Ibrahim, Hijir Ismail, Sumur Zamzam, serta Bukit Shafa dan Marwah.",
+    'desc':
+        "Masjid terbesar di dunia. Di dalamnya terdapat Ka'bah sebagai kiblat umat Islam, Maqam Ibrahim, Hijir Ismail, Sumur Zamzam, serta Bukit Shafa dan Marwah.",
   },
   {
     'nama': 'Gua Hira (Jabal Nur)',
     'lokasi': '±6 km utara Masjidil Haram',
-    'desc': 'Tempat Nabi Muhammad ﷺ menerima wahyu pertama (QS. Al-Alaq: 1-5). Perlu mendaki sekitar 1 jam untuk sampai ke puncak.',
+    'desc':
+        'Tempat Nabi Muhammad ﷺ menerima wahyu pertama (QS. Al-Alaq: 1-5). Perlu mendaki sekitar 1 jam untuk sampai ke puncak.',
   },
   {
     'nama': 'Gua Tsur (Jabal Tsur)',
     'lokasi': 'Selatan Mekkah',
-    'desc': 'Tempat Nabi Muhammad ﷺ dan Abu Bakar bersembunyi dari kejaran kaum Quraisy saat hendak hijrah ke Madinah.',
+    'desc':
+        'Tempat Nabi Muhammad ﷺ dan Abu Bakar bersembunyi dari kejaran kaum Quraisy saat hendak hijrah ke Madinah.',
   },
   {
     'nama': 'Jabal Rahmah',
     'lokasi': 'Padang Arafah, ±20 km dari Mekkah',
-    'desc': 'Bukit setinggi 70 meter tempat bertemunya Nabi Adam dan Siti Hawa setelah diturunkan dari surga. Terdapat tugu di puncaknya.',
+    'desc':
+        'Bukit setinggi 70 meter tempat bertemunya Nabi Adam dan Siti Hawa setelah diturunkan dari surga. Terdapat tugu di puncaknya.',
   },
   {
     'nama': "Jannat al-Mu'alla (Maqbarah Ma'la)",
     'lokasi': 'Dekat Masjidil Haram',
-    'desc': 'Pemakaman tua tempat dimakamkannya Siti Khadijah (istri Nabi), putra-putranya Qasim & Abdullah, serta para sahabat terkemuka.',
+    'desc':
+        'Pemakaman tua tempat dimakamkannya Siti Khadijah (istri Nabi), putra-putranya Qasim & Abdullah, serta para sahabat terkemuka.',
   },
   {
     'nama': 'Masjid Tan\'im (Masjid Aisyah)',
     'lokasi': '±7 km dari Masjidil Haram',
-    'desc': 'Miqat paling populer bagi jamaah yang ingin melaksanakan umroh dari dalam Mekkah. Di sinilah Sayyidah Aisyah memulai ihramnya.',
+    'desc':
+        'Miqat paling populer bagi jamaah yang ingin melaksanakan umroh dari dalam Mekkah. Di sinilah Sayyidah Aisyah memulai ihramnya.',
   },
   {
     'nama': 'Masjid Namirah',
     'lokasi': 'Arafah',
-    'desc': 'Tempat Rasulullah ﷺ menyampaikan khutbah terakhir pada Haji Wada\'. Digunakan saat puncak ibadah haji.',
+    'desc':
+        'Tempat Rasulullah ﷺ menyampaikan khutbah terakhir pada Haji Wada\'. Digunakan saat puncak ibadah haji.',
   },
   {
     'nama': 'Masjid Al-Khaif',
     'lokasi': 'Mina',
-    'desc': 'Tempat Nabi Muhammad ﷺ dan banyak nabi terdahulu pernah shalat. Terletak strategis di kawasan Mina.',
+    'desc':
+        'Tempat Nabi Muhammad ﷺ dan banyak nabi terdahulu pernah shalat. Terletak strategis di kawasan Mina.',
   },
   {
     'nama': 'Masjid Jin',
     'lokasi': '±3 km dari Masjidil Haram',
-    'desc': 'Masjid yang dibangun di lokasi Nabi Muhammad ﷺ bertemu sekelompok jin yang kemudian memeluk Islam.',
+    'desc':
+        'Masjid yang dibangun di lokasi Nabi Muhammad ﷺ bertemu sekelompok jin yang kemudian memeluk Islam.',
   },
   {
     'nama': 'Tempat Wukuf Arafah',
     'lokasi': 'Padang Arafah',
-    'desc': 'Lokasi pelaksanaan wukuf pada 9 Dzulhijjah — puncak ibadah haji. Simbol persatuan umat Islam dari seluruh dunia.',
+    'desc':
+        'Lokasi pelaksanaan wukuf pada 9 Dzulhijjah — puncak ibadah haji. Simbol persatuan umat Islam dari seluruh dunia.',
   },
 ];
 
@@ -59,11 +69,13 @@ class MekkahScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg        = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final cardBg    = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
-    final textClr   = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
-    final subClr    = isDark ? const Color(0xFFAAAAAA) : const Color(0xFF555555);
-    final shadowClr = isDark ? const Color(0xFFD8AB17) : const Color(0xFF000000);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final subClr = isDark ? const Color(0xFFAAAAAA) : const Color(0xFF555555);
+    final shadowClr = isDark
+        ? const Color(0xFFD8AB17)
+        : const Color(0xFF000000);
 
     return PopScope(
       canPop: false,
@@ -75,7 +87,7 @@ class MekkahScreen extends StatelessWidget {
         body: Column(
           children: [
             Container(
-              height: 95,
+              height: 115,
               color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400),
               child: SafeArea(
                 bottom: false,
@@ -85,26 +97,31 @@ class MekkahScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Transform.translate(
+                        offset: const Offset(10, -3.5),
                         child: Text(
                           '←',
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                            color: isDark
+                                ? const Color(0xFFC9A84C)
+                                : Colors.black,
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
+                    Transform.translate(
+                      offset: const Offset(15, 2),
                       child: Text(
                         'Lokasi Ziarah Mekkah',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFC9A84C) : Colors.black,
+                          color: isDark
+                              ? const Color(0xFFC9A84C)
+                              : Colors.black,
                         ),
                       ),
                     ),
@@ -121,12 +138,20 @@ class MekkahScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     const Text(
                       'Tempat Ziarah di Mekkah',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C)),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFE6A63C),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Mekkah menyimpan banyak situs bersejarah yang menjadi saksi perjalanan dakwah Islam sejak zaman Nabi Ibrahim hingga Rasulullah ﷺ.',
-                      style: TextStyle(fontSize: 14, height: 1.6, color: textClr),
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.6,
+                        color: textClr,
+                      ),
                       textAlign: TextAlign.justify,
                     ),
                     const SizedBox(height: 16),
@@ -155,23 +180,50 @@ class MekkahScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   '${i + 1}',
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C)),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE6A63C),
+                                  ),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(item['nama']!, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr)),
+                                      Text(
+                                        item['nama']!,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: textClr,
+                                        ),
+                                      ),
                                       const SizedBox(height: 2),
-                                      Text('📍 ${item['lokasi']}', style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic, color: Color(0xFFE6A63C))),
+                                      Text(
+                                        ' ${item['lokasi']}',
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontStyle: FontStyle.italic,
+                                          color: Color(0xFFE6A63C),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 6),
-                            Text(item['desc']!, style: TextStyle(fontSize: 13, height: 1.5, color: subClr), textAlign: TextAlign.justify),
+                            Text(
+                              item['desc']!,
+                              style: TextStyle(
+                                fontSize: 13,
+                                height: 1.5,
+                                color: subClr,
+                              ),
+                              textAlign: TextAlign.justify,
+                            ),
                           ],
                         ),
                       );

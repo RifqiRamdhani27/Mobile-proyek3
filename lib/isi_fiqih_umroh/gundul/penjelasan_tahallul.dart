@@ -6,8 +6,8 @@ class PenjelasanTahallulScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg       = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
-    final textClr  = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFEDEDED);
+    final textClr = isDark ? const Color(0xFFE0C070) : const Color(0xFF1A1A1A);
     final appBarBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF4B400);
     final titleClr = isDark ? const Color(0xFFC9A84C) : const Color(0xFF000000);
 
@@ -22,7 +22,7 @@ class PenjelasanTahallulScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 95,
+            height: 115,
             color: appBarBg,
             child: SafeArea(
               bottom: false,
@@ -32,21 +32,27 @@ class PenjelasanTahallulScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 8),
+                    child: Transform.translate(
+                      offset: const Offset(10, -3.5),
                       child: Text(
                         '←',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: titleClr),
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: titleClr,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Penjelasan Tahallul',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: titleClr),
+                  Transform.translate(
+                    offset: const Offset(15, 2),
+                    child: Text(
+                      'Penjelasan Tahallul',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: titleClr,
                       ),
                     ),
                   ),
@@ -62,7 +68,12 @@ class PenjelasanTahallulScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Tahallul',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFE6A63C), height: 1.5),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFE6A63C),
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -79,7 +90,11 @@ class PenjelasanTahallulScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Allah berfirman dalam QS. Al-Fath ayat 27:',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: textClr,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Container(
@@ -88,7 +103,11 @@ class PenjelasanTahallulScreen extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       'لَتَدْخُلُنَّ الْمَسْجِدَ الْحَرَامَ إِن شَاءَ اللَّهُ آمِنِينَ مُحَلِّقِينَ رُءُوسَكُمْ وَمُقَصِّرِينَ لَا تَخَافُونَ',
-                      style: TextStyle(fontSize: 20, height: 2.0, color: textClr),
+                      style: TextStyle(
+                        fontSize: 20,
+                        height: 2.0,
+                        color: textClr,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -97,7 +116,9 @@ class PenjelasanTahallulScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFF8E7),
                       borderRadius: BorderRadius.circular(8),
-                      border: const Border(left: BorderSide(color: Color(0xFFE6A63C), width: 4)),
+                      border: const Border(
+                        left: BorderSide(color: Color(0xFFE6A63C), width: 4),
+                      ),
                     ),
                     padding: const EdgeInsets.all(16),
                     child: const Column(
@@ -105,13 +126,22 @@ class PenjelasanTahallulScreen extends StatelessWidget {
                       children: [
                         Text(
                           '"Sungguh, kamu pasti akan memasuki Masjidil Haram, insya Allah dalam keadaan aman, dengan mencukur rambut kepala dan memendekkannya, sedang kamu tidak merasa takut."',
-                          style: TextStyle(fontSize: 15, height: 1.6, fontStyle: FontStyle.italic, color: Color(0xFF1A1A1A)),
+                          style: TextStyle(
+                            fontSize: 15,
+                            height: 1.6,
+                            fontStyle: FontStyle.italic,
+                            color: Color(0xFF1A1A1A),
+                          ),
                           textAlign: TextAlign.justify,
                         ),
                         SizedBox(height: 8),
                         Text(
                           '(QS. Al-Fath: 27)',
-                          style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: Color(0xFF888888)),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            color: Color(0xFF888888),
+                          ),
                         ),
                       ],
                     ),
@@ -125,19 +155,36 @@ class PenjelasanTahallulScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Ketentuan tahallul:',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textClr),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: textClr,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  ...ketentuan.map((item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('• ', style: TextStyle(fontSize: 15, color: Color(0xFFE6A63C))),
-                            Expanded(child: Text(item, style: TextStyle(fontSize: 15, color: textClr))),
-                          ],
-                        ),
-                      )),
+                  ...ketentuan.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFFE6A63C),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: TextStyle(fontSize: 15, color: textClr),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   Text(
                     'Tahallul menandakan penyempurnaan ibadah dan ketaatan kepada Allah.',
