@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/config.dart';
 import 'package:encrypt/encrypt.dart' as enc;
+import 'package:flutter/services.dart';
 
 class GoogleLoginScreen extends StatefulWidget {
   final bool isDark;
@@ -222,10 +223,20 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
       print('ERROR TYPE: ${e.runtimeType}');
       print('ERROR: $e');
       print('STACKTRACE: $stackTrace');
+
+      if (e is PlatformException) {
+        print('CODE: ${e.code}');
+        print('MESSAGE: ${e.message}');
+        print('DETAILS: ${e.details}');
+      }
+
       setState(() {
-        _errorMessage = '$e'; // tampilkan error asli sementara
+        _errorMessage = e is PlatformException
+            ? '${e.code} - ${e.message ?? ""}'
+            : '$e';
       });
-    } finally {
+    }
+    finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
