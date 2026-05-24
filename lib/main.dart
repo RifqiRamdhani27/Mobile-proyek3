@@ -16,7 +16,8 @@ import 'Screens/google_login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'Screens/kiblat.dart'; // ← TAMBAHAN: import halaman kiblat
+import 'Screens/kiblat.dart';
+import 'intro/splash_screen.dart';
 
 // Entry Point
 Future<void> main() async {
@@ -58,7 +59,7 @@ class RavolaApp extends StatelessWidget {
           theme: ThemeData(brightness: Brightness.light, useMaterial3: true),
           darkTheme: ThemeData(brightness: Brightness.dark, useMaterial3: true),
           themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-          home: const HomeScreen(),
+          home: const SplashScreen(home: HomeScreen()),
           routes: {
             '/persiapan-haji': (context) => PersiapanHajiScreen(isDark: isDark),
             '/fiqih-umroh': (context) => FiqihUmrohScreen(isDark: isDark),

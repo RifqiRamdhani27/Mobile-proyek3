@@ -514,7 +514,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
   }
 }
 
-// ── Google Sign-In Button ─────────────────────────────────────────────────────
+// Google Sign-In Button
 class _GoogleSignInButton extends StatefulWidget {
   final bool isDark;
   final Color gold;
@@ -587,7 +587,7 @@ class _GoogleSignInButtonState extends State<_GoogleSignInButton> {
   }
 }
 
-// ── Google Logo SVG-style ─────────────────────────────────────────────────────
+// Google Logo SVG-style
 class _GoogleLogo extends StatelessWidget {
   final double size;
   const _GoogleLogo({required this.size});
@@ -663,7 +663,7 @@ class _GoogleLogoPainter extends CustomPainter {
   bool shouldRepaint(_) => false;
 }
 
-// ── Loading Indicator ─────────────────────────────────────────────────────────
+// Loading Indicator
 class _LoadingIndicator extends StatelessWidget {
   final Color gold;
   const _LoadingIndicator({required this.gold});
@@ -700,7 +700,7 @@ class _LoadingIndicator extends StatelessWidget {
   }
 }
 
-// ── Islamic Background Painter ────────────────────────────────────────────────
+// Islamic Background Painter
 class _IslamicBgPainter extends CustomPainter {
   final bool isDark;
   final double rotation;
