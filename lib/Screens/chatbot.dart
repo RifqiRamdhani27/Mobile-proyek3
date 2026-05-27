@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
-import 'package:flutter_application/config.dart';
+import 'package:ravola/config.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 
 const Color kGold = Color(0xFFF5B400);

@@ -3,8 +3,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math' as math;
-import 'package:flutter_application/main.dart';
-import 'package:flutter_application/config.dart';
+import 'package:ravola/main.dart';
+import 'package:ravola/config.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/services.dart';
 
@@ -235,8 +235,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
             ? '${e.code} - ${e.message ?? ""}'
             : '$e';
       });
-    }
-    finally {
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }

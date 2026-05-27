@@ -2,22 +2,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_application/config.dart';
+import 'package:ravola/config.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 // ─── TEMA: Gold / Cream Elegan ────────────────────────────────────────────────
-const Color kCream      = Color(0xFFFBF7EE);   // background utama
-const Color kCreamDeep  = Color(0xFFF2EAD3);   // background card / section
-const Color kCreamBorder= Color(0xFFE8D9B5);   // border halus
-const Color kGold       = Color(0xFFBF9B30);   // gold utama (gelap agar kontras)
-const Color kGoldLight  = Color(0xFFD4AF37);   // gold menengah
-const Color kGoldBright = Color(0xFFF5C842);   // gold terang (highlight)
-const Color kGoldShimmer= Color(0xFFFAE27C);   // shimmer bar
-const Color kDark       = Color(0xFF2C1A00);   // teks utama (coklat sangat gelap)
-const Color kMuted      = Color(0xFF7A6040);   // teks sekunder
+const Color kCream = Color(0xFFFBF7EE); // background utama
+const Color kCreamDeep = Color(0xFFF2EAD3); // background card / section
+const Color kCreamBorder = Color(0xFFE8D9B5); // border halus
+const Color kGold = Color(0xFFBF9B30); // gold utama (gelap agar kontras)
+const Color kGoldLight = Color(0xFFD4AF37); // gold menengah
+const Color kGoldBright = Color(0xFFF5C842); // gold terang (highlight)
+const Color kGoldShimmer = Color(0xFFFAE27C); // shimmer bar
+const Color kDark = Color(0xFF2C1A00); // teks utama (coklat sangat gelap)
+const Color kMuted = Color(0xFF7A6040); // teks sekunder
 
 // ─── HELPER ──────────────────────────────────────────────────────────────────
 Future<void> _openUrl(String url) async {
@@ -83,7 +83,11 @@ class TravelDetail {
           }
         }
       } else if (raw is String && raw.isNotEmpty) {
-        galeriList = raw.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+        galeriList = raw
+            .split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
       }
     }
     return TravelDetail(
@@ -93,7 +97,8 @@ class TravelDetail {
       deskripsi: j['deskripsi'],
       alamat: j['alamat'],
       email: j['email'],
-      telepon: j['nomor_telepon'] ?? j['telepon'] ?? j['whatsapp'] ?? j['no_hp'],
+      telepon:
+          j['nomor_telepon'] ?? j['telepon'] ?? j['whatsapp'] ?? j['no_hp'],
       nomorSkUmrah: j['nomor_sk_umrah'],
       nomorSkHaji: j['nomor_sk_haji'],
       jumlahJamaah: j['jumlah_jamaah'],
@@ -126,20 +131,26 @@ class TravelDetailService {
     final b = regB.firstMatch(html)?.group(1) ?? '';
     final c = regC.firstMatch(html)?.group(1) ?? '';
 
-    final key        = enc.Key.fromBase16(a);
-    final iv         = enc.IV.fromBase16(b);
+    final key = enc.Key.fromBase16(a);
+    final iv = enc.IV.fromBase16(b);
     final ciphertext = enc.Encrypted.fromBase16(c);
-    final encrypter  = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc, padding: null));
-    final decrypted  = encrypter.decryptBytes(ciphertext, iv: iv);
-    final cookieValue = decrypted.map((b) => b.toRadixString(16).padLeft(2, '0')).join('');
+    final encrypter = enc.Encrypter(
+      enc.AES(key, mode: enc.AESMode.cbc, padding: null),
+    );
+    final decrypted = encrypter.decryptBytes(ciphertext, iv: iv);
+    final cookieValue = decrypted
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join('');
     return {'__test': cookieValue};
   }
 
   static Future<TravelDetail> getDetail(int id) async {
     final targetUrl = '$BASE_URL/api/travel/$id';
-    final cookies   = await _solveChallenge(targetUrl);
-    final cookieHeader = cookies.entries.map((e) => '${e.key}=${e.value}').join('; ');
-    final response  = await http.get(
+    final cookies = await _solveChallenge(targetUrl);
+    final cookieHeader = cookies.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join('; ');
+    final response = await http.get(
       Uri.parse('$targetUrl?i=1'),
       headers: {
         'Accept': 'application/json',
@@ -147,7 +158,8 @@ class TravelDetailService {
         'User-Agent': _userAgent,
       },
     );
-    if (response.statusCode == 200) return TravelDetail.fromJson(jsonDecode(response.body));
+    if (response.statusCode == 200)
+      return TravelDetail.fromJson(jsonDecode(response.body));
     throw Exception('Gagal load detail: ${response.statusCode}');
   }
 }
@@ -163,11 +175,11 @@ class TravelDetailScreen extends StatefulWidget {
 
 class _TravelDetailScreenState extends State<TravelDetailScreen> {
   TravelDetail? detail;
-  bool   isLoading = true;
-  String error     = '';
-  int    _lightboxIndex = 0;
-  bool   _lightboxOpen  = false;
-  late   PageController _pageCtrl;
+  bool isLoading = true;
+  String error = '';
+  int _lightboxIndex = 0;
+  bool _lightboxOpen = false;
+  late PageController _pageCtrl;
   Future<void> _load() async {
     try {
       final d = await TravelDetailService.getDetail(widget.travelId);
@@ -222,23 +234,30 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
           ? _buildLoader()
           : error.isNotEmpty
           ? _buildError()
-          : Stack(children: [
-        _buildScrollContent(),
-        if (_lightboxOpen) _buildLightbox(),
-        if (!_lightboxOpen) _buildWAFloat(),
-      ]),
+          : Stack(
+              children: [
+                _buildScrollContent(),
+                if (_lightboxOpen) _buildLightbox(),
+                if (!_lightboxOpen) _buildWAFloat(),
+              ],
+            ),
     );
   }
 
   Widget _buildLoader() => Container(
     color: kCream,
     child: Center(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const CircularProgressIndicator(color: kGold),
-        const SizedBox(height: 16),
-        Text('Memuat data travel...',
-            style: TextStyle(color: kMuted.withOpacity(0.8), fontSize: 13)),
-      ]),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: kGold),
+          const SizedBox(height: 16),
+          Text(
+            'Memuat data travel...',
+            style: TextStyle(color: kMuted.withOpacity(0.8), fontSize: 13),
+          ),
+        ],
+      ),
     ),
   );
 
@@ -246,22 +265,32 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
     color: kCream,
     padding: const EdgeInsets.all(24),
     child: Center(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Icon(Icons.error_outline, color: kGold, size: 48),
-        const SizedBox(height: 12),
-        Text(error,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, color: kGold, size: 48),
+          const SizedBox(height: 12),
+          Text(
+            error,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: kMuted, fontSize: 13)),
-        const SizedBox(height: 20),
-        TextButton(
-          onPressed: () {
-            setState(() { isLoading = true; error = ''; });
-            _load();
-          },
-          child: const Text('Coba lagi',
-              style: TextStyle(color: kGold, fontWeight: FontWeight.w700)),
-        ),
-      ]),
+            style: const TextStyle(color: kMuted, fontSize: 13),
+          ),
+          const SizedBox(height: 20),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                isLoading = true;
+                error = '';
+              });
+              _load();
+            },
+            child: const Text(
+              'Coba lagi',
+              style: TextStyle(color: kGold, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 
@@ -291,9 +320,11 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
           children: [
             // Foto latar
             if (heroImg != null)
-              Image.network(heroImg, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      Container(color: kCreamDeep))
+              Image.network(
+                heroImg,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(color: kCreamDeep),
+              )
             else
               Container(
                 decoration: const BoxDecoration(
@@ -318,12 +349,20 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
 
             // Gold shimmer bar atas
             Positioned(
-              top: 0, left: 0, right: 0,
+              top: 0,
+              left: 0,
+              right: 0,
               child: Container(
                 height: 3,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [kGold, kGoldBright, kGoldShimmer, kGoldBright, kGold],
+                    colors: [
+                      kGold,
+                      kGoldBright,
+                      kGoldShimmer,
+                      kGoldBright,
+                      kGold,
+                    ],
                   ),
                 ),
               ),
@@ -331,11 +370,13 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
 
             // Tombol back
             Positioned(
-              top: 50, left: 16,
+              top: 50,
+              left: 16,
               child: GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                  width: 36, height: 36,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: kCream.withOpacity(0.85),
                     shape: BoxShape.circle,
@@ -344,37 +385,50 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                       BoxShadow(color: kGold.withOpacity(0.25), blurRadius: 6),
                     ],
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new,
-                      color: kGold, size: 15),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: kGold,
+                    size: 15,
+                  ),
                 ),
               ),
             ),
 
             // Logo + nama (bawah kiri)
             Positioned(
-              bottom: 22, left: 16, right: 16,
+              bottom: 22,
+              left: 16,
+              right: 16,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   // Logo bulat dengan border gold
                   Container(
-                    width: 62, height: 62,
+                    width: 62,
+                    height: 62,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: kGoldBright, width: 2.5),
                       color: kCreamDeep,
                       boxShadow: [
                         BoxShadow(
-                            color: kGold.withOpacity(0.4),
-                            blurRadius: 10,
-                            spreadRadius: 1),
+                          color: kGold.withOpacity(0.4),
+                          blurRadius: 10,
+                          spreadRadius: 1,
+                        ),
                       ],
                     ),
                     child: ClipOval(
                       child: detail!.logo != null && detail!.logo!.isNotEmpty
-                          ? Image.network(detail!.logo!, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.mosque, color: kGold, size: 28))
+                          ? Image.network(
+                              detail!.logo!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.mosque,
+                                color: kGold,
+                                size: 28,
+                              ),
+                            )
                           : const Icon(Icons.mosque, color: kGold, size: 28),
                     ),
                   ),
@@ -399,7 +453,9 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                         const SizedBox(height: 5),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 9, vertical: 3),
+                            horizontal: 9,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: kGold.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(6),
@@ -434,26 +490,32 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: _statCard(
-              icon: Icons.group_outlined,
-              value: '${detail!.jumlahJamaah ?? 0}++',
-              label: 'Jamaah',
-              desc: 'Telah melayani ribuan jamaah dengan aman.',
-            )),
+            Expanded(
+              child: _statCard(
+                icon: Icons.group_outlined,
+                value: '${detail!.jumlahJamaah ?? 0}++',
+                label: 'Jamaah',
+                desc: 'Telah melayani ribuan jamaah dengan aman.',
+              ),
+            ),
             const SizedBox(width: 8),
-            Expanded(child: _statCard(
-              icon: Icons.verified_outlined,
-              value: 'Izin Resmi',
-              label: 'Kemenag',
-              desc: 'Berizin resmi identifikasi A.',
-            )),
+            Expanded(
+              child: _statCard(
+                icon: Icons.verified_outlined,
+                value: 'Izin Resmi',
+                label: 'Kemenag',
+                desc: 'Berizin resmi identifikasi A.',
+              ),
+            ),
             const SizedBox(width: 8),
-            Expanded(child: _statCard(
-              icon: Icons.luggage_outlined,
-              value: '${detail!.jumlahPaket ?? 0}',
-              label: 'Paket',
-              desc: 'Pilihan paket ibadah tersedia.',
-            )),
+            Expanded(
+              child: _statCard(
+                icon: Icons.luggage_outlined,
+                value: '${detail!.jumlahPaket ?? 0}',
+                label: 'Paket',
+                desc: 'Pilihan paket ibadah tersedia.',
+              ),
+            ),
           ],
         ),
       ),
@@ -473,14 +535,19 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: kCreamBorder, width: 1),
         boxShadow: [
-          BoxShadow(color: kGold.withOpacity(0.10), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: kGold.withOpacity(0.10),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 28, height: 28,
+            width: 28,
+            height: 28,
             decoration: BoxDecoration(
               color: kGoldShimmer.withOpacity(0.3),
               borderRadius: BorderRadius.circular(8),
@@ -488,15 +555,31 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
             child: Icon(icon, color: kGold, size: 16),
           ),
           const SizedBox(height: 8),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 11, fontWeight: FontWeight.w800, color: kDark)),
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 10, fontWeight: FontWeight.w600, color: kGold)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              color: kDark,
+            ),
+          ),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: kGold,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(desc,
-              style: TextStyle(fontSize: 9, color: kMuted.withOpacity(0.7), height: 1.5)),
+          Text(
+            desc,
+            style: TextStyle(
+              fontSize: 9,
+              color: kMuted.withOpacity(0.7),
+              height: 1.5,
+            ),
+          ),
         ],
       ),
     );
@@ -531,10 +614,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFFFFF8E7),
-                Colors.white,
-              ],
+              colors: [Color(0xFFFFF8E7), Colors.white],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -569,7 +649,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                         children: [
                           TileLayer(
                             urlTemplate:
-                            'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+                                'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
                             userAgentPackageName: 'com.example.app',
                           ),
 
@@ -644,10 +724,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                         color: kGold.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
-                        Icons.map,
-                        color: kGold,
-                      ),
+                      child: const Icon(Icons.map, color: kGold),
                     ),
 
                     const SizedBox(width: 12),
@@ -692,13 +769,31 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
       child: _creamCard(
         title: 'Informasi Travel',
-        child: Column(children: [
-          _infoRow(Icons.business_outlined,     'Nama Perusahaan', detail!.nama),
-          _infoRow(Icons.phone_outlined,        'Nomor Telepon',   detail!.telepon      ?? '-'),
-          _infoRow(Icons.email_outlined,        'Alamat Email',    detail!.email        ?? '-'),
-          _infoRow(Icons.article_outlined,      'Nomor SK Umrah',  detail!.nomorSkUmrah ?? '-'),
-          _infoRow(Icons.article_outlined,      'Nomor SK Haji',   detail!.nomorSkHaji  ?? '-'),
-        ]),
+        child: Column(
+          children: [
+            _infoRow(Icons.business_outlined, 'Nama Perusahaan', detail!.nama),
+            _infoRow(
+              Icons.phone_outlined,
+              'Nomor Telepon',
+              detail!.telepon ?? '-',
+            ),
+            _infoRow(
+              Icons.email_outlined,
+              'Alamat Email',
+              detail!.email ?? '-',
+            ),
+            _infoRow(
+              Icons.article_outlined,
+              'Nomor SK Umrah',
+              detail!.nomorSkUmrah ?? '-',
+            ),
+            _infoRow(
+              Icons.article_outlined,
+              'Nomor SK Haji',
+              detail!.nomorSkHaji ?? '-',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -710,20 +805,34 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Container(width: 3, height: 16,
+          Row(
+            children: [
+              Container(
+                width: 3,
+                height: 16,
                 decoration: BoxDecoration(
-                    color: kGold, borderRadius: BorderRadius.circular(2))),
-            const SizedBox(width: 8),
-            const Text('Galeri Travel',
+                  color: kGold,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Galeri Travel',
                 style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: kDark)),
-          ]),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: kDark,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 3),
           const Padding(
             padding: EdgeInsets.only(left: 11),
-            child: Text('Dokumentasi perjalanan dan kebersamaan jamaah',
-                style: TextStyle(fontSize: 12, color: kMuted)),
+            child: Text(
+              'Dokumentasi perjalanan dan kebersamaan jamaah',
+              style: TextStyle(fontSize: 12, color: kMuted),
+            ),
           ),
           const SizedBox(height: 12),
           if (detail!.galeri.isEmpty)
@@ -735,13 +844,20 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: kCreamBorder),
               ),
-              child: Column(children: [
-                Icon(Icons.photo_library_outlined,
-                    color: kGold.withOpacity(0.5), size: 36),
-                const SizedBox(height: 8),
-                const Text('Belum ada foto galeri',
-                    style: TextStyle(color: kMuted, fontSize: 13)),
-              ]),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.photo_library_outlined,
+                    color: kGold.withOpacity(0.5),
+                    size: 36,
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Belum ada foto galeri',
+                    style: TextStyle(color: kMuted, fontSize: 13),
+                  ),
+                ],
+              ),
             )
           else
             GridView.builder(
@@ -756,7 +872,10 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
               ),
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
-                  setState(() { _lightboxIndex = index; _lightboxOpen = true; });
+                  setState(() {
+                    _lightboxIndex = index;
+                    _lightboxOpen = true;
+                  });
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (_pageCtrl.hasClients) _pageCtrl.jumpToPage(index);
                   });
@@ -767,9 +886,10 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                     border: Border.all(color: kCreamBorder, width: 1),
                     boxShadow: [
                       BoxShadow(
-                          color: kGold.withOpacity(0.12),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2)),
+                        color: kGold.withOpacity(0.12),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
                   child: ClipRRect(
@@ -786,14 +906,19 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                               color: kCreamDeep,
                               child: const Center(
                                 child: CircularProgressIndicator(
-                                    color: kGold, strokeWidth: 2),
+                                  color: kGold,
+                                  strokeWidth: 2,
+                                ),
                               ),
                             );
                           },
                           errorBuilder: (_, __, ___) => Container(
                             color: kCreamDeep,
-                            child: Icon(Icons.broken_image,
-                                size: 32, color: kGold.withOpacity(0.4)),
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 32,
+                              color: kGold.withOpacity(0.4),
+                            ),
                           ),
                         ),
                         // Gradient bawah tipis
@@ -811,20 +936,26 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                         ),
                         // Zoom badge gold
                         Positioned(
-                          bottom: 8, right: 8,
+                          bottom: 8,
+                          right: 8,
                           child: Container(
-                            width: 28, height: 28,
+                            width: 28,
+                            height: 28,
                             decoration: BoxDecoration(
                               color: kGold,
                               borderRadius: BorderRadius.circular(8),
                               boxShadow: [
                                 BoxShadow(
-                                    color: kGold.withOpacity(0.4),
-                                    blurRadius: 6),
+                                  color: kGold.withOpacity(0.4),
+                                  blurRadius: 6,
+                                ),
                               ],
                             ),
-                            child: const Icon(Icons.zoom_in,
-                                color: Colors.white, size: 16),
+                            child: const Icon(
+                              Icons.zoom_in,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                           ),
                         ),
                       ],
@@ -860,13 +991,18 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                       child: GestureDetector(
                         onTap: () => setState(() => _lightboxOpen = false),
                         child: Container(
-                          width: 36, height: 36,
+                          width: 36,
+                          height: 36,
                           decoration: BoxDecoration(
                             color: kCreamDeep,
                             shape: BoxShape.circle,
                             border: Border.all(color: kGold, width: 1.2),
                           ),
-                          child: const Icon(Icons.close, color: kGold, size: 18),
+                          child: const Icon(
+                            Icons.close,
+                            color: kGold,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -880,7 +1016,8 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                       child: PageView.builder(
                         controller: _pageCtrl,
                         itemCount: photos.length,
-                        onPageChanged: (i) => setState(() => _lightboxIndex = i),
+                        onPageChanged: (i) =>
+                            setState(() => _lightboxIndex = i),
                         itemBuilder: (_, i) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: ClipRRect(
@@ -889,8 +1026,11 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                               photos[i],
                               fit: BoxFit.contain,
                               errorBuilder: (_, __, ___) => Center(
-                                child: Icon(Icons.broken_image,
-                                    color: kGold.withOpacity(0.5), size: 60),
+                                child: Icon(
+                                  Icons.broken_image,
+                                  color: kGold.withOpacity(0.5),
+                                  size: 60,
+                                ),
                               ),
                             ),
                           ),
@@ -911,13 +1051,16 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                           icon: Icons.chevron_left,
                           enabled: _lightboxIndex > 0,
                           onTap: () => _pageCtrl.previousPage(
-                              duration: const Duration(milliseconds: 280),
-                              curve: Curves.easeInOut),
+                            duration: const Duration(milliseconds: 280),
+                            curve: Curves.easeInOut,
+                          ),
                         ),
                         const SizedBox(width: 20),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 7),
+                            horizontal: 18,
+                            vertical: 7,
+                          ),
                           decoration: BoxDecoration(
                             color: kGold,
                             borderRadius: BorderRadius.circular(20),
@@ -925,9 +1068,10 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                           child: Text(
                             '${_lightboxIndex + 1} / ${photos.length}',
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700),
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 20),
@@ -935,8 +1079,9 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                           icon: Icons.chevron_right,
                           enabled: _lightboxIndex < photos.length - 1,
                           onTap: () => _pageCtrl.nextPage(
-                              duration: const Duration(milliseconds: 280),
-                              curve: Curves.easeInOut),
+                            duration: const Duration(milliseconds: 280),
+                            curve: Curves.easeInOut,
+                          ),
                         ),
                       ],
                     ),
@@ -957,7 +1102,9 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                           width: active ? 20 : 6,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: active ? kGoldBright : Colors.white.withOpacity(0.3),
+                            color: active
+                                ? kGoldBright
+                                : Colors.white.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(3),
                           ),
                         );
@@ -984,11 +1131,15 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
         opacity: enabled ? 1.0 : 0.25,
         duration: const Duration(milliseconds: 200),
         child: Container(
-          width: 44, height: 44,
+          width: 44,
+          height: 44,
           decoration: BoxDecoration(
             color: kCreamDeep,
             shape: BoxShape.circle,
-            border: Border.all(color: enabled ? kGold : Colors.white24, width: 1.5),
+            border: Border.all(
+              color: enabled ? kGold : Colors.white24,
+              width: 1.5,
+            ),
           ),
           child: Icon(icon, color: kGold, size: 26),
         ),
@@ -1007,12 +1158,12 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
       child: GestureDetector(
         onTap: hasPhone
             ? () async {
-          final number = _toWaNumber(detail!.telepon!);
+                final number = _toWaNumber(detail!.telepon!);
 
-          final url = 'https://wa.me/$number';
+                final url = 'https://wa.me/$number';
 
-          await _openUrl(url);
-        }
+                await _openUrl(url);
+              }
             : null,
         child: Container(
           width: 62,
@@ -1020,10 +1171,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF25D366),
-                Color(0xFF1EBE5D),
-              ],
+              colors: [Color(0xFF25D366), Color(0xFF1EBE5D)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -1035,11 +1183,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.chat,
-            color: Colors.white,
-            size: 32,
-          ),
+          child: const Icon(Icons.chat, color: Colors.white, size: 32),
         ),
       ),
     );
@@ -1055,9 +1199,10 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
         border: Border.all(color: kCreamBorder, width: 1),
         boxShadow: [
           BoxShadow(
-              color: kGold.withOpacity(0.10),
-              blurRadius: 8,
-              offset: const Offset(0, 2)),
+            color: kGold.withOpacity(0.10),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -1078,22 +1223,28 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(children: [
-                  Container(
-                    width: 3, height: 14,
-                    decoration: BoxDecoration(
-                      color: kGold,
-                      borderRadius: BorderRadius.circular(2),
+                Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: kGold,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(title.toUpperCase(),
+                    const SizedBox(width: 8),
+                    Text(
+                      title.toUpperCase(),
                       style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          color: kGold,
-                          letterSpacing: 1.2)),
-                ]),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: kGold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
                 Divider(color: kCreamBorder, height: 18),
                 child,
               ],
@@ -1111,7 +1262,8 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 32, height: 32,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
               color: kGoldShimmer.withOpacity(0.25),
               borderRadius: BorderRadius.circular(8),
@@ -1124,16 +1276,24 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: TextStyle(fontSize: 10, color: kMuted.withOpacity(0.7))),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: kMuted.withOpacity(0.7),
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(value,
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: kDark),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: kDark,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
               ],
             ),
           ),

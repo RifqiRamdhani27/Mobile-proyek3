@@ -226,32 +226,44 @@ class _MLModalState extends State<_MLModal>
               _buildRpInput(_savingCtrl, '2.000.000'),
               const SizedBox(height: 20),
               GestureDetector(
-                onTap: _process,
+                onTap: _isLoading ? null : _process,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFFD54F), Color(0xFFFF3D00)],
+                    gradient: LinearGradient(
+                      colors: _isLoading
+                          ? [Colors.grey.shade700, Colors.grey.shade600]
+                          : [const Color(0xFFFFD54F), const Color(0xFFFF3D00)],
                     ),
                     borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFFF6D00).withOpacity(0.45),
-                        blurRadius: 14,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                    boxShadow: _isLoading
+                        ? []
+                        : [
+                            BoxShadow(
+                              color: const Color(0xFFFF6D00).withOpacity(0.45),
+                              blurRadius: 14,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.arrow_forward, color: Colors.black, size: 16),
-                      SizedBox(width: 8),
+                      Icon(
+                        _isLoading
+                            ? Icons.hourglass_empty
+                            : Icons.arrow_forward,
+                        color: _isLoading ? Colors.grey.shade400 : Colors.black,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
                       Text(
-                        'MULAI ANALISIS',
+                        _isLoading ? 'MEMPROSES...' : 'MULAI ANALISIS',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: _isLoading
+                              ? Colors.grey.shade400
+                              : Colors.black,
                           fontWeight: FontWeight.w900,
                           fontSize: 13,
                           letterSpacing: 1.5,
@@ -533,27 +545,6 @@ class _MLModalState extends State<_MLModal>
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFFD54F), Color(0xFFFF6D00)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Simpan Jadwal',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ],
