@@ -152,7 +152,7 @@ class TravelDetail {
       alamat: j['alamat'],
       email: j['email'],
       telepon:
-          j['nomor_telepon'] ?? j['telepon'] ?? j['whatsapp'] ?? j['no_hp'],
+      j['nomor_telepon'] ?? j['telepon'] ?? j['whatsapp'] ?? j['no_hp'],
       nomorSkUmrah: j['nomor_sk_umrah'],
       nomorSkHaji: j['nomor_sk_haji'],
       jumlahJamaah: j['jumlah_jamaah'],
@@ -225,24 +225,24 @@ class TravelDetailService {
     throw Exception('Gagal load detail: ${response.statusCode}');
   }
   static Future<List<PaketTravel>> getPaket(int travelId) async {
-  final url = '$BASE_URL/api/travel/$travelId/paket';
-  try {
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': _userAgent,
-      },
-    );
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((j) => PaketTravel.fromJson(j)).toList();
+    final url = '$BASE_URL/api/travel/$travelId/paket';
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': _userAgent,
+        },
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((j) => PaketTravel.fromJson(j)).toList();
+      }
+      return [];
+    } catch (_) {
+      return [];
     }
-    return [];
-  } catch (_) {
-    return [];
   }
-}
 }
 
 // ─── SCREEN ──────────────────────────────────────────────────────────────────
@@ -264,27 +264,27 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   List<PaketTravel> _pakets = [];
   bool _loadingPaket = true;
   Future<void> _load() async {
-  try {
-    final d = await TravelDetailService.getDetail(widget.travelId);
-    setState(() {
-      detail = d;
-      isLoading = false;
-    });
+    try {
+      final d = await TravelDetailService.getDetail(widget.travelId);
+      setState(() {
+        detail = d;
+        isLoading = false;
+      });
 
-    // Fetch paket setelah detail berhasil
-    final p = await TravelDetailService.getPaket(widget.travelId);
-    setState(() {
-      _pakets = p;
-      _loadingPaket = false;
-    });
-  } catch (e) {
-    setState(() {
-      error = e.toString();
-      isLoading = false;
-      _loadingPaket = false;
-    });
+      // Fetch paket setelah detail berhasil
+      final p = await TravelDetailService.getPaket(widget.travelId);
+      setState(() {
+        _pakets = p;
+        _loadingPaket = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+        _loadingPaket = false;
+      });
+    }
   }
-}
 
   @override
   void initState() {
@@ -325,12 +325,12 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
           : error.isNotEmpty
           ? _buildError()
           : Stack(
-              children: [
-                _buildScrollContent(),
-                if (_lightboxOpen) _buildLightbox(),
-                if (!_lightboxOpen) _buildWAFloat(),
-              ],
-            ),
+        children: [
+          _buildScrollContent(),
+          if (_lightboxOpen) _buildLightbox(),
+          if (!_lightboxOpen) _buildWAFloat(),
+        ],
+      ),
     );
   }
 
@@ -394,6 +394,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
           SliverToBoxAdapter(child: _buildMapCard()),
         SliverToBoxAdapter(child: _buildInfoCard()),
         SliverToBoxAdapter(child: _buildGaleri()),
+        SliverToBoxAdapter(child: _buildPaketSection()),
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
@@ -511,14 +512,14 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                     child: ClipOval(
                       child: detail!.logo != null && detail!.logo!.isNotEmpty
                           ? Image.network(
-                              detail!.logo!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.mosque,
-                                color: kGold,
-                                size: 28,
-                              ),
-                            )
+                        detail!.logo!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.mosque,
+                          color: kGold,
+                          size: 28,
+                        ),
+                      )
                           : const Icon(Icons.mosque, color: kGold, size: 28),
                     ),
                   ),
@@ -739,7 +740,7 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
                         children: [
                           TileLayer(
                             urlTemplate:
-                                'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+                            'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
                             userAgentPackageName: 'com.example.app',
                           ),
 
@@ -1237,6 +1238,308 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
     );
   }
 
+  Widget _buildPaketSection() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 3,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: kGold,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Paket Tersedia',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: kDark,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 3),
+          const Padding(
+            padding: EdgeInsets.only(left: 11),
+            child: Text(
+              'Pilih paket sesuai kebutuhan ibadah Anda',
+              style: TextStyle(fontSize: 12, color: kMuted),
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          if (_loadingPaket)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: CircularProgressIndicator(color: kGold, strokeWidth: 2),
+              ),
+            )
+          else if (_pakets.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: kCreamBorder),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.luggage_outlined,
+                      color: kGold.withOpacity(0.5), size: 36),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Belum ada paket tersedia',
+                    style: TextStyle(color: kMuted, fontSize: 13),
+                  ),
+                ],
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _pakets.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (_, i) => _buildPaketCard(_pakets[i]),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaketCard(PaketTravel paket) {
+    final hasPhone =
+        detail?.telepon != null && detail!.telepon!.trim().isNotEmpty;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: kCreamBorder),
+        boxShadow: [
+          BoxShadow(
+            color: kGold.withOpacity(0.10),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Strip emas atas
+          Container(
+            height: 4,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [kGold, kGoldBright, kGoldShimmer, kGoldBright, kGold],
+              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Nama + badge status
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        paket.namaPaket,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: kDark,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE6F4EC),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Text(
+                        paket.status.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF276749),
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 6),
+
+                // Harga
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [kGold, kGoldBright],
+                  ).createShader(bounds),
+                  child: Text(
+                    paket.hargaFormatted,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Chips durasi + tanggal
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    _metaChip(
+                      icon: Icons.access_time_outlined,
+                      label: '${paket.durasi} Hari',
+                    ),
+                    _metaChip(
+                      icon: Icons.flight_takeoff_outlined,
+                      label: paket.tanggalFormatted,
+                    ),
+                  ],
+                ),
+
+                // Divider
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Container(
+                    height: 1,
+                    color: kCreamBorder,
+                  ),
+                ),
+
+                // Fasilitas
+                if (paket.fasilitas != null &&
+                    paket.fasilitas!.isNotEmpty) ...[
+                  const Text(
+                    'FASILITAS',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: kMuted,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    paket.fasilitas!,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: kMuted,
+                      height: 1.65,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 14),
+                ],
+
+                // Tombol pesan WA
+                SizedBox(
+                  width: double.infinity,
+                  child: GestureDetector(
+                    onTap: hasPhone
+                        ? () async {
+                      final number = _toWaNumber(detail!.telepon!);
+                      final pesan = Uri.encodeComponent(
+                        'Halo, saya tertarik dengan *${paket.namaPaket}* '
+                            'dari ${detail!.nama}. Mohon info lebih lanjut.',
+                      );
+                      await _openUrl(
+                          'https://wa.me/$number?text=$pesan');
+                    }
+                        : null,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF2dea6e), Color(0xFF25D366)],
+                        ),
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF25D366).withOpacity(0.35),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.chat_outlined,
+                              color: Colors.white, size: 16),
+                          SizedBox(width: 6),
+                          Text(
+                            'Pesan via WhatsApp',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _metaChip({required IconData icon, required String label}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F8FC),
+        border: Border.all(color: kCreamBorder),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: kGold),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: kMuted,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ── WA FLOAT ───────────────────────────────────────────────────────────────
   Widget _buildWAFloat() {
     final hasPhone =
@@ -1248,12 +1551,12 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
       child: GestureDetector(
         onTap: hasPhone
             ? () async {
-                final number = _toWaNumber(detail!.telepon!);
+          final number = _toWaNumber(detail!.telepon!);
 
-                final url = 'https://wa.me/$number';
+          final url = 'https://wa.me/$number';
 
-                await _openUrl(url);
-              }
+          await _openUrl(url);
+        }
             : null,
         child: Container(
           width: 62,
