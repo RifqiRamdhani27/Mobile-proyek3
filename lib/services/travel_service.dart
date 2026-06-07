@@ -4,6 +4,7 @@ import 'travel_model.dart';
 
 class ApiService {
   static const String baseUrl = 'https://ravola-travel.wuaze.com';
+  
   static Future<List<Travel>> getTravels({String? search}) async {
     final uri = Uri.parse("$baseUrl/travel").replace(
         queryParameters: search != null && search.isNotEmpty ? {'search': search} : null);

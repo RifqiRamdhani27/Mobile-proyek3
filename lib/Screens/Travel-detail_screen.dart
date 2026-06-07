@@ -42,6 +42,59 @@ String _toWaNumber(String raw) {
 }
 
 // ─── MODEL ───────────────────────────────────────────────────────────────────
+class PaketTravel {
+  final int id;
+  final String namaPaket;
+  final double harga;
+  final int durasi;
+  final String? fasilitas;
+  final String? tanggalKeberangkatan;
+  final String status;
+
+  PaketTravel({
+    required this.id,
+    required this.namaPaket,
+    required this.harga,
+    required this.durasi,
+    this.fasilitas,
+    this.tanggalKeberangkatan,
+    required this.status,
+  });
+
+  factory PaketTravel.fromJson(Map<String, dynamic> j) {
+    return PaketTravel(
+      id: j['id'],
+      namaPaket: j['nama_paket'] ?? '',
+      harga: double.tryParse(j['harga'].toString()) ?? 0,
+      durasi: int.tryParse(j['durasi'].toString()) ?? 0,
+      fasilitas: j['fasilitas'],
+      tanggalKeberangkatan: j['tanggal_keberangkatan'],
+      status: j['status'] ?? 'aktif',
+    );
+  }
+
+  String get hargaFormatted {
+    final parts = harga.toStringAsFixed(0).split('');
+    final result = StringBuffer();
+    for (int i = 0; i < parts.length; i++) {
+      if (i > 0 && (parts.length - i) % 3 == 0) result.write('.');
+      result.write(parts[i]);
+    }
+    return 'Rp ${result.toString()}';
+  }
+
+  String get tanggalFormatted {
+    if (tanggalKeberangkatan == null || tanggalKeberangkatan!.isEmpty) return '-';
+    try {
+      final dt = DateTime.parse(tanggalKeberangkatan!);
+      const bulan = ['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      return '${dt.day} ${bulan[dt.month]} ${dt.year}';
+    } catch (_) {
+      return tanggalKeberangkatan!;
+    }
+  }
+}
+
 class TravelDetail {
   final int id;
   final String nama;
@@ -171,6 +224,25 @@ class TravelDetailService {
       return TravelDetail.fromJson(jsonDecode(response.body));
     throw Exception('Gagal load detail: ${response.statusCode}');
   }
+  static Future<List<PaketTravel>> getPaket(int travelId) async {
+  final url = '$BASE_URL/api/travel/$travelId/paket';
+  try {
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': _userAgent,
+      },
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((j) => PaketTravel.fromJson(j)).toList();
+    }
+    return [];
+  } catch (_) {
+    return [];
+  }
+}
 }
 
 // ─── SCREEN ──────────────────────────────────────────────────────────────────
@@ -189,21 +261,30 @@ class _TravelDetailScreenState extends State<TravelDetailScreen> {
   int _lightboxIndex = 0;
   bool _lightboxOpen = false;
   late PageController _pageCtrl;
+  List<PaketTravel> _pakets = [];
+  bool _loadingPaket = true;
   Future<void> _load() async {
-    try {
-      final d = await TravelDetailService.getDetail(widget.travelId);
+  try {
+    final d = await TravelDetailService.getDetail(widget.travelId);
+    setState(() {
+      detail = d;
+      isLoading = false;
+    });
 
-      setState(() {
-        detail = d;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        error = e.toString();
-        isLoading = false;
-      });
-    }
+    // Fetch paket setelah detail berhasil
+    final p = await TravelDetailService.getPaket(widget.travelId);
+    setState(() {
+      _pakets = p;
+      _loadingPaket = false;
+    });
+  } catch (e) {
+    setState(() {
+      error = e.toString();
+      isLoading = false;
+      _loadingPaket = false;
+    });
   }
+}
 
   @override
   void initState() {
