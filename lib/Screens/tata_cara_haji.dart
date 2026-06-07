@@ -5,8 +5,7 @@ class TataCaraHajiScreen extends StatelessWidget {
   final bool isDark;
   const TataCaraHajiScreen({super.key, this.isDark = false});
 
-  final String youtubeUrl =
-      "https://www.youtube.com/watch?v=VIDEO_ID_KAMU"; // GANTI LINK
+  final String youtubeUrl = "https://youtu.be/fKZVMnCufvE";
 
   Future<void> _launchYoutube() async {
     final Uri url = Uri.parse(youtubeUrl);
@@ -30,7 +29,7 @@ class TataCaraHajiScreen extends StatelessWidget {
         backgroundColor: bg,
         body: Column(
           children: [
-            // ── AppBar ──────────────────────────────────────────────────────
+            // AppBar
             Container(
               height: 115,
               color: appBarBg,
@@ -71,14 +70,14 @@ class TataCaraHajiScreen extends StatelessWidget {
               ),
             ),
 
-            // ── Body ────────────────────────────────────────────────────────
+            // Body
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     const SizedBox(height: 25),
 
-                    // ── Thumbnail ──────────────────────────────────────────
+                    // Thumbnail
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Container(
@@ -112,7 +111,7 @@ class TataCaraHajiScreen extends StatelessWidget {
 
                     const SizedBox(height: 30),
 
-                    // ── Tombol Tonton Video ────────────────────────────────
+                    // Tombol Tonton Video
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE6A63C),

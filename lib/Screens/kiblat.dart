@@ -181,7 +181,7 @@ class _QiblaPageState extends State<QiblaPage> {
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _init,
               style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
@@ -218,299 +218,293 @@ class _QiblaPageState extends State<QiblaPage> {
       return '';
     }
 
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height,
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: Column(
+        children: [
+          const SizedBox(height: 6),
 
-            // HEADER - Hanya Tombol Back
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: _circleIcon(Icons.arrow_back, isDark),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // TITLE
-            Column(
+          // Back
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
               children: [
-                Text(
-                  "Arah",
-                  style: TextStyle(fontSize: 18, color: textSecondary),
-                ),
-                Text(
-                  "KIBLAT",
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
-                    letterSpacing: 2,
-                  ),
-                ),
-                Text(
-                  "untuk Sholat",
-                  style: TextStyle(fontSize: 16, color: textSecondary),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: _circleIcon(Icons.arrow_back, isDark),
                 ),
               ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
-            // LOCATION - Dinamis
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: isDark
-                    ? Colors.black.withOpacity(0.3)
-                    : Colors.white.withOpacity(0.3),
-                border: Border.all(color: Colors.orange.withOpacity(0.4)),
+          // TITLE
+          Column(
+            children: [
+              Text(
+                "Arah",
+                style: TextStyle(fontSize: 18, color: textSecondary),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.location_on, color: Colors.orange, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    _currentAddress,
-                    style: TextStyle(color: textSecondary, fontSize: 13),
-                  ),
-                ],
+              Text(
+                "KIBLAT",
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: textPrimary,
+                  letterSpacing: 2,
+                ),
               ),
+              Text(
+                "untuk Sholat",
+                style: TextStyle(fontSize: 16, color: textSecondary),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          // LOCATION - Dinamis
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              color: isDark
+                  ? Colors.black.withOpacity(0.3)
+                  : Colors.white.withOpacity(0.3),
+              border: Border.all(color: Colors.orange.withOpacity(0.4)),
             ),
-
-            const SizedBox(height: 30),
-
-            // COMPASS
-            Stack(
-              alignment: Alignment.center,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Ring luar tebal (hitam→emas untuk light, tetap sweep orange untuk dark)
-                Container(
-                  width: 290,
-                  height: 290,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: isDark
-                        ? SweepGradient(
-                            colors: [
-                              const Color(0xFFFFB300),
-                              const Color(0xFFFF5500),
-                              const Color(0xFFFFB300),
-                            ],
-                          )
-                        : SweepGradient(
-                            center: Alignment.center,
-                            colors: [
-                              const Color(0xFF4A0404),
-                              const Color(0xFFB8860B),
-                              const Color(0xFFD4AF37),
-                              const Color(0xFFB8860B),
-                              const Color(0xFF4A0404),
-                            ],
-                            stops: const [0.0, 0.2, 0.5, 0.8, 1.0],
-                          ),
-                  ),
-                ),
-                // Ring dalam tipis (gap putih/gelap)
-                Container(
-                  width: 268,
-                  height: 268,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isDark
-                        ? const Color(0xFF1A1A1A)
-                        : const Color(0xFFFFF8F0),
-                  ),
-                ),
-                // Ring garis emas tipis
-                Container(
-                  width: 258,
-                  height: 258,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFCFA84C).withOpacity(0.6),
-                      width: 1.2,
-                    ),
-                    color: Colors.transparent,
-                  ),
-                ),
-                // Lingkaran dalam utama
-                Container(
-                  width: 248,
-                  height: 248,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isDark
-                        ? const Color(0xFF1E1E1E).withOpacity(0.95)
-                        : const Color(0xFFFFFAF0).withOpacity(0.95),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.orange.withOpacity(0.15),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                ),
-                // 4 diamond tick mark (N/S/E/W)
-                ...List.generate(4, (i) {
-                  final angle = i * pi / 2;
-                  const r = 118.0;
-                  return Transform.translate(
-                    offset: Offset(r * sin(angle), -r * cos(angle)),
-                    child: Transform.rotate(
-                      angle: angle,
-                      child: Icon(
-                        Icons.diamond,
-                        size: 10,
-                        color: const Color(
-                          0xFFCFA84C,
-                        ).withOpacity(isDark ? 0.8 : 0.7),
-                      ),
-                    ),
-                  );
-                }),
-                // Jarum kiblat rotate
-                AnimatedRotation(
-                  turns: rotateRad / (2 * pi),
-                  duration: const Duration(milliseconds: 200),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Jarum custom mirip gambar (panah lancip atas + ekor V)
-                      CustomPaint(
-                        size: const Size(60, 90),
-                        painter: _QiblatNeedlePainter(),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "• KIBLAT •",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: const Color(0xFFCFA84C),
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ],
-                  ),
+                const Icon(Icons.location_on, color: Colors.orange, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  _currentAddress,
+                  style: TextStyle(color: textSecondary, fontSize: 13),
                 ),
               ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 30),
 
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  colors: isDark
-                      ? [const Color(0xFF2A2A2A), const Color(0xFF1A1A1A)]
-                      : [Colors.orange.shade300, Colors.orange.shade500],
-                ),
-                border: isDark
-                    ? Border.all(color: textPrimary.withOpacity(0.3))
-                    : null,
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    "Posisi HP Saat Ini",
-                    style: TextStyle(
-                      color: isDark ? textPrimary : Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    "${heading.toStringAsFixed(0)}° ${getDirection(heading)}",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? textPrimary : Colors.white,
-                    ),
-                  ),
-                  Text(
-                    "Kiblat: ${qiblaAngleDeg.toStringAsFixed(1)}° dari Utara",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? Colors.white38 : Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 25),
-
-            // INFO CARD - Data Asli
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(15),
+          // COMPASS
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              // Ring luar tebal (hitam→emas untuk light, tetap sweep orange untuk dark)
+              Container(
+                width: 290,
+                height: 290,
                 decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: isDark
+                      ? SweepGradient(
+                          colors: [
+                            const Color(0xFFFFB300),
+                            const Color(0xFFFF5500),
+                            const Color(0xFFFFB300),
+                          ],
+                        )
+                      : SweepGradient(
+                          center: Alignment.center,
+                          colors: [
+                            const Color(0xFF4A0404),
+                            const Color(0xFFB8860B),
+                            const Color(0xFFD4AF37),
+                            const Color(0xFFB8860B),
+                            const Color(0xFF4A0404),
+                          ],
+                          stops: const [0.0, 0.2, 0.5, 0.8, 1.0],
+                        ),
+                ),
+              ),
+              // Ring dalam tipis (gap putih/gelap)
+              Container(
+                width: 268,
+                height: 268,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
                   color: isDark
-                      ? const Color(0xFF1E1E1E).withOpacity(0.9)
-                      : Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(20),
+                      ? const Color(0xFF1A1A1A)
+                      : const Color(0xFFFFF8F0),
+                ),
+              ),
+              // Ring garis emas tipis
+              Container(
+                width: 258,
+                height: 258,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFFCFA84C).withOpacity(0.6),
+                    width: 1.2,
+                  ),
+                  color: Colors.transparent,
+                ),
+              ),
+              // Lingkaran dalam utama
+              Container(
+                width: 248,
+                height: 248,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark
+                      ? const Color(0xFF1E1E1E).withOpacity(0.95)
+                      : const Color(0xFFFFFAF0).withOpacity(0.95),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black26 : Colors.black12,
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _InfoItem(
-                      Icons.place,
-                      "Kota",
-                      _currentAddress.split(' ').last,
-                      isDark,
-                    ),
-                    _InfoItem(
-                      Icons.gps_fixed,
-                      "Akurasi",
-                      compassAccuracy != null
-                          ? "±${compassAccuracy.toStringAsFixed(0)}°"
-                          : "-",
-                      isDark,
-                    ),
-                    _InfoItem(
-                      Icons.map,
-                      "Lat",
-                      "${_position?.latitude.toStringAsFixed(2)}°",
-                      isDark,
-                    ),
-                    _InfoItem(
-                      Icons.explore,
-                      "Kiblat",
-                      "${qiblaAngleDeg.toStringAsFixed(0)}°",
-                      isDark,
+                      color: Colors.orange.withOpacity(0.15),
+                      blurRadius: 20,
+                      spreadRadius: 2,
                     ),
                   ],
                 ),
               ),
-            ),
+              // 4 diamond tick mark (N/S/E/W)
+              ...List.generate(4, (i) {
+                final angle = i * pi / 2;
+                const r = 118.0;
+                return Transform.translate(
+                  offset: Offset(r * sin(angle), -r * cos(angle)),
+                  child: Transform.rotate(
+                    angle: angle,
+                    child: Icon(
+                      Icons.diamond,
+                      size: 10,
+                      color: const Color(
+                        0xFFCFA84C,
+                      ).withOpacity(isDark ? 0.8 : 0.7),
+                    ),
+                  ),
+                );
+              }),
+              // Jarum kiblat rotate
+              AnimatedRotation(
+                turns: rotateRad / (2 * pi),
+                duration: const Duration(milliseconds: 200),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Jarum custom mirip gambar (panah lancip atas + ekor V)
+                    CustomPaint(
+                      size: const Size(60, 90),
+                      painter: _QiblatNeedlePainter(),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "• KIBLAT •",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: const Color(0xFFCFA84C),
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
 
-            const SizedBox(height: 30),
-          ],
-        ),
+          const SizedBox(height: 20),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [const Color(0xFF2A2A2A), const Color(0xFF1A1A1A)]
+                    : [Colors.orange.shade300, Colors.orange.shade500],
+              ),
+              border: isDark
+                  ? Border.all(color: textPrimary.withOpacity(0.3))
+                  : null,
+            ),
+            child: Column(
+              children: [
+                Text(
+                  "Posisi HP Saat Ini",
+                  style: TextStyle(color: isDark ? textPrimary : Colors.white),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  "${heading.toStringAsFixed(0)}° ${getDirection(heading)}",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? textPrimary : Colors.white,
+                  ),
+                ),
+                Text(
+                  "Kiblat: ${qiblaAngleDeg.toStringAsFixed(1)}° dari Utara",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white38 : Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // INFO CARD - Data Asli
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF1E1E1E).withOpacity(0.9)
+                    : Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark ? Colors.black26 : Colors.black12,
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _InfoItem(
+                    Icons.place,
+                    "Kota",
+                    _currentAddress.split(' ').last,
+                    isDark,
+                  ),
+                  _InfoItem(
+                    Icons.gps_fixed,
+                    "Akurasi",
+                    compassAccuracy != null
+                        ? "±${compassAccuracy.toStringAsFixed(0)}°"
+                        : "-",
+                    isDark,
+                  ),
+                  _InfoItem(
+                    Icons.map,
+                    "Lat",
+                    "${_position?.latitude.toStringAsFixed(2)}°",
+                    isDark,
+                  ),
+                  _InfoItem(
+                    Icons.explore,
+                    "Kiblat",
+                    "${qiblaAngleDeg.toStringAsFixed(0)}°",
+                    isDark,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+        ],
       ),
     );
   }
@@ -543,7 +537,7 @@ class _InfoItem extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, color: Colors.orange, size: 20),
-        const SizedBox(height: 5),
+        const SizedBox(height: 15),
         Text(
           title,
           style: TextStyle(

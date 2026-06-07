@@ -13,6 +13,7 @@ import 'Screens/waktu-sholat.dart';
 import 'Screens/travel_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Screens/google_login_screen.dart';
+import 'Screens/kesehatan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -75,6 +76,7 @@ class RavolaApp extends StatelessWidget {
             '/search': (context) => const TravelScreen(),
             '/theme-settings': (context) => ThemeSettingsScreen(isDark: isDark),
             '/kiblat': (context) => QiblaPage(isDark: isDark),
+            '/kesehatan': (context) => KesehatanScreen(isDark: isDark),
           },
         );
       },
@@ -476,6 +478,8 @@ class Dock extends StatelessWidget {
                     Navigator.pushNamed(context, '/search');
                   } else if (label == 'Kiblat') {
                     Navigator.pushNamed(context, '/kiblat');
+                  } else if (label == 'Health') {
+                    Navigator.pushNamed(context, '/kesehatan');
                   } else {
                     onTap?.call(label);
                   }
@@ -883,7 +887,7 @@ class ThemeSettingsScreen extends StatelessWidget {
                       const SizedBox(height: 14),
                       _ThemeOptionCard(
                         label: 'Light Mode',
-                        description: 'Tampilan terang dengan aksen emas',
+                        description: 'Tampilan terang dan kontras',
                         icon: Icons.wb_sunny_rounded,
                         isSelected: !currentDark,
                         gold: gold,
@@ -901,7 +905,7 @@ class ThemeSettingsScreen extends StatelessWidget {
                       const SizedBox(height: 14),
                       _ThemeOptionCard(
                         label: 'Dark Mode',
-                        description: 'Tampilan gelap elegan dengan emas',
+                        description: 'Tampilan gelap dan elegan',
                         icon: Icons.nightlight_round,
                         isSelected: currentDark,
                         gold: gold,

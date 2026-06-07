@@ -261,13 +261,15 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
         : const Color(0xFF8B7332);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: isDark
+          ? const Color(0xFF0E0B06)
+          : const Color(0xFFF5EDD6),
       body: Stack(
         children: [
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _rotateAnim,
-              builder: (_, _) => CustomPaint(
+              builder: (_, __) => CustomPaint(
                 painter: _IslamicBgPainter(
                   isDark: isDark,
                   rotation: _rotateAnim.value,
@@ -332,16 +334,32 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
                                   ),
                                 ],
                               ),
-                              child: Center(
-                                child: Text(
-                                  'R',
-                                  style: TextStyle(
-                                    fontSize: 42,
-                                    fontWeight: FontWeight.w800,
-                                    color: gold,
-                                    letterSpacing: 2,
-                                  ),
-                                ),
+                              child: ValueListenableBuilder<UserSession?>(
+                                valueListenable: userNotifier,
+                                builder: (context, user, _) {
+                                  return ClipOval(
+                                    child: user?.photoUrl != null
+                                        ? Image.network(
+                                            user!.photoUrl!,
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                Image.asset(
+                                                  'assets/images/final_logo.png',
+                                                  width: 100,
+                                                  height: 100,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                          )
+                                        : Image.asset(
+                                            'assets/images/final_logo.png',
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                          ),
+                                  );
+                                },
                               ),
                             ),
 
@@ -391,7 +409,6 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
                               ),
                               child: Column(
                                 children: [
-                                  // Arabic text decoration
                                   Text(
                                     'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
                                     style: TextStyle(
@@ -401,8 +418,6 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-
-                                  const SizedBox(height: 4),
                                   Container(
                                     height: 1,
                                     margin: const EdgeInsets.symmetric(
@@ -419,74 +434,134 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen>
                                     ),
                                   ),
 
-                                  Text(
-                                    'Masuk untuk melanjutkan',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      color: textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Login dengan akun Google kamu untuk\nmenyimpan progres dan preferensi.',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: textSecondary,
-                                      height: 1.5,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 28),
-
-                                  // Error Message
-                                  if (_errorMessage != null) ...[
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 14,
-                                        vertical: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red.withOpacity(
-                                          isDark ? 0.2 : 0.08,
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: Colors.red.withOpacity(0.3),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.error_outline_rounded,
-                                            color: Colors.redAccent,
-                                            size: 18,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Text(
-                                              _errorMessage!,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.redAccent,
+                                  // ── Cek status login ──
+                                  ValueListenableBuilder<UserSession?>(
+                                    valueListenable: userNotifier,
+                                    builder: (context, user, _) {
+                                      if (user != null) {
+                                        // ── Sudah login ──
+                                        return Column(
+                                          children: [
+                                            Text(
+                                              'Assalamu\'alaikum,',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: textSecondary,
+                                                letterSpacing: 0.5,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              user.name,
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w700,
+                                                color: textPrimary,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 14),
+                                            Container(
+                                              height: 1,
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.transparent,
+                                                    gold.withOpacity(0.3),
+                                                    Colors.transparent,
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                  ],
+                                            const SizedBox(height: 14),
+                                            Text(
+                                              'Semoga ibadah haji & umroh kita\ndimudahkan dan diterima oleh Allah SWT.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: textSecondary,
+                                                height: 1.6,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
 
-                                  // ── Google Button ──
-                                  _isLoading
-                                      ? _LoadingIndicator(gold: gold)
-                                      : _GoogleSignInButton(
-                                          isDark: isDark,
-                                          gold: gold,
-                                          onTap: _handleGoogleSignIn,
-                                        ),
+                                      // ── Belum login ──
+                                      return Column(
+                                        children: [
+                                          Text(
+                                            'Masuk untuk melanjutkan',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
+                                              color: textPrimary,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Login dengan akun Google kamu untuk\nmenyimpan progres dan preferensi.',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: textSecondary,
+                                              height: 1.5,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 28),
+                                          if (_errorMessage != null) ...[
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 14,
+                                                    vertical: 10,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.red.withOpacity(
+                                                  isDark ? 0.2 : 0.08,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                  color: Colors.red.withOpacity(
+                                                    0.3,
+                                                  ),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.error_outline_rounded,
+                                                    color: Colors.redAccent,
+                                                    size: 18,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child: Text(
+                                                      _errorMessage!,
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.redAccent,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 16),
+                                          ],
+                                          _isLoading
+                                              ? _LoadingIndicator(gold: gold)
+                                              : _GoogleSignInButton(
+                                                  isDark: isDark,
+                                                  gold: gold,
+                                                  onTap: _handleGoogleSignIn,
+                                                ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
@@ -719,32 +794,164 @@ class _IslamicBgPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final gold = const Color(0xFFC9A84C);
-    final op = isDark ? 0.06 : 0.08;
+
+    // ── Background utama ──
+    final bgColor = isDark
+        ? const Color(0xFF0E0B06) // dark: coklat tua kehitaman
+        : const Color(0xFFF5EDD6); // light: krem hangat keemasan
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = bgColor,
+    );
+
+    // ── Subtle vignette di pojok ──
+    final vignetteColor = isDark
+        ? const Color(0xFF3D1A00)
+        : const Color(0xFFC47A1E);
+    final vignette = Paint()
+      ..shader = RadialGradient(
+        center: Alignment.center,
+        radius: 1.0,
+        colors: [
+          Colors.transparent,
+          vignetteColor.withOpacity(isDark ? 0.35 : 0.18),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), vignette);
+
+    final op = isDark ? 0.18 : 0.40;
 
     final paint = Paint()
-      ..color = gold.withOpacity(op)
+      ..color = isDark
+          ? gold.withOpacity(op)
+          : const Color(0xFFB85C00).withOpacity(0.18)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8;
+      ..strokeWidth = isDark ? 0.8 : 1.2;
 
-    // Slowly rotating star in center background
+    // ── Bintang tengah berputar ──
     canvas.save();
     canvas.translate(size.width / 2, size.height * 0.38);
     canvas.rotate(rotation);
     _drawStarOutline(canvas, Offset.zero, 120, paint);
     canvas.restore();
 
-    // Corner ornaments (static)
-    _drawCornerArc(canvas, Offset.zero, 80, gold.withOpacity(op + 0.05));
+    // ── Bintang kecil tambahan ──
+    canvas.save();
+    canvas.translate(size.width * 0.12, size.height * 0.72);
+    canvas.rotate(-rotation * 0.6);
+    _drawStarOutline(
+      canvas,
+      Offset.zero,
+      30,
+      Paint()
+        ..color = isDark
+            ? gold.withOpacity(op * 0.7)
+            : const Color(0xFFCC6600).withOpacity(0.45)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.6,
+    );
+    canvas.restore();
+
+    canvas.save();
+    canvas.translate(size.width * 0.88, size.height * 0.62);
+    canvas.rotate(rotation * 0.4);
+    _drawStarOutline(
+      canvas,
+      Offset.zero,
+      24,
+      Paint()
+        ..color = isDark
+            ? gold.withOpacity(op * 0.6)
+            : const Color(0xFFD4A017).withOpacity(0.40)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.6,
+    );
+    canvas.restore();
+
+    // ── Corner ornaments ──
+    _drawCornerArc(
+      canvas,
+      Offset.zero,
+      80,
+      isDark
+          ? gold.withOpacity(op + 0.06)
+          : const Color(0xFFB85C00).withOpacity(0.6),
+    );
     _drawCornerArc(
       canvas,
       Offset(size.width, 0),
       80,
-      gold.withOpacity(op + 0.05),
+      isDark
+          ? gold.withOpacity(op + 0.06)
+          : const Color(0xFFB85C00).withOpacity(0.6),
       flipX: true,
     );
+    _drawCornerArc(
+      canvas,
+      Offset(0, size.height),
+      60,
+      isDark
+          ? gold.withOpacity(op * 0.8)
+          : const Color(0xFFCC7700).withOpacity(0.45),
+      flipY: true,
+    );
+    _drawCornerArc(
+      canvas,
+      Offset(size.width, size.height),
+      60,
+      isDark
+          ? gold.withOpacity(op * 0.8)
+          : const Color(0xFFCC7700).withOpacity(0.45),
+      flipX: true,
+      flipY: true,
+    );
 
-    // Bottom vine
-    _drawVine(canvas, size, gold.withOpacity(op + 0.04));
+    // ── Vine lines ──
+    _drawVine(
+      canvas,
+      size,
+      isDark
+          ? gold.withOpacity(op + 0.05)
+          : const Color(0xFFB85C00).withOpacity(0.5),
+      size.height * 0.85,
+    );
+    _drawVine(
+      canvas,
+      size,
+      isDark
+          ? gold.withOpacity(op * 0.6)
+          : const Color(0xFFD4A017).withOpacity(0.35),
+      size.height * 0.15,
+    );
+
+    // ── Diamond dots ──
+    final diamondPaint = Paint()
+      ..color = isDark
+          ? gold.withOpacity(op * 0.9)
+          : const Color(0xFFB85C00).withOpacity(0.5)
+      ..style = PaintingStyle.fill;
+    for (final pt in [
+      Offset(size.width * 0.08, size.height * 0.3),
+      Offset(size.width * 0.92, size.height * 0.3),
+      Offset(size.width * 0.08, size.height * 0.6),
+      Offset(size.width * 0.92, size.height * 0.6),
+      Offset(size.width * 0.5, size.height * 0.12),
+      Offset(size.width * 0.5, size.height * 0.88),
+    ]) {
+      _drawDiamond(canvas, pt, 5, diamondPaint);
+    }
+  }
+
+  void _drawDiamond(Canvas canvas, Offset c, double h, Paint paint) {
+    canvas.drawPath(
+      Path()
+        ..moveTo(c.dx, c.dy - h)
+        ..lineTo(c.dx + h * 0.55, c.dy)
+        ..lineTo(c.dx, c.dy + h)
+        ..lineTo(c.dx - h * 0.55, c.dy)
+        ..close(),
+      paint,
+    );
   }
 
   void _drawStarOutline(Canvas canvas, Offset center, double r, Paint paint) {
@@ -779,6 +986,7 @@ class _IslamicBgPainter extends CustomPainter {
     double size,
     Color color, {
     bool flipX = false,
+    bool flipY = false,
   }) {
     final paint = Paint()
       ..color = color
@@ -786,23 +994,19 @@ class _IslamicBgPainter extends CustomPainter {
       ..strokeWidth = 0.8;
     for (double s in [size, size * 0.7, size * 0.45]) {
       final path = Path();
-      if (!flipX) {
-        path.moveTo(origin.dx, origin.dy + s);
-        path.quadraticBezierTo(origin.dx, origin.dy, origin.dx + s, origin.dy);
-      } else {
-        path.moveTo(origin.dx, origin.dy + s);
-        path.quadraticBezierTo(origin.dx, origin.dy, origin.dx - s, origin.dy);
-      }
+      final dx = flipX ? -s : s;
+      final dy = flipY ? -s : s;
+      path.moveTo(origin.dx, origin.dy + dy);
+      path.quadraticBezierTo(origin.dx, origin.dy, origin.dx + dx, origin.dy);
       canvas.drawPath(path, paint);
     }
   }
 
-  void _drawVine(Canvas canvas, Size size, Color color) {
+  void _drawVine(Canvas canvas, Size size, Color color, double y) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.7;
-    final y = size.height * 0.85;
     final path = Path()
       ..moveTo(20, y)
       ..quadraticBezierTo(80, y - 18, 140, y)

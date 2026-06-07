@@ -44,10 +44,20 @@ class Travel {
     alamat: json['alamat'],
     telepon: json['nomor_telepon'],
     email: json['email'],
-    logo: json['logo'],
+    logo: _buildLogoUrl(json['logo']),
     nomorSkUmrah: json['nomor_sk_umrah'],
     nomorSkHaji: json['nomor_sk_haji'],
   );
+
+  static String? _buildLogoUrl(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    // Kalau sudah full URL, extract path-nya saja
+    String path = raw;
+    if (raw.contains('/storage/')) {
+      path = raw.split('/storage/').last;
+    }
+    return 'https://yxnepziwgobpxpsgaxbz.supabase.co/storage/v1/object/public/$path';
+  }
 }
 
 class NearbyTravel {
@@ -70,7 +80,7 @@ class NearbyTravel {
     nama: json['nama'] ?? '',
     distanceKm: (json['distance_km'] as num).toDouble(),
     alamat: json['alamat'],
-    logo: json['logo'],
+    logo: Travel._buildLogoUrl(json['logo']),
     detailUrl: json['detail_url'],
   );
 }
@@ -143,53 +153,20 @@ class TravelService {
     required double lng,
     double radius = 50,
   }) async {
-    final cookies = await _solveChallenge('$BASE_URL/api/travel');
-    final cookieHeader = cookies.entries
-        .map((e) => '${e.key}=${e.value}')
-        .join('; ');
-    final pageRes = await http.get(
-      Uri.parse('$BASE_URL/travel'),
-      headers: {
-        'User-Agent': _userAgent,
-        'Cookie': cookieHeader,
-        'Accept': 'text/html',
-      },
-    );
-    final html = pageRes.body;
-    String? csrfToken =
-        RegExp(
-          r'name="csrf-token"\s+content="([^"]+)"',
-        ).firstMatch(html)?.group(1) ??
-        RegExp(r'name="_token"\s+value="([^"]+)"').firstMatch(html)?.group(1);
-    if (csrfToken == null || csrfToken.isEmpty)
-      throw Exception('CSRF token tidak ditemukan');
-
-    final rawCookie = pageRes.headers['set-cookie'] ?? '';
-    String laravelSession =
-        RegExp(r'laravel_session=([^;]+)').firstMatch(rawCookie)?.group(1) ??
-        '';
-    String xsrfToken =
-        RegExp(r'XSRF-TOKEN=([^;]+)').firstMatch(rawCookie)?.group(1) ?? '';
-
-    final fullCookie = [
-      cookieHeader,
-      if (laravelSession.isNotEmpty) 'laravel_session=$laravelSession',
-      if (xsrfToken.isNotEmpty) 'XSRF-TOKEN=$xsrfToken',
-    ].join('; ');
-
     final response = await http.post(
-      Uri.parse('$BASE_URL/travel/nearby?i=1'),
+      Uri.parse('$BASE_URL/travel/nearby'),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Cookie': fullCookie,
         'User-Agent': _userAgent,
-        'X-CSRF-TOKEN': csrfToken,
         'X-Requested-With': 'XMLHttpRequest',
-        'Referer': '$BASE_URL/travel',
       },
       body: jsonEncode({'lat': lat, 'lng': lng, 'radius': radius}),
     );
+
+    debugPrint('📡 [NEARBY] status: ${response.statusCode}');
+    debugPrint('📡 [NEARBY] body: ${response.body}');
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return (data['travels'] as List)
@@ -336,18 +313,24 @@ class _TravelScreenState extends State<TravelScreen> {
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
+      debugPrint(' [NEARBY] Posisi: lat=${pos.latitude}, lng=${pos.longitude}');
+
       final results = await TravelService.getNearby(
         lat: pos.latitude,
         lng: pos.longitude,
         radius: 50,
       );
+      debugPrint(' [NEARBY] Ditemukan ${results.length} travel');
+
       setState(() {
         nearbyIds = results.map((t) => t.id).toSet();
         isNearbyLoading = false;
       });
       if (!mounted) return;
       _showNearbyBottomSheet(results);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint(' [NEARBY] Error: $e');
+      debugPrint(' [NEARBY] StackTrace: $stackTrace');
       setState(() => isNearbyLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1113,9 +1096,8 @@ class _TravelScreenState extends State<TravelScreen> {
                                   t.logo!,
                                   width: 72,
                                   height: 72,
-                                  // FIT: contain agar logo kotak/persegi panjang
-                                  // tetap kelihatan full tanpa terpotong
                                   fit: BoxFit.contain,
+                                  headers: const {'User-Agent': 'Mozilla/5.0'},
                                   errorBuilder: (_, __, ___) => _logoFallback(),
                                 )
                               : _logoFallback(),

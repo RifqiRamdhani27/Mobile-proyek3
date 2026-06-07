@@ -653,7 +653,6 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                             final item = sholatTimes[i];
                             final isCur = i == activeIndex;
                             final isLast = i == sholatTimes.length - 1;
-                            // card: width:"48%" — cardFull: width:"100%"
                             final cardW = isLast
                                 ? double.infinity
                                 : (MediaQuery.of(context).size.width -
@@ -663,64 +662,19 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
 
                             return SizedBox(
                               width: cardW,
-                              child: Container(
-                                // card: borderRadius:14 padding:12
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: isCur ? curBg : cardBg,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: isCur ? curBdr : cardBdr,
-                                    width: isCur ? 1 : 0.5,
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // cardName: fontSize:10 letterSpacing:1 marginBottom:4
-                                    Text(
-                                      item['name']!.toUpperCase(),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        letterSpacing: 1,
-                                        color: nameClr,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    // cardTime: fontSize:20 fontWeight:500
-                                    Text(
-                                      item['time']!,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
-                                        color: isCur ? timeClr : timeOff,
-                                      ),
-                                    ),
-                                    // bar: height:2 borderRadius:2 marginTop:8
-                                    const SizedBox(height: 8),
-                                    Container(
-                                      height: 2,
-                                      decoration: BoxDecoration(
-                                        color: barBg,
-                                        borderRadius: BorderRadius.circular(2),
-                                      ),
-                                      // barFill: height:2 borderRadius:2 width:"68%"
-                                      child: isCur
-                                          ? FractionallySizedBox(
-                                              alignment: Alignment.centerLeft,
-                                              widthFactor: 0.68,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: cdClr,
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                ),
-                                              ),
-                                            )
-                                          : null,
-                                    ),
-                                  ],
-                                ),
+                              child: _SholatCard(
+                                item: item,
+                                isCur: isCur,
+                                isDark: widget.isDark,
+                                curBg: curBg,
+                                cardBg: cardBg,
+                                curBdr: curBdr,
+                                cardBdr: cardBdr,
+                                nameClr: nameClr,
+                                timeClr: timeClr,
+                                timeOff: timeOff,
+                                barBg: barBg,
+                                cdClr: cdClr,
                               ),
                             );
                           }),
@@ -818,6 +772,165 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                 ),
               );
             }).toList(),
+      ),
+    );
+  }
+}
+
+class _SholatCard extends StatefulWidget {
+  final Map<String, String> item;
+  final bool isCur;
+  final bool isDark;
+  final Color curBg, cardBg, curBdr, cardBdr;
+  final Color nameClr, timeClr, timeOff, barBg, cdClr;
+
+  const _SholatCard({
+    required this.item,
+    required this.isCur,
+    required this.isDark,
+    required this.curBg,
+    required this.cardBg,
+    required this.curBdr,
+    required this.cardBdr,
+    required this.nameClr,
+    required this.timeClr,
+    required this.timeOff,
+    required this.barBg,
+    required this.cdClr,
+  });
+
+  @override
+  State<_SholatCard> createState() => _SholatCardState();
+}
+
+class _SholatCardState extends State<_SholatCard>
+    with SingleTickerProviderStateMixin {
+  bool _pressed = false;
+  late AnimationController _ctrl;
+  late Animation<double> _scaleAnim;
+  late Animation<double> _glowAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 180),
+    );
+    _scaleAnim = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _glowAnim = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(_) {
+    setState(() => _pressed = true);
+    _ctrl.forward();
+  }
+
+  void _onTapUp(_) {
+    setState(() => _pressed = false);
+    _ctrl.reverse();
+  }
+
+  void _onTapCancel() {
+    setState(() => _pressed = false);
+    _ctrl.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedBuilder(
+        animation: _ctrl,
+        builder: (_, child) {
+          return Transform.scale(
+            scale: _scaleAnim.value,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _pressed
+                    ? (widget.isCur
+                          ? widget.curBg
+                          : (widget.isDark
+                                ? const Color(0xFF2A2A2A)
+                                : const Color(0xFFFFFBF0)))
+                    : (widget.isCur ? widget.curBg : widget.cardBg),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: widget.isCur ? widget.curBdr : widget.cardBdr,
+                  width: widget.isCur ? 1 : 0.5,
+                ),
+                boxShadow: _pressed
+                    ? [
+                        BoxShadow(
+                          color: const Color(
+                            0xFFD4A017,
+                          ).withOpacity(0.25 * _glowAnim.value),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.item['name']!.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      letterSpacing: 1,
+                      color: widget.nameClr,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.item['time']!,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: widget.isCur ? widget.timeClr : widget.timeOff,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 2,
+                    decoration: BoxDecoration(
+                      color: widget.barBg,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    child: widget.isCur
+                        ? FractionallySizedBox(
+                            alignment: Alignment.centerLeft,
+                            widthFactor: 0.68,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: widget.cdClr,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          )
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

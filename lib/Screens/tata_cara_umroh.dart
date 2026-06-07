@@ -5,8 +5,7 @@ class TataCaraUmrohScreen extends StatelessWidget {
   final bool isDark;
   const TataCaraUmrohScreen({super.key, this.isDark = false});
 
-  final String youtubeUrl =
-      "https://www.youtube.com/watch?v=VIDEO_ID_KAMU"; // GANTI LINK
+  final String youtubeUrl = "https://youtu.be/XJBibv9_FBI";
 
   Future<void> _launchYoutube() async {
     final Uri url = Uri.parse(youtubeUrl);

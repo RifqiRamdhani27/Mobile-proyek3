@@ -74,11 +74,11 @@ class TravelDetail {
       if (raw is List) {
         for (final e in raw) {
           if (e is String && e.isNotEmpty) {
-            galeriList.add(e);
+            galeriList.add(_buildImgUrl(e));
           } else if (e is Map) {
             final url = e['url'] ?? e['path'] ?? e['foto'] ?? e['image'];
             if (url != null && url.toString().isNotEmpty) {
-              galeriList.add(url.toString());
+              galeriList.add(_buildImgUrl(url.toString()));
             }
           }
         }
@@ -90,10 +90,11 @@ class TravelDetail {
             .toList();
       }
     }
+
     return TravelDetail(
       id: j['id'],
       nama: j['nama_travel'] ?? '',
-      logo: j['logo'],
+      logo: j['logo'] != null ? _buildImgUrl(j['logo']) : null,
       deskripsi: j['deskripsi'],
       alamat: j['alamat'],
       email: j['email'],
@@ -106,6 +107,14 @@ class TravelDetail {
       izinKemenag: j['izin_kemenag'],
       galeri: galeriList,
     );
+  }
+
+  static String _buildImgUrl(String raw) {
+    if (raw.contains('/storage/')) {
+      final path = raw.split('/storage/').last;
+      return 'https://yxnepziwgobpxpsgaxbz.supabase.co/storage/v1/object/public/$path';
+    }
+    return raw;
   }
 }
 

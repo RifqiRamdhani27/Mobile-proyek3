@@ -68,7 +68,7 @@ class _MLModalState extends State<_MLModal>
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({'budget': budget, 'saving': saving}),
+        body: jsonEncode({'fase': 1, 'saldo': budget, 'income': saving}),
       );
 
       if (response.statusCode == 200) {
@@ -188,7 +188,7 @@ class _MLModalState extends State<_MLModal>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'PREDIKSI FINANSIAL HAJI',
+                        'PREDIKSI FINANSIAL &\nKEBERANGKATAN HAJI',
                         style: TextStyle(
                           color: Color(0xFFFFF176),
                           fontSize: 11,
@@ -221,7 +221,7 @@ class _MLModalState extends State<_MLModal>
               const SizedBox(height: 6),
               _buildRpInput(_budgetCtrl, '2.000.000'),
               const SizedBox(height: 14),
-              _buildInputLabel('NABUNG PER BULAN'),
+              _buildInputLabel('INCOME PER BULAN'),
               const SizedBox(height: 6),
               _buildRpInput(_savingCtrl, '2.000.000'),
               const SizedBox(height: 20),
@@ -324,7 +324,7 @@ class _MLModalState extends State<_MLModal>
     return Stack(
       children: [
         SizedBox(
-          height: _showResult ? 530 : 320,
+          height: _showResult ? 550 : 320,
           width: double.infinity,
           child: Stack(
             fit: StackFit.expand,
@@ -419,135 +419,290 @@ class _MLModalState extends State<_MLModal>
     final data = _predictionData;
     if (data == null) return const SizedBox();
 
-    final targetYear = data['haji_year'].toString();
-    final currentYear = 2026;
-    final gap = targetYear == '2045+'
-        ? 25
-        : (int.tryParse(targetYear) ?? 2045) - currentYear;
+    final namaBulan = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
 
-    final slope = (double.tryParse(data['slope'].toString()) ?? 0) * 1000000;
-    final slopeFormatted = NumberFormat.currency(
+    final bisaDaftarSekarang = data['bisa_daftar_sekarang'] == true;
+    final daftarMonth = data['daftar_month'] as int;
+    final daftarYear = data['daftar_year'] as int;
+    final berangkatYear = data['berangkat_year'] as int;
+    final bulanLagi = data['bulan_menuju_daftar'] as int;
+    final bipihPred = data['bipih_pred'] as int;
+    final sisaPelunasan = data['sisa_pelunasan'] as int;
+
+    final fmt = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
       decimalDigits: 0,
-    ).format(slope);
+    );
 
-    String message;
-    if (gap <= 3) {
-      message =
-          'Perencanaan finansial Anda sangat matang. Target $targetYear sangat presisi untuk diraih.';
-    } else if (gap <= 10) {
-      message =
-          'Anda berada di jalur tepat untuk keberangkatan tahun $targetYear. Terus pertahankan konsistensi.';
-    } else if (gap <= 20) {
-      message =
-          'Sistem memproyeksikan keberangkatan tahun $targetYear. Pertimbangkan alokasi pendapatan tambahan.';
-    } else {
-      message =
-          'Proyeksi berada pada tahun $targetYear. Tinjau kembali alokasi bulanan untuk memperkuat daya simpan.';
-    }
+    final opsiLabel = [
+      {'key': 'opsi1', 'label': 'Santai', 'desc': 'Lunas tepat waktu'},
+      {'key': 'opsi2', 'label': 'Stabil', 'desc': 'Lunas 5 th lebih cepat'},
+      {'key': 'opsi3', 'label': 'Agresif', 'desc': 'Lunas 10 th lebih cepat'},
+    ];
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Estimasi Keberangkatan',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          targetYear,
-          style: const TextStyle(
-            color: Color(0xFFF5B400),
-            fontSize: 56,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-          ),
-        ),
-        const SizedBox(height: 12),
+        // ── FASE 1
         Container(
           width: double.infinity,
-          height: 80,
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kGold.withOpacity(0.2)),
-          ),
-          child: CustomPaint(painter: _SimpleBarChartPainter()),
-        ),
-        const SizedBox(height: 12),
-        Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.4),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kGold.withOpacity(0.2)),
+            border: Border.all(color: kGold.withOpacity(0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Analisis Machine Learning (Akurasi 97.80%):',
+                'FASE 1 — KAPAN BISA DAFTAR?',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 11,
+                  color: kGold,
+                  fontSize: 9,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                '• Tren Rutin: Eskalasi biaya ±$slopeFormatted/tahun.',
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 10,
-                  height: 1.6,
-                ),
-              ),
-              const Text(
-                '• Kebijakan: Penyesuaian subsidi ±Rp 10.000.000 (Pasca 2023).',
-                style: TextStyle(color: Colors.grey, fontSize: 10, height: 1.6),
               ),
               const SizedBox(height: 8),
-              Text(
-                message,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 11,
-                  height: 1.5,
+              if (bisaDaftarSekarang) ...[
+                const Text(
+                  ' Saldo Anda sudah mencukupi setoran awal Rp 25.000.000.',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    height: 1.5,
+                  ),
+                ),
+                Text(
+                  ' Anda bisa daftar sekarang (${namaBulan[daftarMonth - 1]} $daftarYear).',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    height: 1.5,
+                  ),
+                ),
+              ] else ...[
+                const Text(
+                  ' Saldo belum mencapai Rp 25.000.000.',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    height: 1.5,
+                  ),
+                ),
+                Text(
+                  ' Anda bisa daftar pada ${namaBulan[daftarMonth - 1]} $daftarYear ($bulanLagi bulan lagi).',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 4),
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontSize: 11, height: 1.5),
+                  children: [
+                    const TextSpan(
+                      text: ' Estimasi keberangkatan: ',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    TextSpan(
+                      text: '$berangkatYear',
+                      style: const TextStyle(
+                        color: kGold,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' (masa tunggu 26 tahun).',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+
+        const SizedBox(height: 12),
+
+        // ── FASE 2 header
+        const Text(
+          'FASE 2 — PREDIKSI & CICILAN',
+          style: TextStyle(
+            color: kGold,
+            fontSize: 9,
+            letterSpacing: 2,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // ── 2 card BIPIH & Sisa
         Row(
           children: [
             Expanded(
-              child: GestureDetector(
-                onTap: _reset,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Tutup',
-                      style: TextStyle(color: Colors.white, fontSize: 13),
-                    ),
-                  ),
-                ),
+              child: _infoCard(
+                'Prediksi BIPIH $berangkatYear',
+                fmt.format(bipihPred),
+                const Color(0xFFFFF176),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _infoCard(
+                'Sisa Setelah Setoran Awal',
+                fmt.format(sisaPelunasan),
+                const Color(0xFFFFAB40),
+              ),
+            ),
           ],
         ),
+
+        const SizedBox(height: 12),
+
+        // ── 3 opsi cicilan
+        const Text(
+          'PILIHAN CICILAN PELUNASAN',
+          style: TextStyle(color: Colors.grey, fontSize: 9, letterSpacing: 2),
+        ),
+        const SizedBox(height: 8),
+
+        ...opsiLabel.map((o) {
+          final op = data[o['key']] as Map<String, dynamic>;
+          final perBulan = fmt.format(op['per_bulan']);
+          final lunasM = namaBulan[(op['lunas_month'] as int) - 1];
+          final lunasY = op['lunas_year'];
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: kGold.withOpacity(0.2)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        o['label']!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${o['desc']} — lunas $lunasM $lunasY',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: perBulan,
+                        style: const TextStyle(
+                          color: kGold,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const TextSpan(
+                        text: '/bln',
+                        style: TextStyle(color: Colors.grey, fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+
+        const SizedBox(height: 12),
+
+        // ── Tombol reset
+        GestureDetector(
+          onTap: _reset,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white24),
+            ),
+            child: const Center(
+              child: Text(
+                'Hitung Ulang',
+                style: TextStyle(color: Colors.white, fontSize: 13),
+              ),
+            ),
+          ),
+        ),
       ],
+    );
+  }
+
+  Widget _infoCard(String label, String value, Color valueColor) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kGold.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 9,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: valueColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -623,12 +778,18 @@ class _MLModalState extends State<_MLModal>
           const SizedBox(width: 10),
           Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Contoh:',
-                  style: TextStyle(color: Colors.grey, fontSize: 9),
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 9,
+                    letterSpacing: 0.5,
+                  ),
                 ),
+                const SizedBox(height: 2),
                 TextField(
                   controller: ctrl,
                   keyboardType: TextInputType.number,
@@ -636,6 +797,7 @@ class _MLModalState extends State<_MLModal>
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
+                    height: 1,
                   ),
                   decoration: InputDecoration(
                     hintText: hint,
@@ -645,7 +807,7 @@ class _MLModalState extends State<_MLModal>
                     ),
                     border: InputBorder.none,
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    contentPadding: const EdgeInsets.only(bottom: 4),
                   ),
                   inputFormatters: [_RupiahFormatter()],
                 ),
