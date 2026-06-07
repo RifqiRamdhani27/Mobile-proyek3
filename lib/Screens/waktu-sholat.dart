@@ -6,6 +6,7 @@ import 'package:ravola/Screens/travel_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:ravola/Screens/kesehatan.dart';
 
 // ─── Islamic Background ───────────────────────────────────────────────────────
 class IslamicBackgroundTime extends StatelessWidget {
@@ -746,6 +747,9 @@ class _WaktuSholatScreenState extends State<WaktuSholatScreen> {
                     Navigator.pushNamed(context, '/kiblat');
                   } else if (label == 'Time' && !isActive) {
                     Navigator.pushNamed(context, '/waktu-sholat');
+                  } else if (label == 'Health') {
+                    // ← tambahkan ini
+                    Navigator.pushNamed(context, '/kesehatan');
                   }
                 },
                 child: Column(
