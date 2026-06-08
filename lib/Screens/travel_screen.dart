@@ -283,7 +283,9 @@ class _TravelScreenState extends State<TravelScreen> {
   Future<void> _goToLogin() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => GoogleLoginScreen(isDark: false)),
+      MaterialPageRoute(
+        builder: (_) => GoogleLoginScreen(isDark: themeNotifier.value),
+      ),
     );
     if (userNotifier.value != null) {
       fetchData();
