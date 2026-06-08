@@ -22,6 +22,23 @@ const Color kDark = Color(0xFF2C1A00);
 const Color kMuted = Color(0xFF7A6040);
 const Color kGreen = Color(0xFF10B981);
 
+const String kSupabaseStorageUrl =
+    'https://yxnepziwgobpxpsgaxbz.supabase.co/storage/v1/object/public/travels';
+
+String buildStorageUrl(String? raw) {
+  if (raw == null || raw.isEmpty) return '';
+  if (raw.startsWith('http')) {
+    // Hapus double travels/ jika ada
+    return raw.replaceFirst(
+      'storage/v1/object/public/travels/travels/',
+      'storage/v1/object/public/travels/',
+    );
+  }
+  if (raw.startsWith('travels/'))
+    return 'https://yxnepziwgobpxpsgaxbz.supabase.co/storage/v1/object/public/$raw';
+  return '$kSupabaseStorageUrl/$raw';
+}
+
 class Travel {
   final int id;
   final String nama;
@@ -38,25 +55,23 @@ class Travel {
     this.nomorSkHaji,
   });
 
-  factory Travel.fromJson(Map<String, dynamic> json) => Travel(
-    id: json['id'],
-    nama: json['nama_travel'] ?? '',
-    alamat: json['alamat'],
-    telepon: json['nomor_telepon'],
-    email: json['email'],
-    logo: _buildLogoUrl(json['logo']),
-    nomorSkUmrah: json['nomor_sk_umrah'],
-    nomorSkHaji: json['nomor_sk_haji'],
-  );
+  factory Travel.fromJson(Map<String, dynamic> json) {
+    debugPrint('📦 [RAW LOGO] ${json['nama_travel']}: ${json['logo']}');
+    return Travel(
+      id: json['id'],
+      nama: json['nama_travel'] ?? '',
+      alamat: json['alamat'],
+      telepon: json['nomor_telepon'],
+      email: json['email'],
+      logo: _buildLogoUrl(json['logo']),
+      nomorSkUmrah: json['nomor_sk_umrah'],
+      nomorSkHaji: json['nomor_sk_haji'],
+    );
+  }
 
   static String? _buildLogoUrl(String? raw) {
-    if (raw == null || raw.isEmpty) return null;
-    // Kalau sudah full URL, extract path-nya saja
-    String path = raw;
-    if (raw.contains('/storage/')) {
-      path = raw.split('/storage/').last;
-    }
-    return 'https://yxnepziwgobpxpsgaxbz.supabase.co/storage/v1/object/public/$path';
+    final url = buildStorageUrl(raw);
+    return url.isEmpty ? null : url;
   }
 }
 
@@ -80,7 +95,11 @@ class NearbyTravel {
     nama: json['nama'] ?? '',
     distanceKm: (json['distance_km'] as num).toDouble(),
     alamat: json['alamat'],
-    logo: Travel._buildLogoUrl(json['logo']),
+    logo:
+        buildStorageUrl(json['logo'])
+            .isEmpty // ← sekarang di-build
+        ? null
+        : buildStorageUrl(json['logo']),
     detailUrl: json['detail_url'],
   );
 }
@@ -278,6 +297,9 @@ class _TravelScreenState extends State<TravelScreen> {
     try {
       final data = await TravelService.getTravels(search: search);
       setState(() {
+        debugPrint('✅ [TRAVEL] Total: ${data.length}');
+        if (data.isNotEmpty)
+          debugPrint('🖼️ [LOGO FINAL] ${data[0].nama}: ${data[0].logo}');
         travels = data;
         isLoading = false;
         error = '';
