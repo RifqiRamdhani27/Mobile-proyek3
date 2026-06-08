@@ -254,8 +254,8 @@ class TravelDetailService {
         headers: {'Accept': 'application/json', 'User-Agent': _userAgent},
       );
       // TAMBAH INI
-      debugPrint('📦 [PAKET] status: ${response.statusCode}');
-      debugPrint('📦 [PAKET] body: ${response.body}');
+      debugPrint(' [PAKET] status: ${response.statusCode}');
+      debugPrint(' [PAKET] body: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
@@ -263,7 +263,7 @@ class TravelDetailService {
       }
       return [];
     } catch (e) {
-      debugPrint('❌ [PAKET] error: $e');
+      debugPrint(' [PAKET] error: $e');
       return [];
     }
   }
